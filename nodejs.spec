@@ -12,7 +12,7 @@
 
 Name: %{?scl_prefix}nodejs
 Version: 4.3.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -44,8 +44,11 @@ Patch2: nodejs-use-system-certs.patch
 
 BuildRequires: python-devel
 BuildRequires: %{?scl_prefix}libuv-devel >= 1.7.5
-Requires: %{?scl_prefix}libuv >= 1.7.5
+BuildRequires: %{?scl_prefix}http-parser-devel >= 2.6.1
 BuildRequires: zlib-devel
+Requires: %{?scl_prefix}libuv >= 1.7.5
+Requires: %{?scl_prefix}http-parser >= 2.6.1
+
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 #BuildRequires: openssl-devel >= 1:1.0.2
 
@@ -90,7 +93,7 @@ Provides: %{?scl_prefix}bundled(v8) = 4.5.103.35
 
 # Node.js and http-parser share an upstream. The http-parser upstream does not
 # do releases often and is almost always far behind the bundled version
-Provides: %{?scl_prefix}bundled(http-parser) = 2.5.1
+#Provides: %%{?scl_prefix}bundled(http-parser) = 2.5.1
 
 %description
 Node.js is a platform built on Chrome's JavaScript runtime
@@ -125,6 +128,7 @@ The API documentation for the Node.js JavaScript runtime.
 %patch1 -p1
 rm -rf deps/npm \
        deps/uv \
+       deps/http-parser \
        deps/zlib
 
 # remove bundled CA certificates
@@ -138,11 +142,14 @@ rm -f src/node_root_certs.h
 export CFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -fno-delete-null-pointer-checks'
 export CXXFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -fno-delete-null-pointer-checks'
 
+
 ./configure --prefix=%{_prefix} \
+           --shared-http-parser \
            --shared-zlib \
            --shared-libuv \
            --without-npm \
            --without-dtrace
+
 
 %if %{?with_debug} == 1
 # Setting BUILDTYPE=Debug builds both release and debug binaries
@@ -225,10 +232,11 @@ mv %{buildroot}/%{_datadir}/doc/node/gdbinit %{buildroot}/%{_pkgdocdir}/gdbinit
 %{_pkgdocdir}/html
 
 %changelog
-* Wed Feb 10 2016 Tomas Hrcka <thrcka@redhat.com> - 4.3.0-3
-- New upstream release
+* Wed Feb 10 2016 Tomas Hrcka <thrcka@redhat.com> - 4.3.0-4
+- New upstream release 4.3.0
+- https://nodejs.org/en/blog/release/v4.3.0/
 - Build with bundled openssl, this will be reverted ASAP
-- This will be replaced with some useful information.
+- Unbundled http-parser
 
 * Thu Jul 16 2015 Tomas Hrcka <thrcka@redhat.com> - 0.10.40-1
 - Rebase to latest upstream release
