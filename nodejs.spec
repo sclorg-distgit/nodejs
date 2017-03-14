@@ -1,7 +1,7 @@
 %{?scl:%scl_package nodejs}
 %{!?scl:%global pkg_name %{name}}
 #%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
-%{!?_defaultdocdir: %global _defaultdocdir %{_datadir}/doc/%{name}-%{version}}
+#%{!?_defaultdocdir: %global _defaultdocdir %{_datadir}/doc/%{name}-%{version}}
 
 %global with_debug 1
 
@@ -13,7 +13,7 @@
 
 Name: %{?scl_prefix}nodejs
 Version: 6.9.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 URL: http://nodejs.org/
@@ -215,23 +215,22 @@ mkdir -p %{buildroot}%{_prefix}/lib/node_modules
 #chmod 0755 %{buildroot}%{_rpmconfigdir}/nodejs_native.req
 
 #install documentation
-mkdir -p %{buildroot}%{_defaultdocdir}/html
-cp -pr doc/* %{buildroot}%{_defaultdocdir}/html
-rm -f %{buildroot}%{_defaultdocdir}/html/nodejs.1
+#mkdir -p %{buildroot}%{_pkgdocdir}/html
+#cp -pr doc/* %{buildroot}%{_pkgdocdir}/html
+#rm -f %{buildroot}%{_pkgdocdir}/html/nodejs.1
 
 # some old-school doc installing
-#mkdir -p %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
-#cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
-#rm -f %{_defaultdocdir}/%{pkg_name}-docs-%{version}/html/nodejs.1
-
+mkdir -p %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
+cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
+rm -f %{_defaultdocdir}/%{pkg_name}-docs-%{version}/html/nodejs.1
 
 #node-gyp needs common.gypi too
 mkdir -p %{buildroot}%{_datadir}/node
 cp -p common.gypi %{buildroot}%{_datadir}/node
 
 # Install the GDB init tool into the documentation directory
-#mv %{buildroot}%{_datadir}/doc/node/gdbinit %{buildroot}%{_defaultdocdir}/gdbinit
-#mv %{buildroot}/%{_datadir}/doc/node/gdbinit %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/gdbinit
+#mv %{buildroot}/%{_datadir}/doc/node/gdbinit %{buildroot}%{_pkgdocdir}/gdbinit
+mv %{buildroot}/%{_datadir}/doc/node/gdbinit %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/gdbinit
 
 %check 
 %{?scl:scl enable %{scl} "}
@@ -248,12 +247,10 @@ python tools/test.py --mode=release parallel -J
 %{_datadir}/systemtap/tapset/node.stp
 #%%{_rpmconfigdir}/fileattrs/nodejs_native.attr
 #%%{_rpmconfigdir}/nodejs_native.req
-%dir %{_defaultdocdir}
-#%{_defaultdocdir}/%{pkg_name}-docs-%{version}
+%{_defaultdocdir}/%{pkg_name}-docs-%{version}
 %doc LICENSE
 %doc AUTHORS CHANGELOG.md COLLABORATOR_GUIDE.md GOVERNANCE.md README.md
 %doc ROADMAP.md WORKING_GROUPS.md
-%doc %{_datadir}/doc/node/gdbinit 
 
 %files devel
 %if %{?with_debug} == 1
@@ -261,16 +258,18 @@ python tools/test.py --mode=release parallel -J
 %endif
 %{_includedir}/node
 %{_datadir}/node/common.gypi
-#%doc %{buildroot}%{_datadir}/doc/node/gdbinit
-#%{_defaultdocdir}/gdbinit
-#%{_defaultdocdir}/%{pkg_name}-docs-%{version}/gdbinit
+#%{_pkgdocdir}/gdbinit
+%{_defaultdocdir}/%{pkg_name}-docs-%{version}/gdbinit
 
 %files docs
-%dir %{_defaultdocdir}
-%{_defaultdocdir}/html
-#%{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
+#%dir %{_pkgdocdir}
+#%{_pkgdocdir}/html
+%{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
 
 %changelog
+* Fri Mar 10 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 6.9.1-3
+- Fix docs (RHBZ#1428007)
+
 * Fri Feb 17 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 6.9.1-2
 - Update dts dependency
 
