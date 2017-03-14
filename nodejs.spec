@@ -13,7 +13,7 @@
 
 Name: %{?scl_prefix}nodejs
 Version: 6.9.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 URL: http://nodejs.org/
@@ -54,8 +54,8 @@ BuildRequires: %{?scl_prefix}gyp
 BuildRequires: %{?scl_prefix}libuv-devel >= 1.9.1
 BuildRequires: %{?scl_prefix}http-parser-devel >= 2.7.0
 # compilers from rhel6 repositories are too old
-BuildRequires: devtoolset-4-gcc
-BuildRequires: devtoolset-4-gcc-c++
+BuildRequires: devtoolset-6-gcc
+BuildRequires: devtoolset-6-gcc-c++
 BuildRequires: python-devel
 BuildRequires: zlib-devel
 BuildRequires: openssl-devel
@@ -165,7 +165,7 @@ export CXXFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 \
 export LDFLAGS='%{optflags} -L%{_libdir}'
 
 # dts has to be enabled before configure is run
-%{?scl:scl enable %{scl} devtoolset-4 - << \EOF}
+%{?scl:scl enable %{scl} devtoolset-6 - << \EOF}
 
 ./configure --prefix=%{_prefix} \
            --shared-http-parser \
@@ -230,12 +230,12 @@ mkdir -p %{buildroot}%{_datadir}/node
 cp -p common.gypi %{buildroot}%{_datadir}/node
 
 # Install the GDB init tool into the documentation directory
-mv %{buildroot}%{_datadir}/doc/node/gdbinit %{buildroot}%{_defaultdocdir}/gdbinit
+#mv %{buildroot}%{_datadir}/doc/node/gdbinit %{buildroot}%{_defaultdocdir}/gdbinit
 #mv %{buildroot}/%{_datadir}/doc/node/gdbinit %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/gdbinit
 
 %check 
 %{?scl:scl enable %{scl} "}
-python tools/test.py --mode=release parallel -J || :
+python tools/test.py --mode=release parallel -J 
 %{?scl:"}
 
 %files
@@ -253,7 +253,7 @@ python tools/test.py --mode=release parallel -J || :
 %doc LICENSE
 %doc AUTHORS CHANGELOG.md COLLABORATOR_GUIDE.md GOVERNANCE.md README.md
 %doc ROADMAP.md WORKING_GROUPS.md
- 
+%doc %{_datadir}/doc/node/gdbinit 
 
 %files devel
 %if %{?with_debug} == 1
@@ -261,7 +261,8 @@ python tools/test.py --mode=release parallel -J || :
 %endif
 %{_includedir}/node
 %{_datadir}/node/common.gypi
-%{_defaultdocdir}/gdbinit
+#%doc %{buildroot}%{_datadir}/doc/node/gdbinit
+#%{_defaultdocdir}/gdbinit
 #%{_defaultdocdir}/%{pkg_name}-docs-%{version}/gdbinit
 
 %files docs
@@ -270,6 +271,9 @@ python tools/test.py --mode=release parallel -J || :
 #%{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
 
 %changelog
+* Fri Feb 17 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 6.9.1-2
+- Update dts dependency
+
 * Fri Jan 20 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 6.9.1-1
 - Update to 6.9.1
 - use zvetlik/rh-nodejs6 as a base
