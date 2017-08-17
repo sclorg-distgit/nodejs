@@ -1,0 +1,25 @@
+From 44ea8faa483b837f3ca90b705077d701ed9fd219 Mon Sep 17 00:00:00 2001
+From: Zuzana Svetlikova <zsvetlik@redhat.com>
+Date: Mon, 19 Jun 2017 11:44:50 +0200
+Subject: [PATCH] Disable running gyp on shared deps
+
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index da37eab455..acb815756b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -81,7 +81,7 @@ $(NODE_G_EXE): config.gypi out/Makefile
+ 	if [ ! -r $@ -o ! -L $@ ]; then ln -fs out/Debug/$(NODE_EXE) $@; fi
+ 
+ out/Makefile: common.gypi deps/uv/uv.gyp deps/http_parser/http_parser.gyp \
+-              deps/zlib/zlib.gyp deps/v8/gypfiles/toolchain.gypi \
++              deps/v8/gypfiles/toolchain.gypi \
+               deps/v8/gypfiles/features.gypi deps/v8/src/v8.gyp node.gyp \
+               config.gypi
+ 	$(PYTHON) tools/gyp_node.py -f make
+-- 
+2.13.1
+
