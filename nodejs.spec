@@ -19,8 +19,8 @@
 # feature releases that are only supported for nine months, which is shorter
 # than a Fedora release lifecycle.
 %global nodejs_major 8
-%global nodejs_minor 1
-%global nodejs_patch 4
+%global nodejs_minor 2
+%global nodejs_patch 1
 %global nodejs_abi %{nodejs_major}.%{nodejs_minor}
 %global nodejs_version %{nodejs_major}.%{nodejs_minor}.%{nodejs_patch}
 %global nodejs_release 1
@@ -63,8 +63,8 @@
 
 # npm - from deps/npm/package.json
 %global npm_major 5
-%global npm_minor 0
-%global npm_patch 3
+%global npm_minor 3
+%global npm_patch 0
 %global npm_version %{npm_major}.%{npm_minor}.%{npm_patch}
 
 # In order to avoid needing to keep incrementing the release version for the
@@ -417,10 +417,12 @@ python tools/test.py --mode=release parallel -J
 
 %files -n %{?scl_prefix}npm
 %{_bindir}/npm
+%{_bindir}/npx
 %{_prefix}/lib/node_modules/npm
 %ghost %{_sysconfdir}/npmrc
 %ghost %{_sysconfdir}/npmignore
 %doc %{_mandir}/man*/npm*
+%doc %{_mandir}/man*/npx*
 %doc %{_mandir}/man5/package.json.5*
 %doc %{_mandir}/man5/package-lock.json.5*
 %doc %{_mandir}/man7/removing-npm.7*
@@ -436,6 +438,10 @@ python tools/test.py --mode=release parallel -J
 
 
 %changelog
+* Mon Jul 24 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 8.2.1-1
+- Update to 8.2.1
+- update npm to 5.3.0, add npx command
+
 * Wed Jul 12 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 8.1.4-1
 - Security update (https://nodejs.org/en/blog/vulnerability/july-2017-security-releases/)
 - Fixes RHBZ#1463132 and RHBZ#1469706
