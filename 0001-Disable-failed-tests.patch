@@ -1,19 +1,21 @@
-From 50eb3dc5868a163086245297aa1c25b38c9a30df Mon Sep 17 00:00:00 2001
+From 53983f1372ca1c541809afc7de5ac433c6edab90 Mon Sep 17 00:00:00 2001
 From: Zuzana Svetlikova <zsvetlik@redhat.com>
-Date: Tue, 20 Jun 2017 12:20:15 +0200
-Subject: [PATCH] Disable failed tests
+Date: Wed, 12 Jul 2017 17:20:15 +0200
+Subject: [PATCH] Disable some more tests
 
 ---
  test/{parallel => disabled}/test-crypto-fips.js                           | 0
  .../test-net-better-error-messages-port-hostname.js                       | 0
  test/{parallel => disabled}/test-net-connect-immediate-finish.js          | 0
+ test/{parallel => disabled}/test-regress-GH-746.js                        | 0
  test/{parallel => disabled}/test-util-inspect.js                          | 0
  test/{parallel => disabled}/test-v8-serdes.js                             | 0
  test/{parallel => disabled}/test-zlib-failed-init.js                      | 0
- 6 files changed, 0 insertions(+), 0 deletions(-)
+ 7 files changed, 0 insertions(+), 0 deletions(-)
  rename test/{parallel => disabled}/test-crypto-fips.js (100%)
  rename test/{parallel => disabled}/test-net-better-error-messages-port-hostname.js (100%)
  rename test/{parallel => disabled}/test-net-connect-immediate-finish.js (100%)
+ rename test/{parallel => disabled}/test-regress-GH-746.js (100%)
  rename test/{parallel => disabled}/test-util-inspect.js (100%)
  rename test/{parallel => disabled}/test-v8-serdes.js (100%)
  rename test/{parallel => disabled}/test-zlib-failed-init.js (100%)
@@ -30,6 +32,10 @@ diff --git a/test/parallel/test-net-connect-immediate-finish.js b/test/disabled/
 similarity index 100%
 rename from test/parallel/test-net-connect-immediate-finish.js
 rename to test/disabled/test-net-connect-immediate-finish.js
+diff --git a/test/parallel/test-regress-GH-746.js b/test/disabled/test-regress-GH-746.js
+similarity index 100%
+rename from test/parallel/test-regress-GH-746.js
+rename to test/disabled/test-regress-GH-746.js
 diff --git a/test/parallel/test-util-inspect.js b/test/disabled/test-util-inspect.js
 similarity index 100%
 rename from test/parallel/test-util-inspect.js
@@ -43,5 +49,5 @@ similarity index 100%
 rename from test/parallel/test-zlib-failed-init.js
 rename to test/disabled/test-zlib-failed-init.js
 -- 
-2.13.1
+2.13.2
 

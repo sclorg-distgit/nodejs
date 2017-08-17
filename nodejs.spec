@@ -20,10 +20,10 @@
 # than a Fedora release lifecycle.
 %global nodejs_major 8
 %global nodejs_minor 1
-%global nodejs_patch 2
+%global nodejs_patch 4
 %global nodejs_abi %{nodejs_major}.%{nodejs_minor}
 %global nodejs_version %{nodejs_major}.%{nodejs_minor}.%{nodejs_patch}
-%global nodejs_release 7
+%global nodejs_release 1
 
 # == Bundled Dependency Versions ==
 # v8 - from deps/v8/include/v8-version.h
@@ -107,13 +107,9 @@ Patch1: 0001-Disable-running-gyp-files-for-bundled-deps.patch
 # https://github.com/nodejs/help/issues/687
 Patch2: 0001-Disable-failed-tests.patch
 
-Patch3: 0001-c-ares-NAPTR-parser-out-of-bounds-access.patch
-
 %{?scl:Requires: %{scl}-runtime}
 %{?scl:BuildRequires: %{scl}-runtime}
 BuildRequires: python-devel
-#BuildRequires: %{?scl_prefix}libuv-devel >= 1:1.9.1
-#Requires: %{?scl_prefix}libuv >= 1:1.9.1
 #BuildRequires: libicu-devel
 BuildRequires: zlib-devel
 BuildRequires: devtoolset-7-gcc
@@ -240,8 +236,6 @@ The API documentation for the Node.js JavaScript runtime.
 
 
 %prep
-#%{?scl:scl enable %{scl} - << \EOF}
-#set -e
 %setup -q -n node-v%{nodejs_version}
 
 # remove bundled dependencies that we aren't building
@@ -250,18 +244,12 @@ The API documentation for the Node.js JavaScript runtime.
 # disable tests
 %patch2 -p1
 
-# patch CVE-2017-1000381 (RHBZ#1463132)
-%patch3 -p1
-
 rm -rf deps/zlib
-
-#%{?scl:EOF}
 
 
 %build
 %{?scl:scl enable %{scl} devtoolset-7 - << \EOF}
 set -ex
-gcc --version
 # build with debugging symbols and add defines from libuv (#892601)
 # Node's v8 breaks with GCC 6 because of incorrect usage of methods on
 # NULL objects. We need to pass -fno-delete-null-pointer-checks
@@ -304,10 +292,6 @@ make BUILDTYPE=Debug %{?_smp_mflags}
 
 
 %install
-#%{?scl:scl enable %{scl} - << \EOF}
-#set -e
-#rm -rf %{buildroot}
-
 ./tools/install.py install %{buildroot} %{_prefix}
 
 # Set the binary permissions properly
@@ -380,13 +364,11 @@ rm -rf %{buildroot}%{_prefix}/lib/node_modules/npm/html \
 ln -sf %{_pkgdocdir} %{buildroot}%{_prefix}/lib/node_modules/npm/html
 ln -sf %{_pkgdocdir}/npm/html %{buildroot}%{_prefix}/lib/node_modules/npm/doc
 
-#%{?scl:EOF}
-
 
 %check
 %{?scl:scl enable %{scl} - << \EOF}
-exit 0
 set -ex
+exit 0
 # Fail the build if the versions don't match
 %{buildroot}/%{_bindir}/node -e "require('assert').equal(process.versions.node, '%{nodejs_version}')"
 %{buildroot}/%{_bindir}/node -e "require('assert').equal(process.versions.v8, '%{v8_version}')"
@@ -407,6 +389,8 @@ python tools/test.py --mode=release parallel -J
 
 %files
 %{_bindir}/node
+%{_mandir}/man1/node.*
+%dir %{_pkgdocdir}
 %dir %{_prefix}/lib/node_modules
 %dir %{_datadir}/node
 %dir %{_datadir}/systemtap
@@ -420,10 +404,6 @@ python tools/test.py --mode=release parallel -J
 %{_rpmconfigdir}/nodejs_native.req
 %license LICENSE
 %doc AUTHORS CHANGELOG.md COLLABORATOR_GUIDE.md GOVERNANCE.md README.md
-#%doc ROADMAP.md WORKING_GROUPS.md
-%doc %{_mandir}/man1/node.1*
-
-
 
 %files devel
 %if 0%{?with_debug} == 1
@@ -434,7 +414,6 @@ python tools/test.py --mode=release parallel -J
 %{_pkgdocdir}/gdbinit
 %{_pkgdocdir}/lldbinit
 %{_pkgdocdir}/lldb_commands.py*
-
 
 %files -n %{?scl_prefix}npm
 %{_bindir}/npm
@@ -451,11 +430,16 @@ python tools/test.py --mode=release parallel -J
 %files docs
 %dir %{_pkgdocdir}
 %{_pkgdocdir}/html
+%{_pkgdocdir}/npm
 %{_pkgdocdir}/npm/html
 %{_pkgdocdir}/npm/doc
 
 
 %changelog
+* Wed Jul 12 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 8.1.4-1
+- Security update (https://nodejs.org/en/blog/vulnerability/july-2017-security-releases/)
+- Fixes RHBZ#1463132 and RHBZ#1469706
+
 * Wed Jun 28 2017 Joe Orton <jorton@redhat.com> - 8.1.2-7
 - disable debug build on aarch64
 
