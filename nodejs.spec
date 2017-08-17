@@ -10,7 +10,7 @@
 # ARM builds currently break on the Debug builds, so we'll just
 # build the standard runtime until that gets sorted out.
 %ifarch %{arm} aarch64 %{power64}
-%global with_debug 1
+%global with_debug 0
 %endif
 
 # == Node.js Version ==
@@ -23,7 +23,7 @@
 %global nodejs_patch 2
 %global nodejs_abi %{nodejs_major}.%{nodejs_minor}
 %global nodejs_version %{nodejs_major}.%{nodejs_minor}.%{nodejs_patch}
-%global nodejs_release 3
+%global nodejs_release 7
 
 # == Bundled Dependency Versions ==
 # v8 - from deps/v8/include/v8-version.h
@@ -86,7 +86,8 @@ License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
 URL: http://nodejs.org/
 
-ExclusiveArch: %{nodejs_arches}
+#BuildArch: %{nodejs_arches}
+#ExclusiveArch: %{nodejs_arches}
 
 # nodejs bundles openssl, but we use the system version in Fedora
 # because openssl contains prohibited code, we remove openssl completely from
@@ -115,8 +116,8 @@ BuildRequires: python-devel
 #Requires: %{?scl_prefix}libuv >= 1:1.9.1
 #BuildRequires: libicu-devel
 BuildRequires: zlib-devel
-BuildRequires: gcc
-BuildRequires: gcc-c++
+BuildRequires: devtoolset-7-gcc
+BuildRequires: devtoolset-7-gcc-c++
 BuildRequires: procps-ng
 BuildRequires: systemtap-sdt-devel
 
@@ -258,8 +259,9 @@ rm -rf deps/zlib
 
 
 %build
-#%{?scl:scl enable %{scl} - << \EOF}
-#set -e
+%{?scl:scl enable %{scl} devtoolset-7 - << \EOF}
+set -ex
+gcc --version
 # build with debugging symbols and add defines from libuv (#892601)
 # Node's v8 breaks with GCC 6 because of incorrect usage of methods on
 # NULL objects. We need to pass -fno-delete-null-pointer-checks
@@ -293,14 +295,12 @@ export CXXFLAGS="$(echo ${CXXFLAGS} | tr '\n\\' '  ')"
            --openssl-use-def-ca-store
 %endif
 
-%if %{?with_debug} == 1
-# Setting BUILDTYPE=Debug builds both release and debug binaries
-make BUILDTYPE=Debug %{?_smp_mflags}
-%else
 make BUILDTYPE=Release %{?_smp_mflags}
+%if 0%{?with_debug} == 1
+make BUILDTYPE=Debug %{?_smp_mflags}
 %endif
 
-#%{?scl:EOF}
+%{?scl:EOF}
 
 
 %install
@@ -313,7 +313,7 @@ make BUILDTYPE=Release %{?_smp_mflags}
 # Set the binary permissions properly
 chmod 0755 %{buildroot}/%{_bindir}/node
 
-%if %{?with_debug} == 1
+%if 0%{?with_debug} == 1
 # Install the debug binary and set its permissions
 install -Dpm0755 out/Debug/node %{buildroot}/%{_bindir}/node_g
 %endif
@@ -385,8 +385,8 @@ ln -sf %{_pkgdocdir}/npm/html %{buildroot}%{_prefix}/lib/node_modules/npm/doc
 
 %check
 %{?scl:scl enable %{scl} - << \EOF}
-set -e
 exit 0
+set -ex
 # Fail the build if the versions don't match
 %{buildroot}/%{_bindir}/node -e "require('assert').equal(process.versions.node, '%{nodejs_version}')"
 %{buildroot}/%{_bindir}/node -e "require('assert').equal(process.versions.v8, '%{v8_version}')"
@@ -426,7 +426,7 @@ python tools/test.py --mode=release parallel -J
 
 
 %files devel
-%if %{?with_debug} == 1
+%if 0%{?with_debug} == 1
 %{_bindir}/node_g
 %endif
 %{_includedir}/node
@@ -456,6 +456,19 @@ python tools/test.py --mode=release parallel -J
 
 
 %changelog
+* Wed Jun 28 2017 Joe Orton <jorton@redhat.com> - 8.1.2-7
+- disable debug build on aarch64
+
+* Wed Jun 28 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 8.1.2-6
+- Build aarm64 without icu
+- switch to dts 7
+
+* Tue Jun 27 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 8.1.2-5
+- Switch to DTS
+
+* Tue Jun 27 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 8.1.2-4
+- Add %%BuildArch
+
 * Sat Jun 24 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 8.1.2-3
 - Patch CVE-2017-1000381
 
