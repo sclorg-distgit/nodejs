@@ -1,0 +1,5045 @@
+From e58a9e66eb035fec08cdf0fc41ff4fdcbcc22c3c Mon Sep 17 00:00:00 2001
+From: Zuzana Svetlikova <zsvetlik@redhat.com>
+Date: Wed, 16 Nov 2016 05:08:56 -0500
+Subject: [PATCH] Disable tests
+
+---
+ test/disabled/test-child-process-uid-gid.js        |   14 +
+ test/disabled/test-crypto-authenticated.js         |  454 +++++++++++++
+ test/disabled/test-crypto-binary-default.js        |  669 ++++++++++++++++++++
+ test/disabled/test-crypto-cipher-decipher.js       |  115 ++++
+ test/disabled/test-crypto-dh-odd-key.js            |   25 +
+ test/disabled/test-crypto-dh.js                    |  190 ++++++
+ test/disabled/test-crypto.js                       |  143 +++++
+ ...test-net-better-error-messages-port-hostname.js |   14 +
+ test/disabled/test-net-connect-immediate-finish.js |   17 +
+ test/disabled/test-npm-install.js                  |   51 ++
+ test/disabled/test-tls-cnnic-whitelist.js          |   84 +++
+ test/disabled/test-tls-empty-sni-context.js        |   42 ++
+ test/disabled/test-tls-ocsp-callback.js            |  130 ++++
+ test/disabled/test-tls-pfx-gh-5100-regr.js         |   36 +
+ test/disabled/test-tls-session-cache.js            |  113 ++++
+ test/disabled/test-tls-sni-option.js               |  168 +++++
+ test/disabled/test-tls-sni-server-client.js        |  116 ++++
+ test/parallel/test-child-process-uid-gid.js        |   14 -
+ test/parallel/test-crypto-authenticated.js         |  454 -------------
+ test/parallel/test-crypto-binary-default.js        |  669 --------------------
+ test/parallel/test-crypto-cipher-decipher.js       |  115 ----
+ test/parallel/test-crypto-dh-odd-key.js            |   25 -
+ test/parallel/test-crypto-dh.js                    |  190 ------
+ test/parallel/test-crypto.js                       |  143 -----
+ ...test-net-better-error-messages-port-hostname.js |   14 -
+ test/parallel/test-net-connect-immediate-finish.js |   17 -
+ test/parallel/test-npm-install.js                  |   51 --
+ test/parallel/test-tls-cnnic-whitelist.js          |   84 ---
+ test/parallel/test-tls-empty-sni-context.js        |   42 --
+ test/parallel/test-tls-ocsp-callback.js            |  130 ----
+ test/parallel/test-tls-pfx-gh-5100-regr.js         |   36 -
+ test/parallel/test-tls-session-cache.js            |  113 ----
+ test/parallel/test-tls-sni-option.js               |  168 -----
+ test/parallel/test-tls-sni-server-client.js        |  116 ----
+ 34 files changed, 2381 insertions(+), 2381 deletions(-)
+ create mode 100644 test/disabled/test-child-process-uid-gid.js
+ create mode 100644 test/disabled/test-crypto-authenticated.js
+ create mode 100644 test/disabled/test-crypto-binary-default.js
+ create mode 100644 test/disabled/test-crypto-cipher-decipher.js
+ create mode 100644 test/disabled/test-crypto-dh-odd-key.js
+ create mode 100644 test/disabled/test-crypto-dh.js
+ create mode 100644 test/disabled/test-crypto.js
+ create mode 100644 test/disabled/test-net-better-error-messages-port-hostname.js
+ create mode 100644 test/disabled/test-net-connect-immediate-finish.js
+ create mode 100644 test/disabled/test-npm-install.js
+ create mode 100644 test/disabled/test-tls-cnnic-whitelist.js
+ create mode 100644 test/disabled/test-tls-empty-sni-context.js
+ create mode 100644 test/disabled/test-tls-ocsp-callback.js
+ create mode 100644 test/disabled/test-tls-pfx-gh-5100-regr.js
+ create mode 100644 test/disabled/test-tls-session-cache.js
+ create mode 100644 test/disabled/test-tls-sni-option.js
+ create mode 100644 test/disabled/test-tls-sni-server-client.js
+ delete mode 100644 test/parallel/test-child-process-uid-gid.js
+ delete mode 100644 test/parallel/test-crypto-authenticated.js
+ delete mode 100644 test/parallel/test-crypto-binary-default.js
+ delete mode 100644 test/parallel/test-crypto-cipher-decipher.js
+ delete mode 100644 test/parallel/test-crypto-dh-odd-key.js
+ delete mode 100644 test/parallel/test-crypto-dh.js
+ delete mode 100644 test/parallel/test-crypto.js
+ delete mode 100644 test/parallel/test-net-better-error-messages-port-hostname.js
+ delete mode 100644 test/parallel/test-net-connect-immediate-finish.js
+ delete mode 100644 test/parallel/test-npm-install.js
+ delete mode 100644 test/parallel/test-tls-cnnic-whitelist.js
+ delete mode 100644 test/parallel/test-tls-empty-sni-context.js
+ delete mode 100644 test/parallel/test-tls-ocsp-callback.js
+ delete mode 100644 test/parallel/test-tls-pfx-gh-5100-regr.js
+ delete mode 100644 test/parallel/test-tls-session-cache.js
+ delete mode 100644 test/parallel/test-tls-sni-option.js
+ delete mode 100644 test/parallel/test-tls-sni-server-client.js
+
+diff --git a/test/disabled/test-child-process-uid-gid.js b/test/disabled/test-child-process-uid-gid.js
+new file mode 100644
+index 0000000..220cae6
+--- /dev/null
++++ b/test/disabled/test-child-process-uid-gid.js
+@@ -0,0 +1,14 @@
++'use strict';
++const common = require('../common');
++const assert = require('assert');
++const spawn = require('child_process').spawn;
++
++const expectedError = common.isWindows ? /\bENOTSUP\b/ : /\bEPERM\b/;
++
++assert.throws(() => {
++  spawn('echo', ['fhqwhgads'], {uid: 0});
++}, expectedError);
++
++assert.throws(() => {
++  spawn('echo', ['fhqwhgads'], {gid: 0});
++}, expectedError);
+diff --git a/test/disabled/test-crypto-authenticated.js b/test/disabled/test-crypto-authenticated.js
+new file mode 100644
+index 0000000..b816d8a
+--- /dev/null
++++ b/test/disabled/test-crypto-authenticated.js
+@@ -0,0 +1,454 @@
++'use strict';
++const common = require('../common');
++const assert = require('assert');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++const crypto = require('crypto');
++
++crypto.DEFAULT_ENCODING = 'buffer';
++
++//
++// Test authenticated encryption modes.
++//
++// !NEVER USE STATIC IVs IN REAL LIFE!
++//
++
++const TEST_CASES = [
++  { algo: 'aes-128-gcm',
++    key: '6970787039613669314d623455536234',
++    iv: '583673497131313748307652', plain: 'Hello World!',
++    ct: '4be13896f64dfa2c2d0f2c76',
++    tag: '272b422f62eb545eaa15b5ff84092447', tampered: false },
++  { algo: 'aes-128-gcm',
++    key: '6970787039613669314d623455536234',
++    iv: '583673497131313748307652', plain: 'Hello World!',
++    ct: '4be13896f64dfa2c2d0f2c76', aad: '000000FF',
++    tag: 'ba2479f66275665a88cb7b15f43eb005', tampered: false },
++  { algo: 'aes-128-gcm',
++    key: '6970787039613669314d623455536234',
++    iv: '583673497131313748307652', plain: 'Hello World!',
++    ct: '4be13596f64dfa2c2d0fac76',
++    tag: '272b422f62eb545eaa15b5ff84092447', tampered: true },
++  { algo: 'aes-256-gcm',
++    key: '337a54767a7233703637564336316a6d56353472495975313534357834546c59',
++    iv: '36306950306836764a6f4561', plain: 'Hello node.js world!',
++    ct: '58e62cfe7b1d274111a82267ebb93866e72b6c2a',
++    tag: '9bb44f663badabacae9720881fb1ec7a', tampered: false },
++  { algo: 'aes-256-gcm',
++    key: '337a54767a7233703637564336316a6d56353472495975313534357834546c59',
++    iv: '36306950306836764a6f4561', plain: 'Hello node.js world!',
++    ct: '58e62cff7b1d274011a82267ebb93866e72b6c2b',
++    tag: '9bb44f663badabacae9720881fb1ec7a', tampered: true },
++  { algo: 'aes-192-gcm',
++    key: '1ed2233fa2223ef5d7df08546049406c7305220bca40d4c9',
++    iv: '0e1791e9db3bd21a9122c416', plain: 'Hello node.js world!',
++    password: 'very bad password', aad: '63616c76696e',
++    ct: 'dda53a4059aa17b88756984995f7bba3c636cc44',
++    tag: 'd2a35e5c611e5e3d2258360241c5b045', tampered: false },
++
++  // Following test cases are from
++  //   http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/
++  //    proposedmodes/gcm/gcm-revised-spec.pdf
++
++  // Test case 1
++  { algo: 'aes-128-gcm',
++    key: '00000000000000000000000000000000',
++    iv: '000000000000000000000000',
++    plain: '',
++    plainIsHex: false,
++    ct: '',
++    tag: '58e2fccefa7e3061367f1d57a4e7455a', tampered: false },
++
++  // Test case 2
++  { algo: 'aes-128-gcm',
++    key: '00000000000000000000000000000000',
++    iv: '000000000000000000000000',
++    plain: '00000000000000000000000000000000',
++    plainIsHex: true,
++    ct: '0388dace60b6a392f328c2b971b2fe78',
++    tag: 'ab6e47d42cec13bdf53a67b21257bddf', tampered: false },
++
++  // Test case 3
++  { algo: 'aes-128-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308',
++    iv: 'cafebabefacedbaddecaf888',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a721' +
++           'c3c0c95956809532fcf0e2449a6b525b1' +
++           '6aedf5aa0de657ba637b391aafd255',
++    plainIsHex: true,
++    ct: '42831ec2217774244b7221b784d0d49c' +
++        'e3aa212f2c02a4e035c17e2329aca12e2' +
++        '1d514b25466931c7d8f6a5aac84aa051b' +
++        'a30b396a0aac973d58e091473f5985',
++    tag: '4d5c2af327cd64a62cf35abd2ba6fab4', tampered: false },
++
++  // Test case 4
++  { algo: 'aes-128-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308',
++    iv: 'cafebabefacedbaddecaf888',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a721' +
++           'c3c0c95956809532fcf0e2449a6b525b16' +
++           'aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
++    plainIsHex: true,
++    ct: '42831ec2217774244b7221b784d0d49c' +
++        'e3aa212f2c02a4e035c17e2329aca12e2' +
++        '1d514b25466931c7d8f6a5aac84aa051b' +
++        'a30b396a0aac973d58e091',
++    tag: '5bc94fbc3221a5db94fae95ae7121a47', tampered: false },
++
++  // Test case 5, 8 byte IV
++  { algo: 'aes-128-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308',
++    iv: 'cafebabefacedbad',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeef' +
++         'abaddad2',
++    plainIsHex: true,
++    ct: '61353b4c2806934a777ff51fa22a4755' +
++        '699b2a714fcdc6f83766e5f97b6c7423' +
++        '73806900e49f24b22b097544d4896b42' +
++        '4989b5e1ebac0f07c23f4598',
++    tag: '3612d2e79e3b0785561be14aaca2fccb', tampered: false },
++
++  // Test case 6, 60 byte IV
++  { algo: 'aes-128-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308',
++    iv: '9313225DF88406E555909C5AFF5269AA' +
++        '6A7A9538534F7DA1E4C303D2A318A728' +
++        'C3C0C95156809539FCF0E2429A6B52541' +
++        '6AEDBF5A0DE6A57A637B39B',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
++    plainIsHex: true,
++    ct: '8ce24998625615b603a033aca13fb894' +
++        'be9112a5c3a211a8ba262a3cca7e2ca7' +
++        '01e4a9a4fba43c90ccdcb281d48c7c6f' +
++        'd62875d2aca417034c34aee5',
++    tag: '619cc5aefffe0bfa462af43c1699d050', tampered: false },
++
++  // Test case 7
++  { algo: 'aes-192-gcm',
++    key: '000000000000000000000000000000000000000000000000',
++    iv: '000000000000000000000000',
++    plain: '',
++    plainIsHex: false,
++    ct: '',
++    tag: 'cd33b28ac773f74ba00ed1f312572435', tampered: false },
++
++  // Test case 8
++  { algo: 'aes-192-gcm',
++    key: '000000000000000000000000000000000000000000000000',
++    iv: '000000000000000000000000',
++    plain: '00000000000000000000000000000000',
++    plainIsHex: true,
++    ct: '98e7247c07f0fe411c267e4384b0f600',
++    tag: '2ff58d80033927ab8ef4d4587514f0fb', tampered: false },
++
++  // Test case 9
++  { algo: 'aes-192-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c',
++    iv: 'cafebabefacedbaddecaf888',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b391aafd255',
++    plainIsHex: true,
++    ct: '3980ca0b3c00e841eb06fac4872a2757' +
++        '859e1ceaa6efd984628593b40ca1e19c' +
++        '7d773d00c144c525ac619d18c84a3f47' +
++        '18e2448b2fe324d9ccda2710acade256',
++    tag: '9924a7c8587336bfb118024db8674a14', tampered: false },
++
++  // Test case 10
++  { algo: 'aes-192-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c',
++    iv: 'cafebabefacedbaddecaf888',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
++    plainIsHex: true,
++    ct: '3980ca0b3c00e841eb06fac4872a2757' +
++        '859e1ceaa6efd984628593b40ca1e19c' +
++        '7d773d00c144c525ac619d18c84a3f47' +
++        '18e2448b2fe324d9ccda2710',
++    tag: '2519498e80f1478f37ba55bd6d27618c', tampered: false },
++
++  // Test case 11
++  { algo: 'aes-192-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c',
++    iv: 'cafebabefacedbad',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
++    plainIsHex: true,
++    ct: '0f10f599ae14a154ed24b36e25324db8' +
++        'c566632ef2bbb34f8347280fc4507057' +
++        'fddc29df9a471f75c66541d4d4dad1c9' +
++        'e93a19a58e8b473fa0f062f7',
++    tag: '65dcc57fcf623a24094fcca40d3533f8', tampered: false },
++
++  // Test case 12, 60 byte IV
++  { algo: 'aes-192-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c',
++    iv: '9313225df88406e555909c5aff5269aa' +
++        '6a7a9538534f7da1e4c303d2a318a728' +
++        'c3c0c95156809539fcf0e2429a6b5254' +
++        '16aedbf5a0de6a57a637b39b',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
++    plainIsHex: true,
++    ct: 'd27e88681ce3243c4830165a8fdcf9ff' +
++        '1de9a1d8e6b447ef6ef7b79828666e45' +
++        '81e79012af34ddd9e2f037589b292db3' +
++        'e67c036745fa22e7e9b7373b',
++    tag: 'dcf566ff291c25bbb8568fc3d376a6d9', tampered: false },
++
++  // Test case 13
++  { algo: 'aes-256-gcm',
++    key: '0000000000000000000000000000000000000000000000000000000000000000',
++    iv: '000000000000000000000000',
++    plain: '',
++    plainIsHex: false,
++    ct: '',
++    tag: '530f8afbc74536b9a963b4f1c4cb738b', tampered: false },
++
++  // Test case 14
++  { algo: 'aes-256-gcm',
++    key: '0000000000000000000000000000000000000000000000000000000000000000',
++    iv: '000000000000000000000000',
++    plain: '00000000000000000000000000000000',
++    plainIsHex: true,
++    ct: 'cea7403d4d606b6e074ec5d3baf39d18',
++    tag: 'd0d1c8a799996bf0265b98b5d48ab919', tampered: false },
++
++  // Test case 15
++  { algo: 'aes-256-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
++    iv: 'cafebabefacedbaddecaf888',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b391aafd255',
++    plainIsHex: true,
++    ct: '522dc1f099567d07f47f37a32a84427d' +
++        '643a8cdcbfe5c0c97598a2bd2555d1aa' +
++        '8cb08e48590dbb3da7b08b1056828838' +
++        'c5f61e6393ba7a0abcc9f662898015ad',
++    tag: 'b094dac5d93471bdec1a502270e3cc6c', tampered: false },
++
++  // Test case 16
++  { algo: 'aes-256-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
++    iv: 'cafebabefacedbaddecaf888',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
++    plainIsHex: true,
++    ct: '522dc1f099567d07f47f37a32a84427d' +
++        '643a8cdcbfe5c0c97598a2bd2555d1aa' +
++        '8cb08e48590dbb3da7b08b1056828838' +
++        'c5f61e6393ba7a0abcc9f662',
++    tag: '76fc6ece0f4e1768cddf8853bb2d551b', tampered: false },
++
++  // Test case 17, 8 byte IV
++  { algo: 'aes-256-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
++    iv: 'cafebabefacedbad',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
++    plainIsHex: true,
++    ct: 'c3762df1ca787d32ae47c13bf19844cb' +
++        'af1ae14d0b976afac52ff7d79bba9de0' +
++        'feb582d33934a4f0954cc2363bc73f78' +
++        '62ac430e64abe499f47c9b1f',
++    tag: '3a337dbf46a792c45e454913fe2ea8f2', tampered: false },
++
++  // Test case 18, 60 byte IV
++  { algo: 'aes-256-gcm',
++    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
++    iv: '9313225df88406e555909c5aff5269aa' +
++        '6a7a9538534f7da1e4c303d2a318a728' +
++        'c3c0c95156809539fcf0e2429a6b5254' +
++        '16aedbf5a0de6a57a637b39b',
++    plain: 'd9313225f88406e5a55909c5aff5269a' +
++           '86a7a9531534f7da2e4c303d8a318a72' +
++           '1c3c0c95956809532fcf0e2449a6b525' +
++           'b16aedf5aa0de657ba637b39',
++    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
++    plainIsHex: true,
++    ct: '5a8def2f0c9e53f1f75d7853659e2a20' +
++        'eeb2b22aafde6419a058ab4f6f746bf4' +
++        '0fc0c3b780f244452da3ebf1c5d82cde' +
++        'a2418997200ef82e44ae7e3f',
++    tag: 'a44a8266ee1c8eb0c8b5d4cf5ae9f19a', tampered: false },
++];
++
++var ciphers = crypto.getCiphers();
++
++for (var i in TEST_CASES) {
++  var test = TEST_CASES[i];
++
++  if (ciphers.indexOf(test.algo) === -1) {
++    common.skip('unsupported ' + test.algo + ' test');
++    continue;
++  }
++
++  if (common.hasFipsCrypto && test.iv.length < 24) {
++    console.log('1..0 # Skipped: IV len < 12 bytes unsupported in FIPS mode');
++    continue;
++  }
++
++  (function() {
++    var encrypt = crypto.createCipheriv(test.algo,
++      new Buffer(test.key, 'hex'), new Buffer(test.iv, 'hex'));
++    if (test.aad)
++      encrypt.setAAD(new Buffer(test.aad, 'hex'));
++
++    var inputEncoding = test.plainIsHex ? 'hex' : 'ascii';
++    var hex = encrypt.update(test.plain, inputEncoding, 'hex');
++    hex += encrypt.final('hex');
++
++    var auth_tag = encrypt.getAuthTag();
++    // only test basic encryption run if output is marked as tampered.
++    if (!test.tampered) {
++      assert.equal(hex, test.ct);
++      assert.equal(auth_tag.toString('hex'), test.tag);
++    }
++  })();
++
++  (function() {
++    var decrypt = crypto.createDecipheriv(test.algo,
++      new Buffer(test.key, 'hex'), new Buffer(test.iv, 'hex'));
++    decrypt.setAuthTag(new Buffer(test.tag, 'hex'));
++    if (test.aad)
++      decrypt.setAAD(new Buffer(test.aad, 'hex'));
++
++    var outputEncoding = test.plainIsHex ? 'hex' : 'ascii';
++
++    var msg = decrypt.update(test.ct, 'hex', outputEncoding);
++    if (!test.tampered) {
++      msg += decrypt.final(outputEncoding);
++      assert.equal(msg, test.plain);
++    } else {
++      // assert that final throws if input data could not be verified!
++      assert.throws(function() { decrypt.final('ascii'); }, / auth/);
++    }
++  })();
++
++  (function() {
++    if (!test.password) return;
++    if (common.hasFipsCrypto) {
++      assert.throws(() => { crypto.createCipher(test.algo, test.password); },
++                    /not supported in FIPS mode/);
++    } else {
++      var encrypt = crypto.createCipher(test.algo, test.password);
++      if (test.aad)
++        encrypt.setAAD(new Buffer(test.aad, 'hex'));
++      var hex = encrypt.update(test.plain, 'ascii', 'hex');
++      hex += encrypt.final('hex');
++      var auth_tag = encrypt.getAuthTag();
++      // only test basic encryption run if output is marked as tampered.
++      if (!test.tampered) {
++        assert.equal(hex, test.ct);
++        assert.equal(auth_tag.toString('hex'), test.tag);
++      }
++    }
++  })();
++
++  (function() {
++    if (!test.password) return;
++    if (common.hasFipsCrypto) {
++      assert.throws(() => { crypto.createDecipher(test.algo, test.password); },
++                    /not supported in FIPS mode/);
++    } else {
++      var decrypt = crypto.createDecipher(test.algo, test.password);
++      decrypt.setAuthTag(new Buffer(test.tag, 'hex'));
++      if (test.aad)
++        decrypt.setAAD(new Buffer(test.aad, 'hex'));
++      var msg = decrypt.update(test.ct, 'hex', 'ascii');
++      if (!test.tampered) {
++        msg += decrypt.final('ascii');
++        assert.equal(msg, test.plain);
++      } else {
++        // assert that final throws if input data could not be verified!
++        assert.throws(function() { decrypt.final('ascii'); }, / auth/);
++      }
++    }
++  })();
++
++  // after normal operation, test some incorrect ways of calling the API:
++  // it's most certainly enough to run these tests with one algorithm only.
++
++  if (i > 0) {
++    continue;
++  }
++
++  (function() {
++    // non-authenticating mode:
++    var encrypt = crypto.createCipheriv('aes-128-cbc',
++      'ipxp9a6i1Mb4USb4', '6fKjEjR3Vl30EUYC');
++    encrypt.update('blah', 'ascii');
++    encrypt.final();
++    assert.throws(() => { encrypt.getAuthTag(); }, / state/);
++    assert.throws(() => { encrypt.setAAD(Buffer.from('123', 'ascii')); },
++                  / state/);
++  })();
++
++  (function() {
++    // trying to get tag before inputting all data:
++    var encrypt = crypto.createCipheriv(test.algo,
++      new Buffer(test.key, 'hex'), new Buffer(test.iv, 'hex'));
++    encrypt.update('blah', 'ascii');
++    assert.throws(function() { encrypt.getAuthTag(); }, / state/);
++  })();
++
++  (function() {
++    // trying to set tag on encryption object:
++    var encrypt = crypto.createCipheriv(test.algo,
++      Buffer.from(test.key, 'hex'), Buffer.from(test.iv, 'hex'));
++    assert.throws(() => { encrypt.setAuthTag(Buffer.from(test.tag, 'hex')); },
++                  / state/);
++  })();
++
++  (function() {
++    // trying to read tag from decryption object:
++    var decrypt = crypto.createDecipheriv(test.algo,
++      new Buffer(test.key, 'hex'), new Buffer(test.iv, 'hex'));
++    assert.throws(function() { decrypt.getAuthTag(); }, / state/);
++  })();
++
++  (function() {
++    // trying to create cipher with incorrect IV length
++    assert.throws(function() {
++      crypto.createCipheriv(
++        test.algo,
++        Buffer.from(test.key, 'hex'),
++        Buffer.alloc(0)
++      );
++    }, /Invalid IV length/);
++  })();
++}
+diff --git a/test/disabled/test-crypto-binary-default.js b/test/disabled/test-crypto-binary-default.js
+new file mode 100644
+index 0000000..da29d69
+--- /dev/null
++++ b/test/disabled/test-crypto-binary-default.js
+@@ -0,0 +1,669 @@
++'use strict';
++// This is the same as test/simple/test-crypto, but from before the shift
++// to use buffers by default.
++
++
++var common = require('../common');
++var assert = require('assert');
++var constants = require('constants');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++var crypto = require('crypto');
++var tls = require('tls');
++
++crypto.DEFAULT_ENCODING = 'binary';
++
++var fs = require('fs');
++var path = require('path');
++
++// Test Certificates
++var certPem = fs.readFileSync(common.fixturesDir + '/test_cert.pem', 'ascii');
++var certPfx = fs.readFileSync(common.fixturesDir + '/test_cert.pfx');
++var keyPem = fs.readFileSync(common.fixturesDir + '/test_key.pem', 'ascii');
++var rsaPubPem = fs.readFileSync(common.fixturesDir + '/test_rsa_pubkey.pem',
++    'ascii');
++var rsaKeyPem = fs.readFileSync(common.fixturesDir + '/test_rsa_privkey.pem',
++    'ascii');
++
++// PFX tests
++assert.doesNotThrow(function() {
++  tls.createSecureContext({pfx: certPfx, passphrase: 'sample'});
++});
++
++assert.throws(function() {
++  tls.createSecureContext({pfx: certPfx});
++}, 'mac verify failure');
++
++assert.throws(function() {
++  tls.createSecureContext({pfx: certPfx, passphrase: 'test'});
++}, 'mac verify failure');
++
++assert.throws(function() {
++  tls.createSecureContext({pfx: 'sample', passphrase: 'test'});
++}, 'not enough data');
++
++// Test HMAC
++const hmacHash = crypto.createHmac('sha1', 'Node')
++                       .update('some data')
++                       .update('to hmac')
++                       .digest('hex');
++assert.equal(hmacHash, '19fd6e1ba73d9ed2224dd5094a71babe85d9a892', 'test HMAC');
++
++// Test HMAC-SHA-* (rfc 4231 Test Cases)
++var rfc4231 = [
++  {
++    key: new Buffer('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b', 'hex'),
++    data: new Buffer('4869205468657265', 'hex'), // 'Hi There'
++    hmac: {
++      sha224: '896fb1128abbdf196832107cd49df33f47b4b1169912ba4f53684b22',
++      sha256:
++          'b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c' +
++          '2e32cff7',
++      sha384:
++          'afd03944d84895626b0825f4ab46907f15f9dadbe4101ec682aa034c' +
++          '7cebc59cfaea9ea9076ede7f4af152e8b2fa9cb6',
++      sha512:
++          '87aa7cdea5ef619d4ff0b4241a1d6cb02379f4e2ce4ec2787ad0b305' +
++          '45e17cdedaa833b7d6b8a702038b274eaea3f4e4be9d914eeb61f170' +
++          '2e696c203a126854'
++    }
++  },
++  {
++    key: new Buffer('4a656665', 'hex'), // 'Jefe'
++    data: new Buffer('7768617420646f2079612077616e7420666f72206e6f74686' +
++                     '96e673f', 'hex'), // 'what do ya want for nothing?'
++    hmac: {
++      sha224: 'a30e01098bc6dbbf45690f3a7e9e6d0f8bbea2a39e6148008fd05e44',
++      sha256:
++          '5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b9' +
++          '64ec3843',
++      sha384:
++          'af45d2e376484031617f78d2b58a6b1b9c7ef464f5a01b47e42ec373' +
++          '6322445e8e2240ca5e69e2c78b3239ecfab21649',
++      sha512:
++          '164b7a7bfcf819e2e395fbe73b56e0a387bd64222e831fd610270cd7' +
++          'ea2505549758bf75c05a994a6d034f65f8f0e6fdcaeab1a34d4a6b4b' +
++          '636e070a38bce737'
++    }
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex'),
++    data: new Buffer('ddddddddddddddddddddddddddddddddddddddddddddddddd' +
++                     'ddddddddddddddddddddddddddddddddddddddddddddddddddd',
++                     'hex'),
++    hmac: {
++      sha224: '7fb3cb3588c6c1f6ffa9694d7d6ad2649365b0c1f65d69d1ec8333ea',
++      sha256:
++          '773ea91e36800e46854db8ebd09181a72959098b3ef8c122d9635514' +
++          'ced565fe',
++      sha384:
++          '88062608d3e6ad8a0aa2ace014c8a86f0aa635d947ac9febe83ef4e5' +
++          '5966144b2a5ab39dc13814b94e3ab6e101a34f27',
++      sha512:
++          'fa73b0089d56a284efb0f0756c890be9b1b5dbdd8ee81a3655f83e33' +
++          'b2279d39bf3e848279a722c806b485a47e67c807b946a337bee89426' +
++          '74278859e13292fb'
++    }
++  },
++  {
++    key: new Buffer('0102030405060708090a0b0c0d0e0f10111213141516171819',
++                    'hex'),
++    data: new Buffer('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc' +
++                     'dcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd',
++                     'hex'),
++    hmac: {
++      sha224: '6c11506874013cac6a2abc1bb382627cec6a90d86efc012de7afec5a',
++      sha256:
++          '82558a389a443c0ea4cc819899f2083a85f0faa3e578f8077a2e3ff4' +
++          '6729665b',
++      sha384:
++          '3e8a69b7783c25851933ab6290af6ca77a9981480850009cc5577c6e' +
++          '1f573b4e6801dd23c4a7d679ccf8a386c674cffb',
++      sha512:
++          'b0ba465637458c6990e5a8c5f61d4af7e576d97ff94b872de76f8050' +
++          '361ee3dba91ca5c11aa25eb4d679275cc5788063a5f19741120c4f2d' +
++          'e2adebeb10a298dd'
++    }
++  },
++
++  {
++    key: new Buffer('0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c', 'hex'),
++    // 'Test With Truncation'
++    data: new Buffer('546573742057697468205472756e636174696f6e', 'hex'),
++    hmac: {
++      sha224: '0e2aea68a90c8d37c988bcdb9fca6fa8',
++      sha256: 'a3b6167473100ee06e0c796c2955552b',
++      sha384: '3abf34c3503b2a23a46efc619baef897',
++      sha512: '415fad6271580a531d4179bc891d87a6'
++    },
++    truncate: true
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaa', 'hex'),
++    // 'Test Using Larger Than Block-Size Key - Hash Key First'
++    data: new Buffer('54657374205573696e67204c6172676572205468616e20426' +
++                     'c6f636b2d53697a65204b6579202d2048617368204b657920' +
++                     '4669727374', 'hex'),
++    hmac: {
++      sha224: '95e9a0db962095adaebe9b2d6f0dbce2d499f112f2d2b7273fa6870e',
++      sha256:
++          '60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f' +
++          '0ee37f54',
++      sha384:
++          '4ece084485813e9088d2c63a041bc5b44f9ef1012a2b588f3cd11f05' +
++          '033ac4c60c2ef6ab4030fe8296248df163f44952',
++      sha512:
++          '80b24263c7c1a3ebb71493c1dd7be8b49b46d1f41b4aeec1121b0137' +
++          '83f8f3526b56d037e05f2598bd0fd2215d6a1e5295e64f73f63f0aec' +
++          '8b915a985d786598'
++    }
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaa', 'hex'),
++    // 'This is a test using a larger than block-size key and a larger ' +
++    // 'than block-size data. The key needs to be hashed before being ' +
++    // 'used by the HMAC algorithm.'
++    data: new Buffer('5468697320697320612074657374207573696e672061206c6' +
++                     '172676572207468616e20626c6f636b2d73697a65206b6579' +
++                     '20616e642061206c6172676572207468616e20626c6f636b2' +
++                     'd73697a6520646174612e20546865206b6579206e65656473' +
++                     '20746f20626520686173686564206265666f7265206265696' +
++                     'e6720757365642062792074686520484d414320616c676f72' +
++                     '6974686d2e', 'hex'),
++    hmac: {
++      sha224: '3a854166ac5d9f023f54d517d0b39dbd946770db9c2b95c9f6f565d1',
++      sha256:
++          '9b09ffa71b942fcb27635fbcd5b0e944bfdc63644f0713938a7f5153' +
++          '5c3a35e2',
++      sha384:
++          '6617178e941f020d351e2f254e8fd32c602420feb0b8fb9adccebb82' +
++          '461e99c5a678cc31e799176d3860e6110c46523e',
++      sha512:
++          'e37b6a775dc87dbaa4dfa9f96e5e3ffddebd71f8867289865df5a32d' +
++          '20cdc944b6022cac3c4982b10d5eeb55c3e4de15134676fb6de04460' +
++          '65c97440fa8c6a58'
++    }
++  }
++];
++
++for (let i = 0, l = rfc4231.length; i < l; i++) {
++  for (var hash in rfc4231[i]['hmac']) {
++    var result = crypto.createHmac(hash, rfc4231[i]['key'])
++                     .update(rfc4231[i]['data'])
++                     .digest('hex');
++    if (rfc4231[i]['truncate']) {
++      result = result.substr(0, 32); // first 128 bits == 32 hex chars
++    }
++    assert.equal(rfc4231[i]['hmac'][hash],
++                 result,
++                 'Test HMAC-' + hash + ': Test case ' + (i + 1) + ' rfc 4231');
++  }
++}
++
++// Test HMAC-MD5/SHA1 (rfc 2202 Test Cases)
++var rfc2202_md5 = [
++  {
++    key: new Buffer('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b', 'hex'),
++    data: 'Hi There',
++    hmac: '9294727a3638bb1c13f48ef8158bfc9d'
++  },
++  {
++    key: 'Jefe',
++    data: 'what do ya want for nothing?',
++    hmac: '750c783e6ab0b503eaa86e310a5db738'
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex'),
++    data: new Buffer('ddddddddddddddddddddddddddddddddddddddddddddddddd' +
++                     'ddddddddddddddddddddddddddddddddddddddddddddddddddd',
++                     'hex'),
++    hmac: '56be34521d144c88dbb8c733f0e8b3f6'
++  },
++  {
++    key: new Buffer('0102030405060708090a0b0c0d0e0f10111213141516171819',
++                    'hex'),
++    data: new Buffer('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc' +
++                     'dcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd' +
++                     'cdcdcdcdcd',
++                     'hex'),
++    hmac: '697eaf0aca3a3aea3a75164746ffaa79'
++  },
++  {
++    key: new Buffer('0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c', 'hex'),
++    data: 'Test With Truncation',
++    hmac: '56461ef2342edc00f9bab995690efd4c'
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaa',
++                    'hex'),
++    data: 'Test Using Larger Than Block-Size Key - Hash Key First',
++    hmac: '6b1ab7fe4bd7bf8f0b62e6ce61b9d0cd'
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaa',
++                    'hex'),
++    data:
++        'Test Using Larger Than Block-Size Key and Larger Than One ' +
++        'Block-Size Data',
++    hmac: '6f630fad67cda0ee1fb1f562db3aa53e'
++  }
++];
++var rfc2202_sha1 = [
++  {
++    key: new Buffer('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b', 'hex'),
++    data: 'Hi There',
++    hmac: 'b617318655057264e28bc0b6fb378c8ef146be00'
++  },
++  {
++    key: 'Jefe',
++    data: 'what do ya want for nothing?',
++    hmac: 'effcdf6ae5eb2fa2d27416d5f184df9c259a7c79'
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex'),
++    data: new Buffer('ddddddddddddddddddddddddddddddddddddddddddddd' +
++                     'ddddddddddddddddddddddddddddddddddddddddddddd' +
++                     'dddddddddd',
++                     'hex'),
++    hmac: '125d7342b9ac11cd91a39af48aa17b4f63f175d3'
++  },
++  {
++    key: new Buffer('0102030405060708090a0b0c0d0e0f10111213141516171819',
++                    'hex'),
++    data: new Buffer('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc' +
++                     'dcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd' +
++                     'cdcdcdcdcd',
++                     'hex'),
++    hmac: '4c9007f4026250c6bc8414f9bf50c86c2d7235da'
++  },
++  {
++    key: new Buffer('0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c', 'hex'),
++    data: 'Test With Truncation',
++    hmac: '4c1a03424b55e07fe7f27be1d58bb9324a9a5a04'
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaa',
++                    'hex'),
++    data: 'Test Using Larger Than Block-Size Key - Hash Key First',
++    hmac: 'aa4ae5e15272d00e95705637ce8a3b55ed402112'
++  },
++  {
++    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
++                    'aaaaaaaaaaaaaaaaaaaaaa',
++                    'hex'),
++    data:
++        'Test Using Larger Than Block-Size Key and Larger Than One ' +
++        'Block-Size Data',
++    hmac: 'e8e99d0f45237d786d6bbaa7965c7808bbff1a91'
++  }
++];
++
++for (let i = 0, l = rfc2202_md5.length; i < l; i++) {
++  if (!common.hasFipsCrypto) {
++    assert.equal(rfc2202_md5[i]['hmac'],
++                 crypto.createHmac('md5', rfc2202_md5[i]['key'])
++                     .update(rfc2202_md5[i]['data'])
++                     .digest('hex'),
++                 'Test HMAC-MD5 : Test case ' + (i + 1) + ' rfc 2202');
++  }
++}
++for (let i = 0, l = rfc2202_sha1.length; i < l; i++) {
++  assert.equal(rfc2202_sha1[i]['hmac'],
++               crypto.createHmac('sha1', rfc2202_sha1[i]['key'])
++                   .update(rfc2202_sha1[i]['data'])
++                   .digest('hex'),
++               'Test HMAC-SHA1 : Test case ' + (i + 1) + ' rfc 2202');
++}
++
++// Test hashing
++var a1 = crypto.createHash('sha1').update('Test123').digest('hex');
++var a2 = crypto.createHash('sha256').update('Test123').digest('base64');
++var a3 = crypto.createHash('sha512').update('Test123').digest(); // binary
++var a4 = crypto.createHash('sha1').update('Test123').digest('buffer');
++
++if (!common.hasFipsCrypto) {
++  var a0 = crypto.createHash('md5').update('Test123').digest('binary');
++  assert.equal(
++    a0,
++    'h\u00ea\u00cb\u0097\u00d8o\fF!\u00fa+\u000e\u0017\u00ca\u00bd\u008c',
++    'Test MD5 as binary'
++  );
++}
++
++assert.equal(a1, '8308651804facb7b9af8ffc53a33a22d6a1c8ac2', 'Test SHA1');
++
++assert.equal(a2, '2bX1jws4GYKTlxhloUB09Z66PoJZW+y+hq5R8dnx9l4=',
++             'Test SHA256 as base64');
++
++assert.equal(a3, '\u00c1(4\u00f1\u0003\u001fd\u0097!O\'\u00d4C/&Qz\u00d4' +
++                 '\u0094\u0015l\u00b8\u008dQ+\u00db\u001d\u00c4\u00b5}\u00b2' +
++                 '\u00d6\u0092\u00a3\u00df\u00a2i\u00a1\u009b\n\n*\u000f' +
++                 '\u00d7\u00d6\u00a2\u00a8\u0085\u00e3<\u0083\u009c\u0093' +
++                 '\u00c2\u0006\u00da0\u00a1\u00879(G\u00ed\'',
++             'Test SHA512 as assumed binary');
++
++assert.deepEqual(a4,
++                 new Buffer('8308651804facb7b9af8ffc53a33a22d6a1c8ac2', 'hex'),
++                 'Test SHA1');
++
++// Test multiple updates to same hash
++var h1 = crypto.createHash('sha1').update('Test123').digest('hex');
++var h2 = crypto.createHash('sha1').update('Test').update('123').digest('hex');
++assert.equal(h1, h2, 'multipled updates');
++
++// Test hashing for binary files
++var fn = path.join(common.fixturesDir, 'sample.png');
++var sha1Hash = crypto.createHash('sha1');
++var fileStream = fs.createReadStream(fn);
++fileStream.on('data', function(data) {
++  sha1Hash.update(data);
++});
++fileStream.on('close', function() {
++  assert.equal(sha1Hash.digest('hex'),
++               '22723e553129a336ad96e10f6aecdf0f45e4149e',
++               'Test SHA1 of sample.png');
++});
++
++// Issue #2227: unknown digest method should throw an error.
++assert.throws(function() {
++  crypto.createHash('xyzzy');
++});
++
++// Test signing and verifying
++var s1 = crypto.createSign('RSA-SHA1')
++               .update('Test123')
++               .sign(keyPem, 'base64');
++var s1Verified = crypto.createVerify('RSA-SHA1')
++                       .update('Test')
++                       .update('123')
++                       .verify(certPem, s1, 'base64');
++assert.strictEqual(s1Verified, true, 'sign and verify (base 64)');
++
++var s2 = crypto.createSign('RSA-SHA256')
++               .update('Test123')
++               .sign(keyPem); // binary
++var s2Verified = crypto.createVerify('RSA-SHA256')
++                       .update('Test')
++                       .update('123')
++                       .verify(certPem, s2); // binary
++assert.strictEqual(s2Verified, true, 'sign and verify (binary)');
++
++var s3 = crypto.createSign('RSA-SHA1')
++               .update('Test123')
++               .sign(keyPem, 'buffer');
++var s3Verified = crypto.createVerify('RSA-SHA1')
++                       .update('Test')
++                       .update('123')
++                       .verify(certPem, s3);
++assert.strictEqual(s3Verified, true, 'sign and verify (buffer)');
++
++
++function testCipher1(key) {
++  // Test encryption and decryption
++  var plaintext = 'Keep this a secret? No! Tell everyone about node.js!';
++  var cipher = crypto.createCipher('aes192', key);
++
++  // encrypt plaintext which is in utf8 format
++  // to a ciphertext which will be in hex
++  var ciph = cipher.update(plaintext, 'utf8', 'hex');
++  // Only use binary or hex, not base64.
++  ciph += cipher.final('hex');
++
++  var decipher = crypto.createDecipher('aes192', key);
++  var txt = decipher.update(ciph, 'hex', 'utf8');
++  txt += decipher.final('utf8');
++
++  assert.equal(txt, plaintext, 'encryption and decryption');
++}
++
++
++function testCipher2(key) {
++  // encryption and decryption with Base64
++  // reported in https://github.com/joyent/node/issues/738
++  var plaintext =
++      '32|RmVZZkFUVmpRRkp0TmJaUm56ZU9qcnJkaXNNWVNpTTU*|iXmckfRWZBGWWELw' +
++      'eCBsThSsfUHLeRe0KCsK8ooHgxie0zOINpXxfZi/oNG7uq9JWFVCk70gfzQH8ZUJ' +
++      'jAfaFg**';
++  var cipher = crypto.createCipher('aes256', key);
++
++  // encrypt plaintext which is in utf8 format
++  // to a ciphertext which will be in Base64
++  var ciph = cipher.update(plaintext, 'utf8', 'base64');
++  ciph += cipher.final('base64');
++
++  var decipher = crypto.createDecipher('aes256', key);
++  var txt = decipher.update(ciph, 'base64', 'utf8');
++  txt += decipher.final('utf8');
++
++  assert.equal(txt, plaintext, 'encryption and decryption with Base64');
++}
++
++
++function testCipher3(key, iv) {
++  // Test encyrption and decryption with explicit key and iv
++  var plaintext =
++      '32|RmVZZkFUVmpRRkp0TmJaUm56ZU9qcnJkaXNNWVNpTTU*|iXmckfRWZBGWWELw' +
++      'eCBsThSsfUHLeRe0KCsK8ooHgxie0zOINpXxfZi/oNG7uq9JWFVCk70gfzQH8ZUJ' +
++      'jAfaFg**';
++  var cipher = crypto.createCipheriv('des-ede3-cbc', key, iv);
++  var ciph = cipher.update(plaintext, 'utf8', 'hex');
++  ciph += cipher.final('hex');
++
++  var decipher = crypto.createDecipheriv('des-ede3-cbc', key, iv);
++  var txt = decipher.update(ciph, 'hex', 'utf8');
++  txt += decipher.final('utf8');
++
++  assert.equal(txt, plaintext, 'encryption and decryption with key and iv');
++}
++
++
++function testCipher4(key, iv) {
++  // Test encyrption and decryption with explicit key and iv
++  var plaintext =
++      '32|RmVZZkFUVmpRRkp0TmJaUm56ZU9qcnJkaXNNWVNpTTU*|iXmckfRWZBGWWELw' +
++      'eCBsThSsfUHLeRe0KCsK8ooHgxie0zOINpXxfZi/oNG7uq9JWFVCk70gfzQH8ZUJ' +
++      'jAfaFg**';
++  var cipher = crypto.createCipheriv('des-ede3-cbc', key, iv);
++  var ciph = cipher.update(plaintext, 'utf8', 'buffer');
++  ciph = Buffer.concat([ciph, cipher.final('buffer')]);
++
++  var decipher = crypto.createDecipheriv('des-ede3-cbc', key, iv);
++  var txt = decipher.update(ciph, 'buffer', 'utf8');
++  txt += decipher.final('utf8');
++
++  assert.equal(txt, plaintext, 'encryption and decryption with key and iv');
++}
++
++if (!common.hasFipsCrypto) {
++  testCipher1('MySecretKey123');
++  testCipher1(new Buffer('MySecretKey123'));
++
++  testCipher2('0123456789abcdef');
++  testCipher2(new Buffer('0123456789abcdef'));
++}
++
++testCipher3('0123456789abcd0123456789', '12345678');
++testCipher3('0123456789abcd0123456789', new Buffer('12345678'));
++testCipher3(new Buffer('0123456789abcd0123456789'), '12345678');
++testCipher3(new Buffer('0123456789abcd0123456789'), new Buffer('12345678'));
++
++testCipher4(new Buffer('0123456789abcd0123456789'), new Buffer('12345678'));
++
++
++// update() should only take buffers / strings
++assert.throws(function() {
++  crypto.createHash('sha1').update({foo: 'bar'});
++}, /buffer/);
++
++
++// Test Diffie-Hellman with two parties sharing a secret,
++// using various encodings as we go along
++var dh1 = crypto.createDiffieHellman(common.hasFipsCrypto ? 1024 : 256);
++var p1 = dh1.getPrime('buffer');
++var dh2 = crypto.createDiffieHellman(p1, 'base64');
++var key1 = dh1.generateKeys();
++var key2 = dh2.generateKeys('hex');
++var secret1 = dh1.computeSecret(key2, 'hex', 'base64');
++var secret2 = dh2.computeSecret(key1, 'binary', 'buffer');
++
++assert.equal(secret1, secret2.toString('base64'));
++
++// Create "another dh1" using generated keys from dh1,
++// and compute secret again
++var dh3 = crypto.createDiffieHellman(p1, 'buffer');
++var privkey1 = dh1.getPrivateKey();
++dh3.setPublicKey(key1);
++dh3.setPrivateKey(privkey1);
++
++assert.equal(dh1.getPrime(), dh3.getPrime());
++assert.equal(dh1.getGenerator(), dh3.getGenerator());
++assert.equal(dh1.getPublicKey(), dh3.getPublicKey());
++assert.equal(dh1.getPrivateKey(), dh3.getPrivateKey());
++
++var secret3 = dh3.computeSecret(key2, 'hex', 'base64');
++
++assert.equal(secret1, secret3);
++
++// https://github.com/joyent/node/issues/2338
++var p = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' +
++        '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' +
++        '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' +
++        'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF';
++var d = crypto.createDiffieHellman(p, 'hex');
++assert.equal(d.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++
++// Test RSA key signing/verification
++var rsaSign = crypto.createSign('RSA-SHA1');
++var rsaVerify = crypto.createVerify('RSA-SHA1');
++assert.ok(rsaSign);
++assert.ok(rsaVerify);
++
++rsaSign.update(rsaPubPem);
++var rsaSignature = rsaSign.sign(rsaKeyPem, 'hex');
++assert.equal(rsaSignature,
++             '5c50e3145c4e2497aadb0eabc83b342d0b0021ece0d4c4a064b7c' +
++             '8f020d7e2688b122bfb54c724ac9ee169f83f66d2fe90abeb95e8' +
++             'e1290e7e177152a4de3d944cf7d4883114a20ed0f78e70e25ef0f' +
++             '60f06b858e6af42a2f276ede95bbc6bc9a9bbdda15bd663186a6f' +
++             '40819a7af19e577bb2efa5e579a1f5ce8a0d4ca8b8f6');
++
++rsaVerify.update(rsaPubPem);
++assert.strictEqual(rsaVerify.verify(rsaPubPem, rsaSignature, 'hex'), true);
++
++
++//
++// Test RSA signing and verification
++//
++(function() {
++  var privateKey = fs.readFileSync(
++      common.fixturesDir + '/test_rsa_privkey_2.pem');
++
++  var publicKey = fs.readFileSync(
++      common.fixturesDir + '/test_rsa_pubkey_2.pem');
++
++  var input = 'I AM THE WALRUS';
++
++  var signature =
++      '79d59d34f56d0e94aa6a3e306882b52ed4191f07521f25f505a078dc2f89' +
++      '396e0c8ac89e996fde5717f4cb89199d8fec249961fcb07b74cd3d2a4ffa' +
++      '235417b69618e4bcd76b97e29975b7ce862299410e1b522a328e44ac9bb2' +
++      '8195e0268da7eda23d9825ac43c724e86ceeee0d0d4465678652ccaf6501' +
++      '0ddfb299bedeb1ad';
++
++  var sign = crypto.createSign('RSA-SHA256');
++  sign.update(input);
++
++  var output = sign.sign(privateKey, 'hex');
++  assert.equal(output, signature);
++
++  var verify = crypto.createVerify('RSA-SHA256');
++  verify.update(input);
++
++  assert.strictEqual(verify.verify(publicKey, signature, 'hex'), true);
++})();
++
++
++//
++// Test DSA signing and verification
++//
++(function() {
++  var privateKey = fs.readFileSync(
++      common.fixturesDir + '/test_dsa_privkey.pem');
++
++  var publicKey = fs.readFileSync(
++      common.fixturesDir + '/test_dsa_pubkey.pem');
++
++  var input = 'I AM THE WALRUS';
++
++  // DSA signatures vary across runs so there is no static string to verify
++  // against
++  var sign = crypto.createSign('DSS1');
++  sign.update(input);
++  var signature = sign.sign(privateKey, 'hex');
++
++  var verify = crypto.createVerify('DSS1');
++  verify.update(input);
++
++  assert.strictEqual(verify.verify(publicKey, signature, 'hex'), true);
++})();
++
++
++//
++// Test PBKDF2 with RFC 6070 test vectors (except #4)
++//
++function testPBKDF2(password, salt, iterations, keylen, expected) {
++  var actual = crypto.pbkdf2Sync(password, salt, iterations, keylen);
++  assert.equal(actual, expected);
++
++  crypto.pbkdf2(password, salt, iterations, keylen, function(err, actual) {
++    assert.equal(actual, expected);
++  });
++}
++
++
++testPBKDF2('password', 'salt', 1, 20,
++           '\x0c\x60\xc8\x0f\x96\x1f\x0e\x71\xf3\xa9\xb5\x24' +
++           '\xaf\x60\x12\x06\x2f\xe0\x37\xa6');
++
++testPBKDF2('password', 'salt', 2, 20,
++           '\xea\x6c\x01\x4d\xc7\x2d\x6f\x8c\xcd\x1e\xd9\x2a' +
++           '\xce\x1d\x41\xf0\xd8\xde\x89\x57');
++
++testPBKDF2('password', 'salt', 4096, 20,
++           '\x4b\x00\x79\x01\xb7\x65\x48\x9a\xbe\xad\x49\xd9\x26' +
++           '\xf7\x21\xd0\x65\xa4\x29\xc1');
++
++testPBKDF2('passwordPASSWORDpassword',
++           'saltSALTsaltSALTsaltSALTsaltSALTsalt',
++           4096,
++           25,
++           '\x3d\x2e\xec\x4f\xe4\x1c\x84\x9b\x80\xc8\xd8\x36\x62' +
++           '\xc0\xe4\x4a\x8b\x29\x1a\x96\x4c\xf2\xf0\x70\x38');
++
++testPBKDF2('pass\0word', 'sa\0lt', 4096, 16,
++           '\x56\xfa\x6a\xa7\x55\x48\x09\x9d\xcc\x37\xd7\xf0\x34' +
++           '\x25\xe0\xc3');
+diff --git a/test/disabled/test-crypto-cipher-decipher.js b/test/disabled/test-crypto-cipher-decipher.js
+new file mode 100644
+index 0000000..2f03aa5
+--- /dev/null
++++ b/test/disabled/test-crypto-cipher-decipher.js
+@@ -0,0 +1,115 @@
++'use strict';
++var common = require('../common');
++var assert = require('assert');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++if (common.hasFipsCrypto) {
++  common.skip('not supported in FIPS mode');
++  return;
++}
++var crypto = require('crypto');
++
++function testCipher1(key) {
++  // Test encryption and decryption
++  var plaintext = 'Keep this a secret? No! Tell everyone about node.js!';
++  var cipher = crypto.createCipher('aes192', key);
++
++  // encrypt plaintext which is in utf8 format
++  // to a ciphertext which will be in hex
++  var ciph = cipher.update(plaintext, 'utf8', 'hex');
++  // Only use binary or hex, not base64.
++  ciph += cipher.final('hex');
++
++  var decipher = crypto.createDecipher('aes192', key);
++  var txt = decipher.update(ciph, 'hex', 'utf8');
++  txt += decipher.final('utf8');
++
++  assert.equal(txt, plaintext, 'encryption and decryption');
++
++  // streaming cipher interface
++  // NB: In real life, it's not guaranteed that you can get all of it
++  // in a single read() like this.  But in this case, we know it's
++  // quite small, so there's no harm.
++  var cStream = crypto.createCipher('aes192', key);
++  cStream.end(plaintext);
++  ciph = cStream.read();
++
++  var dStream = crypto.createDecipher('aes192', key);
++  dStream.end(ciph);
++  txt = dStream.read().toString('utf8');
++
++  assert.equal(txt, plaintext, 'encryption and decryption with streams');
++}
++
++
++function testCipher2(key) {
++  // encryption and decryption with Base64
++  // reported in https://github.com/joyent/node/issues/738
++  var plaintext =
++      '32|RmVZZkFUVmpRRkp0TmJaUm56ZU9qcnJkaXNNWVNpTTU*|iXmckfRWZBGWWELw' +
++      'eCBsThSsfUHLeRe0KCsK8ooHgxie0zOINpXxfZi/oNG7uq9JWFVCk70gfzQH8ZUJ' +
++      'jAfaFg**';
++  var cipher = crypto.createCipher('aes256', key);
++
++  // encrypt plaintext which is in utf8 format
++  // to a ciphertext which will be in Base64
++  var ciph = cipher.update(plaintext, 'utf8', 'base64');
++  ciph += cipher.final('base64');
++
++  var decipher = crypto.createDecipher('aes256', key);
++  var txt = decipher.update(ciph, 'base64', 'utf8');
++  txt += decipher.final('utf8');
++
++  assert.equal(txt, plaintext, 'encryption and decryption with Base64');
++}
++
++testCipher1('MySecretKey123');
++testCipher1(new Buffer('MySecretKey123'));
++
++testCipher2('0123456789abcdef');
++testCipher2(new Buffer('0123456789abcdef'));
++
++// Base64 padding regression test, see #4837.
++(function() {
++  var c = crypto.createCipher('aes-256-cbc', 'secret');
++  var s = c.update('test', 'utf8', 'base64') + c.final('base64');
++  assert.equal(s, '375oxUQCIocvxmC5At+rvA==');
++})();
++
++// Calling Cipher.final() or Decipher.final() twice should error but
++// not assert. See #4886.
++(function() {
++  var c = crypto.createCipher('aes-256-cbc', 'secret');
++  try { c.final('xxx'); } catch (e) { /* Ignore. */ }
++  try { c.final('xxx'); } catch (e) { /* Ignore. */ }
++  try { c.final('xxx'); } catch (e) { /* Ignore. */ }
++  var d = crypto.createDecipher('aes-256-cbc', 'secret');
++  try { d.final('xxx'); } catch (e) { /* Ignore. */ }
++  try { d.final('xxx'); } catch (e) { /* Ignore. */ }
++  try { d.final('xxx'); } catch (e) { /* Ignore. */ }
++})();
++
++// Regression test for #5482: string to Cipher#update() should not assert.
++(function() {
++  var c = crypto.createCipher('aes192', '0123456789abcdef');
++  c.update('update');
++  c.final();
++})();
++
++// #5655 regression tests, 'utf-8' and 'utf8' are identical.
++(function() {
++  var c = crypto.createCipher('aes192', '0123456789abcdef');
++  c.update('update', '');  // Defaults to "utf8".
++  c.final('utf-8');  // Should not throw.
++
++  c = crypto.createCipher('aes192', '0123456789abcdef');
++  c.update('update', 'utf8');
++  c.final('utf-8');  // Should not throw.
++
++  c = crypto.createCipher('aes192', '0123456789abcdef');
++  c.update('update', 'utf-8');
++  c.final('utf8');  // Should not throw.
++})();
+diff --git a/test/disabled/test-crypto-dh-odd-key.js b/test/disabled/test-crypto-dh-odd-key.js
+new file mode 100644
+index 0000000..13c9844
+--- /dev/null
++++ b/test/disabled/test-crypto-dh-odd-key.js
+@@ -0,0 +1,25 @@
++'use strict';
++var common = require('../common');
++var assert = require('assert');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++var crypto = require('crypto');
++
++function test() {
++  var odd = new Buffer(39);
++  odd.fill('A');
++
++  var c = crypto.createDiffieHellman(32);
++  c.setPrivateKey(odd);
++  c.generateKeys();
++}
++
++// FIPS requires a length of at least 1024
++if (!common.hasFipsCrypto) {
++  assert.doesNotThrow(function() { test(); });
++} else {
++  assert.throws(function() { test(); }, /key size too small/);
++}
+diff --git a/test/disabled/test-crypto-dh.js b/test/disabled/test-crypto-dh.js
+new file mode 100644
+index 0000000..e6b1de2
+--- /dev/null
++++ b/test/disabled/test-crypto-dh.js
+@@ -0,0 +1,190 @@
++'use strict';
++var common = require('../common');
++var assert = require('assert');
++var constants = require('constants');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++var crypto = require('crypto');
++
++// Test Diffie-Hellman with two parties sharing a secret,
++// using various encodings as we go along
++var dh1 = crypto.createDiffieHellman(common.hasFipsCrypto ? 1024 : 256);
++var p1 = dh1.getPrime('buffer');
++var dh2 = crypto.createDiffieHellman(p1, 'buffer');
++var key1 = dh1.generateKeys();
++var key2 = dh2.generateKeys('hex');
++var secret1 = dh1.computeSecret(key2, 'hex', 'base64');
++var secret2 = dh2.computeSecret(key1, 'binary', 'buffer');
++
++assert.equal(secret1, secret2.toString('base64'));
++assert.equal(dh1.verifyError, 0);
++assert.equal(dh2.verifyError, 0);
++
++assert.throws(function() {
++  crypto.createDiffieHellman([0x1, 0x2]);
++});
++
++assert.throws(function() {
++  crypto.createDiffieHellman(function() { });
++});
++
++assert.throws(function() {
++  crypto.createDiffieHellman(/abc/);
++});
++
++assert.throws(function() {
++  crypto.createDiffieHellman({});
++});
++
++// Create "another dh1" using generated keys from dh1,
++// and compute secret again
++var dh3 = crypto.createDiffieHellman(p1, 'buffer');
++var privkey1 = dh1.getPrivateKey();
++dh3.setPublicKey(key1);
++dh3.setPrivateKey(privkey1);
++
++assert.deepEqual(dh1.getPrime(), dh3.getPrime());
++assert.deepEqual(dh1.getGenerator(), dh3.getGenerator());
++assert.deepEqual(dh1.getPublicKey(), dh3.getPublicKey());
++assert.deepEqual(dh1.getPrivateKey(), dh3.getPrivateKey());
++assert.equal(dh3.verifyError, 0);
++
++var secret3 = dh3.computeSecret(key2, 'hex', 'base64');
++
++assert.equal(secret1, secret3);
++
++// Run this one twice to make sure that the dh3 clears its error properly
++(function() {
++  var c = crypto.createDecipheriv('aes-128-ecb', crypto.randomBytes(16), '');
++  assert.throws(function() { c.final('utf8'); }, /wrong final block length/);
++})();
++
++assert.throws(function() {
++  dh3.computeSecret('');
++}, /key is too small/i);
++
++(function() {
++  var c = crypto.createDecipheriv('aes-128-ecb', crypto.randomBytes(16), '');
++  assert.throws(function() { c.final('utf8'); }, /wrong final block length/);
++})();
++
++// Create a shared using a DH group.
++var alice = crypto.createDiffieHellmanGroup('modp5');
++var bob = crypto.createDiffieHellmanGroup('modp5');
++alice.generateKeys();
++bob.generateKeys();
++var aSecret = alice.computeSecret(bob.getPublicKey()).toString('hex');
++var bSecret = bob.computeSecret(alice.getPublicKey()).toString('hex');
++assert.equal(aSecret, bSecret);
++assert.equal(alice.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++assert.equal(bob.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++
++/* Ensure specific generator (buffer) works as expected.
++ * The values below (modp2/modp2buf) are for a 1024 bits long prime from
++ * RFC 2412 E.2, see https://tools.ietf.org/html/rfc2412. */
++var modp2 = crypto.createDiffieHellmanGroup('modp2');
++var modp2buf = new Buffer([
++  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc9, 0x0f,
++  0xda, 0xa2, 0x21, 0x68, 0xc2, 0x34, 0xc4, 0xc6, 0x62, 0x8b,
++  0x80, 0xdc, 0x1c, 0xd1, 0x29, 0x02, 0x4e, 0x08, 0x8a, 0x67,
++  0xcc, 0x74, 0x02, 0x0b, 0xbe, 0xa6, 0x3b, 0x13, 0x9b, 0x22,
++  0x51, 0x4a, 0x08, 0x79, 0x8e, 0x34, 0x04, 0xdd, 0xef, 0x95,
++  0x19, 0xb3, 0xcd, 0x3a, 0x43, 0x1b, 0x30, 0x2b, 0x0a, 0x6d,
++  0xf2, 0x5f, 0x14, 0x37, 0x4f, 0xe1, 0x35, 0x6d, 0x6d, 0x51,
++  0xc2, 0x45, 0xe4, 0x85, 0xb5, 0x76, 0x62, 0x5e, 0x7e, 0xc6,
++  0xf4, 0x4c, 0x42, 0xe9, 0xa6, 0x37, 0xed, 0x6b, 0x0b, 0xff,
++  0x5c, 0xb6, 0xf4, 0x06, 0xb7, 0xed, 0xee, 0x38, 0x6b, 0xfb,
++  0x5a, 0x89, 0x9f, 0xa5, 0xae, 0x9f, 0x24, 0x11, 0x7c, 0x4b,
++  0x1f, 0xe6, 0x49, 0x28, 0x66, 0x51, 0xec, 0xe6, 0x53, 0x81,
++  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
++]);
++var exmodp2 = crypto.createDiffieHellman(modp2buf, new Buffer([2]));
++modp2.generateKeys();
++exmodp2.generateKeys();
++var modp2Secret = modp2.computeSecret(exmodp2.getPublicKey()).toString('hex');
++var exmodp2Secret = exmodp2.computeSecret(modp2.getPublicKey()).toString('hex');
++assert.equal(modp2Secret, exmodp2Secret);
++assert.equal(modp2.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++assert.equal(exmodp2.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++
++
++// Ensure specific generator (string with encoding) works as expected.
++var exmodp2_2 = crypto.createDiffieHellman(modp2buf, '02', 'hex');
++exmodp2_2.generateKeys();
++modp2Secret = modp2.computeSecret(exmodp2_2.getPublicKey()).toString('hex');
++var exmodp2_2Secret = exmodp2_2.computeSecret(modp2.getPublicKey())
++                               .toString('hex');
++assert.equal(modp2Secret, exmodp2_2Secret);
++assert.equal(exmodp2_2.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++
++
++// Ensure specific generator (string without encoding) works as expected.
++var exmodp2_3 = crypto.createDiffieHellman(modp2buf, '\x02');
++exmodp2_3.generateKeys();
++modp2Secret = modp2.computeSecret(exmodp2_3.getPublicKey()).toString('hex');
++var exmodp2_3Secret = exmodp2_3.computeSecret(modp2.getPublicKey())
++                               .toString('hex');
++assert.equal(modp2Secret, exmodp2_3Secret);
++assert.equal(exmodp2_3.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++
++
++// Ensure specific generator (numeric) works as expected.
++var exmodp2_4 = crypto.createDiffieHellman(modp2buf, 2);
++exmodp2_4.generateKeys();
++modp2Secret = modp2.computeSecret(exmodp2_4.getPublicKey()).toString('hex');
++var exmodp2_4Secret = exmodp2_4.computeSecret(modp2.getPublicKey())
++                               .toString('hex');
++assert.equal(modp2Secret, exmodp2_4Secret);
++assert.equal(exmodp2_4.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++
++
++var p = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' +
++        '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' +
++        '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' +
++        'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF';
++var bad_dh = crypto.createDiffieHellman(p, 'hex');
++assert.equal(bad_dh.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
++
++
++// Test ECDH
++var ecdh1 = crypto.createECDH('prime256v1');
++var ecdh2 = crypto.createECDH('prime256v1');
++key1 = ecdh1.generateKeys();
++key2 = ecdh2.generateKeys('hex');
++secret1 = ecdh1.computeSecret(key2, 'hex', 'base64');
++secret2 = ecdh2.computeSecret(key1, 'binary', 'buffer');
++
++assert.equal(secret1, secret2.toString('base64'));
++
++// Oakley curves do not clean up ERR stack, it was causing unexpected failure
++// when accessing other OpenSSL APIs afterwards.
++crypto.createECDH('Oakley-EC2N-3');
++crypto.createHash('sha256');
++
++// Point formats
++assert.equal(ecdh1.getPublicKey('buffer', 'uncompressed')[0], 4);
++var firstByte = ecdh1.getPublicKey('buffer', 'compressed')[0];
++assert(firstByte === 2 || firstByte === 3);
++firstByte = ecdh1.getPublicKey('buffer', 'hybrid')[0];
++assert(firstByte === 6 || firstByte === 7);
++
++// ECDH should check that point is on curve
++var ecdh3 = crypto.createECDH('secp256k1');
++var key3 = ecdh3.generateKeys();
++
++assert.throws(function() {
++  ecdh2.computeSecret(key3, 'binary', 'buffer');
++});
++
++// ECDH should allow .setPrivateKey()/.setPublicKey()
++var ecdh4 = crypto.createECDH('prime256v1');
++
++ecdh4.setPrivateKey(ecdh1.getPrivateKey());
++ecdh4.setPublicKey(ecdh1.getPublicKey());
++
++assert.throws(function() {
++  ecdh4.setPublicKey(ecdh3.getPublicKey());
++});
+diff --git a/test/disabled/test-crypto.js b/test/disabled/test-crypto.js
+new file mode 100644
+index 0000000..bf87900
+--- /dev/null
++++ b/test/disabled/test-crypto.js
+@@ -0,0 +1,143 @@
++'use strict';
++var common = require('../common');
++var assert = require('assert');
++var util = require('util');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++var crypto = require('crypto');
++
++crypto.DEFAULT_ENCODING = 'buffer';
++
++var fs = require('fs');
++
++// Test Certificates
++var caPem = fs.readFileSync(common.fixturesDir + '/test_ca.pem', 'ascii');
++var certPem = fs.readFileSync(common.fixturesDir + '/test_cert.pem', 'ascii');
++var certPfx = fs.readFileSync(common.fixturesDir + '/test_cert.pfx');
++var keyPem = fs.readFileSync(common.fixturesDir + '/test_key.pem', 'ascii');
++var tls = require('tls');
++
++// 'this' safety
++// https://github.com/joyent/node/issues/6690
++assert.throws(function() {
++  var options = {key: keyPem, cert: certPem, ca: caPem};
++  var credentials = crypto.createCredentials(options);
++  var context = credentials.context;
++  var notcontext = { setOptions: context.setOptions, setKey: context.setKey };
++  crypto.createCredentials({ secureOptions: 1 }, notcontext);
++}, TypeError);
++
++// PFX tests
++assert.doesNotThrow(function() {
++  tls.createSecureContext({pfx: certPfx, passphrase: 'sample'});
++});
++
++assert.throws(function() {
++  tls.createSecureContext({pfx: certPfx});
++}, 'mac verify failure');
++
++assert.throws(function() {
++  tls.createSecureContext({pfx: certPfx, passphrase: 'test'});
++}, 'mac verify failure');
++
++assert.throws(function() {
++  tls.createSecureContext({pfx: 'sample', passphrase: 'test'});
++}, 'not enough data');
++
++
++// update() should only take buffers / strings
++assert.throws(function() {
++  crypto.createHash('sha1').update({foo: 'bar'});
++}, /buffer/);
++
++
++function assertSorted(list) {
++  // Array#sort() modifies the list in place so make a copy.
++  var sorted = util._extend([], list).sort();
++  assert.deepEqual(list, sorted);
++}
++
++// Assume that we have at least AES-128-CBC.
++assert.notEqual(0, crypto.getCiphers().length);
++assert.notEqual(-1, crypto.getCiphers().indexOf('aes-128-cbc'));
++assert.equal(-1, crypto.getCiphers().indexOf('AES-128-CBC'));
++assertSorted(crypto.getCiphers());
++
++// Assume that we have at least AES256-SHA.
++assert.notEqual(0, tls.getCiphers().length);
++assert.notEqual(-1, tls.getCiphers().indexOf('aes256-sha'));
++assert.equal(-1, tls.getCiphers().indexOf('AES256-SHA'));
++assertSorted(tls.getCiphers());
++
++// Assert that we have sha and sha1 but not SHA and SHA1.
++assert.notEqual(0, crypto.getHashes().length);
++assert.notEqual(-1, crypto.getHashes().indexOf('sha1'));
++assert.notEqual(-1, crypto.getHashes().indexOf('sha'));
++assert.equal(-1, crypto.getHashes().indexOf('SHA1'));
++assert.equal(-1, crypto.getHashes().indexOf('SHA'));
++assert.notEqual(-1, crypto.getHashes().indexOf('RSA-SHA1'));
++assert.equal(-1, crypto.getHashes().indexOf('rsa-sha1'));
++assertSorted(crypto.getHashes());
++
++// Assume that we have at least secp384r1.
++assert.notEqual(0, crypto.getCurves().length);
++assert.notEqual(-1, crypto.getCurves().indexOf('secp384r1'));
++assert.equal(-1, crypto.getCurves().indexOf('SECP384R1'));
++assertSorted(crypto.getCurves());
++
++// Regression tests for #5725: hex input that's not a power of two should
++// throw, not assert in C++ land.
++assert.throws(function() {
++  crypto.createCipher('aes192', 'test').update('0', 'hex');
++}, common.hasFipsCrypto ? /not supported in FIPS mode/ : /Bad input string/);
++
++assert.throws(function() {
++  crypto.createDecipher('aes192', 'test').update('0', 'hex');
++}, common.hasFipsCrypto ? /not supported in FIPS mode/ : /Bad input string/);
++
++assert.throws(function() {
++  crypto.createHash('sha1').update('0', 'hex');
++}, /Bad input string/);
++
++assert.throws(function() {
++  crypto.createSign('RSA-SHA1').update('0', 'hex');
++}, /Bad input string/);
++
++assert.throws(function() {
++  crypto.createVerify('RSA-SHA1').update('0', 'hex');
++}, /Bad input string/);
++
++assert.throws(function() {
++  var priv = [
++    '-----BEGIN RSA PRIVATE KEY-----',
++    'MIGrAgEAAiEA+3z+1QNF2/unumadiwEr+C5vfhezsb3hp4jAnCNRpPcCAwEAAQIgQNriSQK4',
++    'EFwczDhMZp2dvbcz7OUUyt36z3S4usFPHSECEQD/41K7SujrstBfoCPzwC1xAhEA+5kt4BJy',
++    'eKN7LggbF3Dk5wIQN6SL+fQ5H/+7NgARsVBp0QIRANxYRukavs4QvuyNhMx+vrkCEQCbf6j/',
++    'Ig6/HueCK/0Jkmp+',
++    '-----END RSA PRIVATE KEY-----',
++    ''
++  ].join('\n');
++  crypto.createSign('RSA-SHA256').update('test').sign(priv);
++}, /digest too big for rsa key/);
++
++assert.throws(function() {
++  // The correct header inside `test_bad_rsa_privkey.pem` should have been
++  // -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY-----
++  // instead of
++  // -----BEGIN RSA PRIVATE KEY----- and -----END RSA PRIVATE KEY-----
++  // It is generated in this way:
++  //   $ openssl genrsa -out mykey.pem 512;
++  //   $ openssl pkcs8 -topk8 -inform PEM -outform PEM -in mykey.pem \
++  //     -out private_key.pem -nocrypt;
++  //   Then open private_key.pem and change its header and footer.
++  var sha1_privateKey = fs.readFileSync(common.fixturesDir +
++                                        '/test_bad_rsa_privkey.pem', 'ascii');
++  // this would inject errors onto OpenSSL's error stack
++  crypto.createSign('sha1').sign(sha1_privateKey);
++}, /asn1 encoding routines:ASN1_CHECK_TLEN:wrong tag/);
++
++// Make sure memory isn't released before being returned
++console.log(crypto.randomBytes(16));
+diff --git a/test/disabled/test-net-better-error-messages-port-hostname.js b/test/disabled/test-net-better-error-messages-port-hostname.js
+new file mode 100644
+index 0000000..23089ba
+--- /dev/null
++++ b/test/disabled/test-net-better-error-messages-port-hostname.js
+@@ -0,0 +1,14 @@
++'use strict';
++var common = require('../common');
++var net = require('net');
++var assert = require('assert');
++
++var c = net.createConnection(common.PORT, '***');
++
++c.on('connect', common.fail);
++
++c.on('error', common.mustCall(function(e) {
++  assert.equal(e.code, 'ENOTFOUND');
++  assert.equal(e.port, common.PORT);
++  assert.equal(e.hostname, '***');
++}));
+diff --git a/test/disabled/test-net-connect-immediate-finish.js b/test/disabled/test-net-connect-immediate-finish.js
+new file mode 100644
+index 0000000..6114233
+--- /dev/null
++++ b/test/disabled/test-net-connect-immediate-finish.js
+@@ -0,0 +1,17 @@
++'use strict';
++const common = require('../common');
++const assert = require('assert');
++const net = require('net');
++
++const client = net.connect({host: '***', port: common.PORT});
++
++client.once('error', common.mustCall(function(err) {
++  assert(err);
++  assert.strictEqual(err.code, err.errno);
++  assert.strictEqual(err.code, 'ENOTFOUND');
++  assert.strictEqual(err.host, err.hostname);
++  assert.strictEqual(err.host, '***');
++  assert.strictEqual(err.syscall, 'getaddrinfo');
++}));
++
++client.end();
+diff --git a/test/disabled/test-npm-install.js b/test/disabled/test-npm-install.js
+new file mode 100644
+index 0000000..c716e48
+--- /dev/null
++++ b/test/disabled/test-npm-install.js
+@@ -0,0 +1,51 @@
++'use strict';
++const common = require('../common');
++
++const path = require('path');
++const spawn = require('child_process').spawn;
++const assert = require('assert');
++const fs = require('fs');
++
++common.refreshTmpDir();
++
++const npmPath = path.join(
++  common.testDir,
++  '..',
++  'deps',
++  'npm',
++  'bin',
++  'npm-cli.js'
++);
++
++const args = [
++  npmPath,
++  'install'
++];
++
++const pkgContent = JSON.stringify({
++  dependencies: {
++    'package-name': common.fixturesDir + '/packages/main'
++  }
++});
++
++const pkgPath = path.join(common.tmpDir, 'package.json');
++
++fs.writeFileSync(pkgPath, pkgContent);
++
++const env = Object.create(process.env);
++env['PATH'] = path.dirname(process.execPath);
++
++const proc = spawn(process.execPath, args, {
++  cwd: common.tmpDir,
++  env: env
++});
++
++function handleExit(code, signalCode) {
++  assert.equal(code, 0, 'npm install should run without an error');
++  assert.ok(signalCode === null, 'signalCode should be null');
++  assert.doesNotThrow(function() {
++    fs.accessSync(common.tmpDir + '/node_modules/package-name');
++  });
++}
++
++proc.on('exit', common.mustCall(handleExit));
+diff --git a/test/disabled/test-tls-cnnic-whitelist.js b/test/disabled/test-tls-cnnic-whitelist.js
+new file mode 100644
+index 0000000..f16698c
+--- /dev/null
++++ b/test/disabled/test-tls-cnnic-whitelist.js
+@@ -0,0 +1,84 @@
++'use strict';
++var common = require('../common');
++var assert = require('assert');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++
++var tls = require('tls');
++var fs = require('fs');
++var path = require('path');
++var finished = 0;
++
++function filenamePEM(n) {
++  return path.join(common.fixturesDir, 'keys', n + '.pem');
++}
++
++function loadPEM(n) {
++  return fs.readFileSync(filenamePEM(n));
++}
++
++var testCases = [
++  { // Test 0: for the check of a cert not existed in the whitelist.
++    // agent7-cert.pem is issued by the fake CNNIC root CA so that its
++    // hash is not listed in the whitelist.
++    // fake-cnnic-root-cert has the same subject name as the original
++    // rootCA.
++    serverOpts: {
++      key: loadPEM('agent7-key'),
++      cert: loadPEM('agent7-cert')
++    },
++    clientOpts: {
++      port: undefined,
++      rejectUnauthorized: true,
++      ca: [loadPEM('fake-cnnic-root-cert')]
++    },
++    errorCode: 'CERT_REVOKED'
++  },
++  // Test 1: for the fix of node#2061
++  // agent6-cert.pem is signed by intermidate cert of ca3.
++  // The server has a cert chain of agent6->ca3->ca1(root) but
++  // tls.connect should be failed with an error of
++  // UNABLE_TO_GET_ISSUER_CERT_LOCALLY since the root CA of ca1 is not
++  // installed locally.
++  {
++    serverOpts: {
++      ca: loadPEM('ca3-key'),
++      key: loadPEM('agent6-key'),
++      cert: loadPEM('agent6-cert')
++    },
++    clientOpts: {
++      port: undefined,
++      rejectUnauthorized: true
++    },
++    errorCode: 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY'
++  }
++];
++
++function runTest(tindex) {
++  var tcase = testCases[tindex];
++
++  if (!tcase) return;
++
++  var server = tls.createServer(tcase.serverOpts, function(s) {
++    s.resume();
++  }).listen(0, function() {
++    tcase.clientOpts = this.address().port;
++    var client = tls.connect(tcase.clientOpts);
++    client.on('error', function(e) {
++      assert.strictEqual(e.code, tcase.errorCode);
++      server.close(function() {
++        finished++;
++        runTest(tindex + 1);
++      });
++    });
++  });
++}
++
++runTest(0);
++
++process.on('exit', function() {
++  assert.equal(finished, testCases.length);
++});
+diff --git a/test/disabled/test-tls-empty-sni-context.js b/test/disabled/test-tls-empty-sni-context.js
+new file mode 100644
+index 0000000..7759142
+--- /dev/null
++++ b/test/disabled/test-tls-empty-sni-context.js
+@@ -0,0 +1,42 @@
++'use strict';
++
++if (!process.features.tls_sni) {
++  console.log('1..0 # Skipped: node compiled without OpenSSL or ' +
++              'with old OpenSSL version.');
++  return;
++}
++
++const common = require('../common');
++const assert = require('assert');
++
++if (!common.hasCrypto) {
++  console.log('1..0 # Skipped: missing crypto');
++  return;
++}
++
++const tls = require('tls');
++
++const options = {
++  SNICallback: (name, callback) => {
++    callback(null, tls.createSecureContext());
++  }
++};
++
++const server = tls.createServer(options, (c) => {
++  common.fail('Should not be called');
++}).on('clientError', common.mustCall((err, c) => {
++  assert(/SSL_use_certificate:passed a null parameter/i.test(err.message));
++  server.close();
++})).listen(0, common.mustCall(() => {
++  const c = tls.connect({
++    port: server.address().port,
++    rejectUnauthorized: false,
++    servername: 'any.name'
++  }, () => {
++    common.fail('Should not be called');
++  });
++
++  c.on('error', common.mustCall((err) => {
++    assert(/socket hang up/.test(err.message));
++  }));
++}));
+diff --git a/test/disabled/test-tls-ocsp-callback.js b/test/disabled/test-tls-ocsp-callback.js
+new file mode 100644
+index 0000000..330ed55
+--- /dev/null
++++ b/test/disabled/test-tls-ocsp-callback.js
+@@ -0,0 +1,130 @@
++'use strict';
++var common = require('../common');
++
++if (!process.features.tls_ocsp) {
++  common.skip('node compiled without OpenSSL or ' +
++              'with old OpenSSL version.');
++  return;
++}
++if (!common.opensslCli) {
++  common.skip('node compiled without OpenSSL CLI.');
++  return;
++}
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++var tls = require('tls');
++
++var assert = require('assert');
++var constants = require('constants');
++var fs = require('fs');
++var join = require('path').join;
++
++var pfx = fs.readFileSync(join(common.fixturesDir, 'keys', 'agent1-pfx.pem'));
++
++function test(testOptions, cb) {
++
++  var keyFile = join(common.fixturesDir, 'keys', 'agent1-key.pem');
++  var certFile = join(common.fixturesDir, 'keys', 'agent1-cert.pem');
++  var caFile = join(common.fixturesDir, 'keys', 'ca1-cert.pem');
++  var key = fs.readFileSync(keyFile);
++  var cert = fs.readFileSync(certFile);
++  var ca = fs.readFileSync(caFile);
++  var options = {
++    key: key,
++    cert: cert,
++    ca: [ca]
++  };
++  var requestCount = 0;
++  var clientSecure = 0;
++  var ocspCount = 0;
++  var ocspResponse;
++
++  if (testOptions.pfx) {
++    delete options.key;
++    delete options.cert;
++    options.pfx = testOptions.pfx;
++    options.passphrase = testOptions.passphrase;
++  }
++
++  var server = tls.createServer(options, function(cleartext) {
++    cleartext.on('error', function(er) {
++      // We're ok with getting ECONNRESET in this test, but it's
++      // timing-dependent, and thus unreliable. Any other errors
++      // are just failures, though.
++      if (er.code !== 'ECONNRESET')
++        throw er;
++    });
++    ++requestCount;
++    cleartext.end();
++  });
++  server.on('OCSPRequest', function(cert, issuer, callback) {
++    ++ocspCount;
++    assert.ok(Buffer.isBuffer(cert));
++    assert.ok(Buffer.isBuffer(issuer));
++
++    // Just to check that async really works there
++    setTimeout(function() {
++      callback(null,
++               testOptions.response ? new Buffer(testOptions.response) : null);
++    }, 100);
++  });
++  server.listen(0, function() {
++    var client = tls.connect({
++      port: this.address().port,
++      requestOCSP: testOptions.ocsp !== false,
++      secureOptions: testOptions.ocsp === false ?
++          constants.SSL_OP_NO_TICKET : 0,
++      rejectUnauthorized: false
++    }, function() {
++      clientSecure++;
++    });
++    client.on('OCSPResponse', function(resp) {
++      ocspResponse = resp;
++      if (resp)
++        client.destroy();
++    });
++    client.on('close', function() {
++      server.close(cb);
++    });
++  });
++
++  process.on('exit', function() {
++    if (testOptions.ocsp === false) {
++      assert.equal(requestCount, clientSecure);
++      assert.equal(requestCount, 1);
++      return;
++    }
++
++    if (testOptions.response) {
++      assert.equal(ocspResponse.toString(), testOptions.response);
++    } else {
++      assert.ok(ocspResponse === null);
++    }
++    assert.equal(requestCount, testOptions.response ? 0 : 1);
++    assert.equal(clientSecure, requestCount);
++    assert.equal(ocspCount, 1);
++  });
++}
++
++var tests = [
++  { response: false },
++  { response: 'hello world' },
++  { ocsp: false }
++];
++
++if (!common.hasFipsCrypto) {
++  tests.push({ pfx: pfx, passphrase: 'sample', response: 'hello pfx' });
++}
++
++function runTests(i) {
++  if (i === tests.length) return;
++
++  test(tests[i], common.mustCall(function() {
++    runTests(i + 1);
++  }));
++}
++
++runTests(0);
+diff --git a/test/disabled/test-tls-pfx-gh-5100-regr.js b/test/disabled/test-tls-pfx-gh-5100-regr.js
+new file mode 100644
+index 0000000..385c092
+--- /dev/null
++++ b/test/disabled/test-tls-pfx-gh-5100-regr.js
+@@ -0,0 +1,36 @@
++'use strict';
++
++const common = require('../common');
++
++if (!common.hasCrypto) {
++  common.skip('node compiled without crypto.');
++  return;
++}
++
++const assert = require('assert');
++const tls = require('tls');
++const fs = require('fs');
++const path = require('path');
++
++const pfx = fs.readFileSync(
++    path.join(common.fixturesDir, 'keys', 'agent1-pfx.pem'));
++
++const server = tls.createServer({
++  pfx: pfx,
++  passphrase: 'sample',
++  requestCert: true,
++  rejectUnauthorized: false
++}, common.mustCall(function(c) {
++  assert(c.authorizationError === null, 'authorizationError must be null');
++  c.end();
++})).listen(0, function() {
++  var client = tls.connect({
++    port: this.address().port,
++    pfx: pfx,
++    passphrase: 'sample',
++    rejectUnauthorized: false
++  }, function() {
++    client.end();
++    server.close();
++  });
++});
+diff --git a/test/disabled/test-tls-session-cache.js b/test/disabled/test-tls-session-cache.js
+new file mode 100644
+index 0000000..99badeb
+--- /dev/null
++++ b/test/disabled/test-tls-session-cache.js
+@@ -0,0 +1,113 @@
++'use strict';
++var common = require('../common');
++
++if (!common.opensslCli) {
++  common.skip('node compiled without OpenSSL CLI.');
++  return;
++}
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++
++doTest({ tickets: false }, function() {
++  doTest({ tickets: true }, function() {
++    console.error('all done');
++  });
++});
++
++function doTest(testOptions, callback) {
++  var assert = require('assert');
++  var tls = require('tls');
++  var fs = require('fs');
++  var join = require('path').join;
++  var spawn = require('child_process').spawn;
++
++  var keyFile = join(common.fixturesDir, 'agent.key');
++  var certFile = join(common.fixturesDir, 'agent.crt');
++  var key = fs.readFileSync(keyFile);
++  var cert = fs.readFileSync(certFile);
++  var options = {
++    key: key,
++    cert: cert,
++    ca: [cert],
++    requestCert: true
++  };
++  var requestCount = 0;
++  var resumeCount = 0;
++  var session;
++
++  var server = tls.createServer(options, function(cleartext) {
++    cleartext.on('error', function(er) {
++      // We're ok with getting ECONNRESET in this test, but it's
++      // timing-dependent, and thus unreliable. Any other errors
++      // are just failures, though.
++      if (er.code !== 'ECONNRESET')
++        throw er;
++    });
++    ++requestCount;
++    cleartext.end();
++  });
++  server.on('newSession', function(id, data, cb) {
++    // Emulate asynchronous store
++    setTimeout(function() {
++      assert.ok(!session);
++      session = {
++        id: id,
++        data: data
++      };
++      cb();
++    }, 1000);
++  });
++  server.on('resumeSession', function(id, callback) {
++    ++resumeCount;
++    assert.ok(session);
++    assert.equal(session.id.toString('hex'), id.toString('hex'));
++
++    // Just to check that async really works there
++    setTimeout(function() {
++      callback(null, session.data);
++    }, 100);
++  });
++
++  server.listen(0, function() {
++    var args = [
++      's_client',
++      '-tls1',
++      '-connect', `localhost:${this.address().port}`,
++      '-servername', 'ohgod',
++      '-key', join(common.fixturesDir, 'agent.key'),
++      '-cert', join(common.fixturesDir, 'agent.crt'),
++      '-reconnect'
++    ].concat(testOptions.tickets ? [] : '-no_ticket');
++
++    // for the performance and stability issue in s_client on Windows
++    if (common.isWindows)
++      args.push('-no_rand_screen');
++
++    var client = spawn(common.opensslCli, args, {
++      stdio: [ 0, 1, 'pipe' ]
++    });
++    client.stderr.setEncoding('utf8');
++    client.on('exit', function(code) {
++      console.error('done');
++      assert.equal(code, 0);
++      server.close(function() {
++        setTimeout(callback, 100);
++      });
++    });
++  });
++
++  process.on('exit', function() {
++    if (testOptions.tickets) {
++      assert.equal(requestCount, 6);
++      assert.equal(resumeCount, 0);
++    } else {
++      // initial request + reconnect requests (5 times)
++      assert.ok(session);
++      assert.equal(requestCount, 6);
++      assert.equal(resumeCount, 5);
++    }
++  });
++}
+diff --git a/test/disabled/test-tls-sni-option.js b/test/disabled/test-tls-sni-option.js
+new file mode 100644
+index 0000000..3bc02b5
+--- /dev/null
++++ b/test/disabled/test-tls-sni-option.js
+@@ -0,0 +1,168 @@
++'use strict';
++if (!process.features.tls_sni) {
++  common.skip('node compiled without OpenSSL or ' +
++              'with old OpenSSL version.');
++  return;
++}
++
++const common = require('../common');
++const assert = require('assert');
++const fs = require('fs');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++var tls = require('tls');
++
++function filenamePEM(n) {
++  return require('path').join(common.fixturesDir, 'keys', n + '.pem');
++}
++
++function loadPEM(n) {
++  return fs.readFileSync(filenamePEM(n));
++}
++
++var serverOptions = {
++  key: loadPEM('agent2-key'),
++  cert: loadPEM('agent2-cert'),
++  requestCert: true,
++  rejectUnauthorized: false,
++  SNICallback: function(servername, callback) {
++    var context = SNIContexts[servername];
++
++    // Just to test asynchronous callback
++    setTimeout(function() {
++      if (context) {
++        if (context.emptyRegression)
++          callback(null, {});
++        else
++          callback(null, tls.createSecureContext(context));
++      } else {
++        callback(null, null);
++      }
++    }, 100);
++  }
++};
++
++var SNIContexts = {
++  'a.example.com': {
++    key: loadPEM('agent1-key'),
++    cert: loadPEM('agent1-cert'),
++    ca: [ loadPEM('ca2-cert') ]
++  },
++  'b.example.com': {
++    key: loadPEM('agent3-key'),
++    cert: loadPEM('agent3-cert')
++  },
++  'c.another.com': {
++    emptyRegression: true
++  }
++};
++
++var clientsOptions = [{
++  port: undefined,
++  key: loadPEM('agent1-key'),
++  cert: loadPEM('agent1-cert'),
++  ca: [loadPEM('ca1-cert')],
++  servername: 'a.example.com',
++  rejectUnauthorized: false
++}, {
++  port: undefined,
++  key: loadPEM('agent4-key'),
++  cert: loadPEM('agent4-cert'),
++  ca: [loadPEM('ca1-cert')],
++  servername: 'a.example.com',
++  rejectUnauthorized: false
++}, {
++  port: undefined,
++  key: loadPEM('agent2-key'),
++  cert: loadPEM('agent2-cert'),
++  ca: [loadPEM('ca2-cert')],
++  servername: 'b.example.com',
++  rejectUnauthorized: false
++}, {
++  port: undefined,
++  key: loadPEM('agent3-key'),
++  cert: loadPEM('agent3-cert'),
++  ca: [loadPEM('ca1-cert')],
++  servername: 'c.wrong.com',
++  rejectUnauthorized: false
++}, {
++  port: undefined,
++  key: loadPEM('agent3-key'),
++  cert: loadPEM('agent3-cert'),
++  ca: [loadPEM('ca1-cert')],
++  servername: 'c.another.com',
++  rejectUnauthorized: false
++}];
++
++const serverResults = [];
++const clientResults = [];
++const serverErrors = [];
++const clientErrors = [];
++let serverError;
++let clientError;
++
++var server = tls.createServer(serverOptions, function(c) {
++  serverResults.push({ sni: c.servername, authorized: c.authorized });
++});
++
++server.on('clientError', function(err) {
++  serverResults.push(null);
++  serverError = err.message;
++});
++
++server.listen(0, startTest);
++
++function startTest() {
++  function connectClient(i, callback) {
++    var options = clientsOptions[i];
++    clientError = null;
++    serverError = null;
++
++    options.port = server.address().port;
++    var client = tls.connect(options, function() {
++      clientResults.push(
++          /Hostname\/IP doesn't/.test(client.authorizationError || ''));
++      client.destroy();
++
++      next();
++    });
++
++    client.on('error', function(err) {
++      clientResults.push(false);
++      clientError = err.message;
++      next();
++    });
++
++    function next() {
++      clientErrors.push(clientError);
++      serverErrors.push(serverError);
++
++      if (i === clientsOptions.length - 1)
++        callback();
++      else
++        connectClient(i + 1, callback);
++    }
++  }
++
++  connectClient(0, function() {
++    server.close();
++  });
++}
++
++process.on('exit', function() {
++  assert.deepEqual(serverResults, [
++    { sni: 'a.example.com', authorized: false },
++    { sni: 'a.example.com', authorized: true },
++    { sni: 'b.example.com', authorized: false },
++    { sni: 'c.wrong.com', authorized: false },
++    null
++  ]);
++  assert.deepEqual(clientResults, [true, true, true, false, false]);
++  assert.deepEqual(clientErrors, [null, null, null, null, 'socket hang up']);
++  assert.deepEqual(serverErrors, [
++    null, null, null, null, 'Invalid SNI context'
++  ]);
++});
+diff --git a/test/disabled/test-tls-sni-server-client.js b/test/disabled/test-tls-sni-server-client.js
+new file mode 100644
+index 0000000..d7c30f8
+--- /dev/null
++++ b/test/disabled/test-tls-sni-server-client.js
+@@ -0,0 +1,116 @@
++'use strict';
++if (!process.features.tls_sni) {
++  common.skip('node compiled without OpenSSL or ' +
++              'with old OpenSSL version.');
++  return;
++}
++
++const common = require('../common');
++const assert = require('assert');
++const fs = require('fs');
++
++if (!common.hasCrypto) {
++  common.skip('missing crypto');
++  return;
++}
++var tls = require('tls');
++
++function filenamePEM(n) {
++  return require('path').join(common.fixturesDir, 'keys', n + '.pem');
++}
++
++function loadPEM(n) {
++  return fs.readFileSync(filenamePEM(n));
++}
++
++var serverOptions = {
++  key: loadPEM('agent2-key'),
++  cert: loadPEM('agent2-cert')
++};
++
++var SNIContexts = {
++  'a.example.com': {
++    key: loadPEM('agent1-key'),
++    cert: loadPEM('agent1-cert')
++  },
++  'asterisk.test.com': {
++    key: loadPEM('agent3-key'),
++    cert: loadPEM('agent3-cert')
++  },
++  'chain.example.com': {
++    key: loadPEM('agent6-key'),
++    // NOTE: Contains ca3 chain cert
++    cert: loadPEM('agent6-cert')
++  }
++};
++
++var clientsOptions = [{
++  port: undefined,
++  ca: [loadPEM('ca1-cert')],
++  servername: 'a.example.com',
++  rejectUnauthorized: false
++}, {
++  port: undefined,
++  ca: [loadPEM('ca2-cert')],
++  servername: 'b.test.com',
++  rejectUnauthorized: false
++}, {
++  port: undefined,
++  ca: [loadPEM('ca2-cert')],
++  servername: 'a.b.test.com',
++  rejectUnauthorized: false
++}, {
++  port: undefined,
++  ca: [loadPEM('ca1-cert')],
++  servername: 'c.wrong.com',
++  rejectUnauthorized: false
++}, {
++  port: undefined,
++  ca: [loadPEM('ca1-cert')],
++  servername: 'chain.example.com',
++  rejectUnauthorized: false
++}];
++
++const serverResults = [];
++const clientResults = [];
++
++var server = tls.createServer(serverOptions, function(c) {
++  serverResults.push(c.servername);
++});
++
++server.addContext('a.example.com', SNIContexts['a.example.com']);
++server.addContext('*.test.com', SNIContexts['asterisk.test.com']);
++server.addContext('chain.example.com', SNIContexts['chain.example.com']);
++
++server.listen(0, startTest);
++
++function startTest() {
++  var i = 0;
++  function start() {
++    // No options left
++    if (i === clientsOptions.length)
++      return server.close();
++
++    var options = clientsOptions[i++];
++    options.port = server.address().port;
++    var client = tls.connect(options, function() {
++      clientResults.push(
++        client.authorizationError &&
++        /Hostname\/IP doesn't/.test(client.authorizationError));
++      client.destroy();
++
++      // Continue
++      start();
++    });
++  }
++
++  start();
++}
++
++process.on('exit', function() {
++  assert.deepEqual(serverResults, [
++    'a.example.com', 'b.test.com', 'a.b.test.com', 'c.wrong.com',
++    'chain.example.com'
++  ]);
++  assert.deepEqual(clientResults, [true, true, false, false, true]);
++});
+diff --git a/test/parallel/test-child-process-uid-gid.js b/test/parallel/test-child-process-uid-gid.js
+deleted file mode 100644
+index 220cae6..0000000
+--- a/test/parallel/test-child-process-uid-gid.js
++++ /dev/null
+@@ -1,14 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-const assert = require('assert');
+-const spawn = require('child_process').spawn;
+-
+-const expectedError = common.isWindows ? /\bENOTSUP\b/ : /\bEPERM\b/;
+-
+-assert.throws(() => {
+-  spawn('echo', ['fhqwhgads'], {uid: 0});
+-}, expectedError);
+-
+-assert.throws(() => {
+-  spawn('echo', ['fhqwhgads'], {gid: 0});
+-}, expectedError);
+diff --git a/test/parallel/test-crypto-authenticated.js b/test/parallel/test-crypto-authenticated.js
+deleted file mode 100644
+index b816d8a..0000000
+--- a/test/parallel/test-crypto-authenticated.js
++++ /dev/null
+@@ -1,454 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-const assert = require('assert');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-const crypto = require('crypto');
+-
+-crypto.DEFAULT_ENCODING = 'buffer';
+-
+-//
+-// Test authenticated encryption modes.
+-//
+-// !NEVER USE STATIC IVs IN REAL LIFE!
+-//
+-
+-const TEST_CASES = [
+-  { algo: 'aes-128-gcm',
+-    key: '6970787039613669314d623455536234',
+-    iv: '583673497131313748307652', plain: 'Hello World!',
+-    ct: '4be13896f64dfa2c2d0f2c76',
+-    tag: '272b422f62eb545eaa15b5ff84092447', tampered: false },
+-  { algo: 'aes-128-gcm',
+-    key: '6970787039613669314d623455536234',
+-    iv: '583673497131313748307652', plain: 'Hello World!',
+-    ct: '4be13896f64dfa2c2d0f2c76', aad: '000000FF',
+-    tag: 'ba2479f66275665a88cb7b15f43eb005', tampered: false },
+-  { algo: 'aes-128-gcm',
+-    key: '6970787039613669314d623455536234',
+-    iv: '583673497131313748307652', plain: 'Hello World!',
+-    ct: '4be13596f64dfa2c2d0fac76',
+-    tag: '272b422f62eb545eaa15b5ff84092447', tampered: true },
+-  { algo: 'aes-256-gcm',
+-    key: '337a54767a7233703637564336316a6d56353472495975313534357834546c59',
+-    iv: '36306950306836764a6f4561', plain: 'Hello node.js world!',
+-    ct: '58e62cfe7b1d274111a82267ebb93866e72b6c2a',
+-    tag: '9bb44f663badabacae9720881fb1ec7a', tampered: false },
+-  { algo: 'aes-256-gcm',
+-    key: '337a54767a7233703637564336316a6d56353472495975313534357834546c59',
+-    iv: '36306950306836764a6f4561', plain: 'Hello node.js world!',
+-    ct: '58e62cff7b1d274011a82267ebb93866e72b6c2b',
+-    tag: '9bb44f663badabacae9720881fb1ec7a', tampered: true },
+-  { algo: 'aes-192-gcm',
+-    key: '1ed2233fa2223ef5d7df08546049406c7305220bca40d4c9',
+-    iv: '0e1791e9db3bd21a9122c416', plain: 'Hello node.js world!',
+-    password: 'very bad password', aad: '63616c76696e',
+-    ct: 'dda53a4059aa17b88756984995f7bba3c636cc44',
+-    tag: 'd2a35e5c611e5e3d2258360241c5b045', tampered: false },
+-
+-  // Following test cases are from
+-  //   http://csrc.nist.gov/groups/ST/toolkit/BCM/documents/
+-  //    proposedmodes/gcm/gcm-revised-spec.pdf
+-
+-  // Test case 1
+-  { algo: 'aes-128-gcm',
+-    key: '00000000000000000000000000000000',
+-    iv: '000000000000000000000000',
+-    plain: '',
+-    plainIsHex: false,
+-    ct: '',
+-    tag: '58e2fccefa7e3061367f1d57a4e7455a', tampered: false },
+-
+-  // Test case 2
+-  { algo: 'aes-128-gcm',
+-    key: '00000000000000000000000000000000',
+-    iv: '000000000000000000000000',
+-    plain: '00000000000000000000000000000000',
+-    plainIsHex: true,
+-    ct: '0388dace60b6a392f328c2b971b2fe78',
+-    tag: 'ab6e47d42cec13bdf53a67b21257bddf', tampered: false },
+-
+-  // Test case 3
+-  { algo: 'aes-128-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308',
+-    iv: 'cafebabefacedbaddecaf888',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a721' +
+-           'c3c0c95956809532fcf0e2449a6b525b1' +
+-           '6aedf5aa0de657ba637b391aafd255',
+-    plainIsHex: true,
+-    ct: '42831ec2217774244b7221b784d0d49c' +
+-        'e3aa212f2c02a4e035c17e2329aca12e2' +
+-        '1d514b25466931c7d8f6a5aac84aa051b' +
+-        'a30b396a0aac973d58e091473f5985',
+-    tag: '4d5c2af327cd64a62cf35abd2ba6fab4', tampered: false },
+-
+-  // Test case 4
+-  { algo: 'aes-128-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308',
+-    iv: 'cafebabefacedbaddecaf888',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a721' +
+-           'c3c0c95956809532fcf0e2449a6b525b16' +
+-           'aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
+-    plainIsHex: true,
+-    ct: '42831ec2217774244b7221b784d0d49c' +
+-        'e3aa212f2c02a4e035c17e2329aca12e2' +
+-        '1d514b25466931c7d8f6a5aac84aa051b' +
+-        'a30b396a0aac973d58e091',
+-    tag: '5bc94fbc3221a5db94fae95ae7121a47', tampered: false },
+-
+-  // Test case 5, 8 byte IV
+-  { algo: 'aes-128-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308',
+-    iv: 'cafebabefacedbad',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeef' +
+-         'abaddad2',
+-    plainIsHex: true,
+-    ct: '61353b4c2806934a777ff51fa22a4755' +
+-        '699b2a714fcdc6f83766e5f97b6c7423' +
+-        '73806900e49f24b22b097544d4896b42' +
+-        '4989b5e1ebac0f07c23f4598',
+-    tag: '3612d2e79e3b0785561be14aaca2fccb', tampered: false },
+-
+-  // Test case 6, 60 byte IV
+-  { algo: 'aes-128-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308',
+-    iv: '9313225DF88406E555909C5AFF5269AA' +
+-        '6A7A9538534F7DA1E4C303D2A318A728' +
+-        'C3C0C95156809539FCF0E2429A6B52541' +
+-        '6AEDBF5A0DE6A57A637B39B',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
+-    plainIsHex: true,
+-    ct: '8ce24998625615b603a033aca13fb894' +
+-        'be9112a5c3a211a8ba262a3cca7e2ca7' +
+-        '01e4a9a4fba43c90ccdcb281d48c7c6f' +
+-        'd62875d2aca417034c34aee5',
+-    tag: '619cc5aefffe0bfa462af43c1699d050', tampered: false },
+-
+-  // Test case 7
+-  { algo: 'aes-192-gcm',
+-    key: '000000000000000000000000000000000000000000000000',
+-    iv: '000000000000000000000000',
+-    plain: '',
+-    plainIsHex: false,
+-    ct: '',
+-    tag: 'cd33b28ac773f74ba00ed1f312572435', tampered: false },
+-
+-  // Test case 8
+-  { algo: 'aes-192-gcm',
+-    key: '000000000000000000000000000000000000000000000000',
+-    iv: '000000000000000000000000',
+-    plain: '00000000000000000000000000000000',
+-    plainIsHex: true,
+-    ct: '98e7247c07f0fe411c267e4384b0f600',
+-    tag: '2ff58d80033927ab8ef4d4587514f0fb', tampered: false },
+-
+-  // Test case 9
+-  { algo: 'aes-192-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c',
+-    iv: 'cafebabefacedbaddecaf888',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b391aafd255',
+-    plainIsHex: true,
+-    ct: '3980ca0b3c00e841eb06fac4872a2757' +
+-        '859e1ceaa6efd984628593b40ca1e19c' +
+-        '7d773d00c144c525ac619d18c84a3f47' +
+-        '18e2448b2fe324d9ccda2710acade256',
+-    tag: '9924a7c8587336bfb118024db8674a14', tampered: false },
+-
+-  // Test case 10
+-  { algo: 'aes-192-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c',
+-    iv: 'cafebabefacedbaddecaf888',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
+-    plainIsHex: true,
+-    ct: '3980ca0b3c00e841eb06fac4872a2757' +
+-        '859e1ceaa6efd984628593b40ca1e19c' +
+-        '7d773d00c144c525ac619d18c84a3f47' +
+-        '18e2448b2fe324d9ccda2710',
+-    tag: '2519498e80f1478f37ba55bd6d27618c', tampered: false },
+-
+-  // Test case 11
+-  { algo: 'aes-192-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c',
+-    iv: 'cafebabefacedbad',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
+-    plainIsHex: true,
+-    ct: '0f10f599ae14a154ed24b36e25324db8' +
+-        'c566632ef2bbb34f8347280fc4507057' +
+-        'fddc29df9a471f75c66541d4d4dad1c9' +
+-        'e93a19a58e8b473fa0f062f7',
+-    tag: '65dcc57fcf623a24094fcca40d3533f8', tampered: false },
+-
+-  // Test case 12, 60 byte IV
+-  { algo: 'aes-192-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c',
+-    iv: '9313225df88406e555909c5aff5269aa' +
+-        '6a7a9538534f7da1e4c303d2a318a728' +
+-        'c3c0c95156809539fcf0e2429a6b5254' +
+-        '16aedbf5a0de6a57a637b39b',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
+-    plainIsHex: true,
+-    ct: 'd27e88681ce3243c4830165a8fdcf9ff' +
+-        '1de9a1d8e6b447ef6ef7b79828666e45' +
+-        '81e79012af34ddd9e2f037589b292db3' +
+-        'e67c036745fa22e7e9b7373b',
+-    tag: 'dcf566ff291c25bbb8568fc3d376a6d9', tampered: false },
+-
+-  // Test case 13
+-  { algo: 'aes-256-gcm',
+-    key: '0000000000000000000000000000000000000000000000000000000000000000',
+-    iv: '000000000000000000000000',
+-    plain: '',
+-    plainIsHex: false,
+-    ct: '',
+-    tag: '530f8afbc74536b9a963b4f1c4cb738b', tampered: false },
+-
+-  // Test case 14
+-  { algo: 'aes-256-gcm',
+-    key: '0000000000000000000000000000000000000000000000000000000000000000',
+-    iv: '000000000000000000000000',
+-    plain: '00000000000000000000000000000000',
+-    plainIsHex: true,
+-    ct: 'cea7403d4d606b6e074ec5d3baf39d18',
+-    tag: 'd0d1c8a799996bf0265b98b5d48ab919', tampered: false },
+-
+-  // Test case 15
+-  { algo: 'aes-256-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
+-    iv: 'cafebabefacedbaddecaf888',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b391aafd255',
+-    plainIsHex: true,
+-    ct: '522dc1f099567d07f47f37a32a84427d' +
+-        '643a8cdcbfe5c0c97598a2bd2555d1aa' +
+-        '8cb08e48590dbb3da7b08b1056828838' +
+-        'c5f61e6393ba7a0abcc9f662898015ad',
+-    tag: 'b094dac5d93471bdec1a502270e3cc6c', tampered: false },
+-
+-  // Test case 16
+-  { algo: 'aes-256-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
+-    iv: 'cafebabefacedbaddecaf888',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
+-    plainIsHex: true,
+-    ct: '522dc1f099567d07f47f37a32a84427d' +
+-        '643a8cdcbfe5c0c97598a2bd2555d1aa' +
+-        '8cb08e48590dbb3da7b08b1056828838' +
+-        'c5f61e6393ba7a0abcc9f662',
+-    tag: '76fc6ece0f4e1768cddf8853bb2d551b', tampered: false },
+-
+-  // Test case 17, 8 byte IV
+-  { algo: 'aes-256-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
+-    iv: 'cafebabefacedbad',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
+-    plainIsHex: true,
+-    ct: 'c3762df1ca787d32ae47c13bf19844cb' +
+-        'af1ae14d0b976afac52ff7d79bba9de0' +
+-        'feb582d33934a4f0954cc2363bc73f78' +
+-        '62ac430e64abe499f47c9b1f',
+-    tag: '3a337dbf46a792c45e454913fe2ea8f2', tampered: false },
+-
+-  // Test case 18, 60 byte IV
+-  { algo: 'aes-256-gcm',
+-    key: 'feffe9928665731c6d6a8f9467308308feffe9928665731c6d6a8f9467308308',
+-    iv: '9313225df88406e555909c5aff5269aa' +
+-        '6a7a9538534f7da1e4c303d2a318a728' +
+-        'c3c0c95156809539fcf0e2429a6b5254' +
+-        '16aedbf5a0de6a57a637b39b',
+-    plain: 'd9313225f88406e5a55909c5aff5269a' +
+-           '86a7a9531534f7da2e4c303d8a318a72' +
+-           '1c3c0c95956809532fcf0e2449a6b525' +
+-           'b16aedf5aa0de657ba637b39',
+-    aad: 'feedfacedeadbeeffeedfacedeadbeefabaddad2',
+-    plainIsHex: true,
+-    ct: '5a8def2f0c9e53f1f75d7853659e2a20' +
+-        'eeb2b22aafde6419a058ab4f6f746bf4' +
+-        '0fc0c3b780f244452da3ebf1c5d82cde' +
+-        'a2418997200ef82e44ae7e3f',
+-    tag: 'a44a8266ee1c8eb0c8b5d4cf5ae9f19a', tampered: false },
+-];
+-
+-var ciphers = crypto.getCiphers();
+-
+-for (var i in TEST_CASES) {
+-  var test = TEST_CASES[i];
+-
+-  if (ciphers.indexOf(test.algo) === -1) {
+-    common.skip('unsupported ' + test.algo + ' test');
+-    continue;
+-  }
+-
+-  if (common.hasFipsCrypto && test.iv.length < 24) {
+-    console.log('1..0 # Skipped: IV len < 12 bytes unsupported in FIPS mode');
+-    continue;
+-  }
+-
+-  (function() {
+-    var encrypt = crypto.createCipheriv(test.algo,
+-      new Buffer(test.key, 'hex'), new Buffer(test.iv, 'hex'));
+-    if (test.aad)
+-      encrypt.setAAD(new Buffer(test.aad, 'hex'));
+-
+-    var inputEncoding = test.plainIsHex ? 'hex' : 'ascii';
+-    var hex = encrypt.update(test.plain, inputEncoding, 'hex');
+-    hex += encrypt.final('hex');
+-
+-    var auth_tag = encrypt.getAuthTag();
+-    // only test basic encryption run if output is marked as tampered.
+-    if (!test.tampered) {
+-      assert.equal(hex, test.ct);
+-      assert.equal(auth_tag.toString('hex'), test.tag);
+-    }
+-  })();
+-
+-  (function() {
+-    var decrypt = crypto.createDecipheriv(test.algo,
+-      new Buffer(test.key, 'hex'), new Buffer(test.iv, 'hex'));
+-    decrypt.setAuthTag(new Buffer(test.tag, 'hex'));
+-    if (test.aad)
+-      decrypt.setAAD(new Buffer(test.aad, 'hex'));
+-
+-    var outputEncoding = test.plainIsHex ? 'hex' : 'ascii';
+-
+-    var msg = decrypt.update(test.ct, 'hex', outputEncoding);
+-    if (!test.tampered) {
+-      msg += decrypt.final(outputEncoding);
+-      assert.equal(msg, test.plain);
+-    } else {
+-      // assert that final throws if input data could not be verified!
+-      assert.throws(function() { decrypt.final('ascii'); }, / auth/);
+-    }
+-  })();
+-
+-  (function() {
+-    if (!test.password) return;
+-    if (common.hasFipsCrypto) {
+-      assert.throws(() => { crypto.createCipher(test.algo, test.password); },
+-                    /not supported in FIPS mode/);
+-    } else {
+-      var encrypt = crypto.createCipher(test.algo, test.password);
+-      if (test.aad)
+-        encrypt.setAAD(new Buffer(test.aad, 'hex'));
+-      var hex = encrypt.update(test.plain, 'ascii', 'hex');
+-      hex += encrypt.final('hex');
+-      var auth_tag = encrypt.getAuthTag();
+-      // only test basic encryption run if output is marked as tampered.
+-      if (!test.tampered) {
+-        assert.equal(hex, test.ct);
+-        assert.equal(auth_tag.toString('hex'), test.tag);
+-      }
+-    }
+-  })();
+-
+-  (function() {
+-    if (!test.password) return;
+-    if (common.hasFipsCrypto) {
+-      assert.throws(() => { crypto.createDecipher(test.algo, test.password); },
+-                    /not supported in FIPS mode/);
+-    } else {
+-      var decrypt = crypto.createDecipher(test.algo, test.password);
+-      decrypt.setAuthTag(new Buffer(test.tag, 'hex'));
+-      if (test.aad)
+-        decrypt.setAAD(new Buffer(test.aad, 'hex'));
+-      var msg = decrypt.update(test.ct, 'hex', 'ascii');
+-      if (!test.tampered) {
+-        msg += decrypt.final('ascii');
+-        assert.equal(msg, test.plain);
+-      } else {
+-        // assert that final throws if input data could not be verified!
+-        assert.throws(function() { decrypt.final('ascii'); }, / auth/);
+-      }
+-    }
+-  })();
+-
+-  // after normal operation, test some incorrect ways of calling the API:
+-  // it's most certainly enough to run these tests with one algorithm only.
+-
+-  if (i > 0) {
+-    continue;
+-  }
+-
+-  (function() {
+-    // non-authenticating mode:
+-    var encrypt = crypto.createCipheriv('aes-128-cbc',
+-      'ipxp9a6i1Mb4USb4', '6fKjEjR3Vl30EUYC');
+-    encrypt.update('blah', 'ascii');
+-    encrypt.final();
+-    assert.throws(() => { encrypt.getAuthTag(); }, / state/);
+-    assert.throws(() => { encrypt.setAAD(Buffer.from('123', 'ascii')); },
+-                  / state/);
+-  })();
+-
+-  (function() {
+-    // trying to get tag before inputting all data:
+-    var encrypt = crypto.createCipheriv(test.algo,
+-      new Buffer(test.key, 'hex'), new Buffer(test.iv, 'hex'));
+-    encrypt.update('blah', 'ascii');
+-    assert.throws(function() { encrypt.getAuthTag(); }, / state/);
+-  })();
+-
+-  (function() {
+-    // trying to set tag on encryption object:
+-    var encrypt = crypto.createCipheriv(test.algo,
+-      Buffer.from(test.key, 'hex'), Buffer.from(test.iv, 'hex'));
+-    assert.throws(() => { encrypt.setAuthTag(Buffer.from(test.tag, 'hex')); },
+-                  / state/);
+-  })();
+-
+-  (function() {
+-    // trying to read tag from decryption object:
+-    var decrypt = crypto.createDecipheriv(test.algo,
+-      new Buffer(test.key, 'hex'), new Buffer(test.iv, 'hex'));
+-    assert.throws(function() { decrypt.getAuthTag(); }, / state/);
+-  })();
+-
+-  (function() {
+-    // trying to create cipher with incorrect IV length
+-    assert.throws(function() {
+-      crypto.createCipheriv(
+-        test.algo,
+-        Buffer.from(test.key, 'hex'),
+-        Buffer.alloc(0)
+-      );
+-    }, /Invalid IV length/);
+-  })();
+-}
+diff --git a/test/parallel/test-crypto-binary-default.js b/test/parallel/test-crypto-binary-default.js
+deleted file mode 100644
+index da29d69..0000000
+--- a/test/parallel/test-crypto-binary-default.js
++++ /dev/null
+@@ -1,669 +0,0 @@
+-'use strict';
+-// This is the same as test/simple/test-crypto, but from before the shift
+-// to use buffers by default.
+-
+-
+-var common = require('../common');
+-var assert = require('assert');
+-var constants = require('constants');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-var crypto = require('crypto');
+-var tls = require('tls');
+-
+-crypto.DEFAULT_ENCODING = 'binary';
+-
+-var fs = require('fs');
+-var path = require('path');
+-
+-// Test Certificates
+-var certPem = fs.readFileSync(common.fixturesDir + '/test_cert.pem', 'ascii');
+-var certPfx = fs.readFileSync(common.fixturesDir + '/test_cert.pfx');
+-var keyPem = fs.readFileSync(common.fixturesDir + '/test_key.pem', 'ascii');
+-var rsaPubPem = fs.readFileSync(common.fixturesDir + '/test_rsa_pubkey.pem',
+-    'ascii');
+-var rsaKeyPem = fs.readFileSync(common.fixturesDir + '/test_rsa_privkey.pem',
+-    'ascii');
+-
+-// PFX tests
+-assert.doesNotThrow(function() {
+-  tls.createSecureContext({pfx: certPfx, passphrase: 'sample'});
+-});
+-
+-assert.throws(function() {
+-  tls.createSecureContext({pfx: certPfx});
+-}, 'mac verify failure');
+-
+-assert.throws(function() {
+-  tls.createSecureContext({pfx: certPfx, passphrase: 'test'});
+-}, 'mac verify failure');
+-
+-assert.throws(function() {
+-  tls.createSecureContext({pfx: 'sample', passphrase: 'test'});
+-}, 'not enough data');
+-
+-// Test HMAC
+-const hmacHash = crypto.createHmac('sha1', 'Node')
+-                       .update('some data')
+-                       .update('to hmac')
+-                       .digest('hex');
+-assert.equal(hmacHash, '19fd6e1ba73d9ed2224dd5094a71babe85d9a892', 'test HMAC');
+-
+-// Test HMAC-SHA-* (rfc 4231 Test Cases)
+-var rfc4231 = [
+-  {
+-    key: new Buffer('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b', 'hex'),
+-    data: new Buffer('4869205468657265', 'hex'), // 'Hi There'
+-    hmac: {
+-      sha224: '896fb1128abbdf196832107cd49df33f47b4b1169912ba4f53684b22',
+-      sha256:
+-          'b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c' +
+-          '2e32cff7',
+-      sha384:
+-          'afd03944d84895626b0825f4ab46907f15f9dadbe4101ec682aa034c' +
+-          '7cebc59cfaea9ea9076ede7f4af152e8b2fa9cb6',
+-      sha512:
+-          '87aa7cdea5ef619d4ff0b4241a1d6cb02379f4e2ce4ec2787ad0b305' +
+-          '45e17cdedaa833b7d6b8a702038b274eaea3f4e4be9d914eeb61f170' +
+-          '2e696c203a126854'
+-    }
+-  },
+-  {
+-    key: new Buffer('4a656665', 'hex'), // 'Jefe'
+-    data: new Buffer('7768617420646f2079612077616e7420666f72206e6f74686' +
+-                     '96e673f', 'hex'), // 'what do ya want for nothing?'
+-    hmac: {
+-      sha224: 'a30e01098bc6dbbf45690f3a7e9e6d0f8bbea2a39e6148008fd05e44',
+-      sha256:
+-          '5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b9' +
+-          '64ec3843',
+-      sha384:
+-          'af45d2e376484031617f78d2b58a6b1b9c7ef464f5a01b47e42ec373' +
+-          '6322445e8e2240ca5e69e2c78b3239ecfab21649',
+-      sha512:
+-          '164b7a7bfcf819e2e395fbe73b56e0a387bd64222e831fd610270cd7' +
+-          'ea2505549758bf75c05a994a6d034f65f8f0e6fdcaeab1a34d4a6b4b' +
+-          '636e070a38bce737'
+-    }
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex'),
+-    data: new Buffer('ddddddddddddddddddddddddddddddddddddddddddddddddd' +
+-                     'ddddddddddddddddddddddddddddddddddddddddddddddddddd',
+-                     'hex'),
+-    hmac: {
+-      sha224: '7fb3cb3588c6c1f6ffa9694d7d6ad2649365b0c1f65d69d1ec8333ea',
+-      sha256:
+-          '773ea91e36800e46854db8ebd09181a72959098b3ef8c122d9635514' +
+-          'ced565fe',
+-      sha384:
+-          '88062608d3e6ad8a0aa2ace014c8a86f0aa635d947ac9febe83ef4e5' +
+-          '5966144b2a5ab39dc13814b94e3ab6e101a34f27',
+-      sha512:
+-          'fa73b0089d56a284efb0f0756c890be9b1b5dbdd8ee81a3655f83e33' +
+-          'b2279d39bf3e848279a722c806b485a47e67c807b946a337bee89426' +
+-          '74278859e13292fb'
+-    }
+-  },
+-  {
+-    key: new Buffer('0102030405060708090a0b0c0d0e0f10111213141516171819',
+-                    'hex'),
+-    data: new Buffer('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc' +
+-                     'dcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd',
+-                     'hex'),
+-    hmac: {
+-      sha224: '6c11506874013cac6a2abc1bb382627cec6a90d86efc012de7afec5a',
+-      sha256:
+-          '82558a389a443c0ea4cc819899f2083a85f0faa3e578f8077a2e3ff4' +
+-          '6729665b',
+-      sha384:
+-          '3e8a69b7783c25851933ab6290af6ca77a9981480850009cc5577c6e' +
+-          '1f573b4e6801dd23c4a7d679ccf8a386c674cffb',
+-      sha512:
+-          'b0ba465637458c6990e5a8c5f61d4af7e576d97ff94b872de76f8050' +
+-          '361ee3dba91ca5c11aa25eb4d679275cc5788063a5f19741120c4f2d' +
+-          'e2adebeb10a298dd'
+-    }
+-  },
+-
+-  {
+-    key: new Buffer('0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c', 'hex'),
+-    // 'Test With Truncation'
+-    data: new Buffer('546573742057697468205472756e636174696f6e', 'hex'),
+-    hmac: {
+-      sha224: '0e2aea68a90c8d37c988bcdb9fca6fa8',
+-      sha256: 'a3b6167473100ee06e0c796c2955552b',
+-      sha384: '3abf34c3503b2a23a46efc619baef897',
+-      sha512: '415fad6271580a531d4179bc891d87a6'
+-    },
+-    truncate: true
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaa', 'hex'),
+-    // 'Test Using Larger Than Block-Size Key - Hash Key First'
+-    data: new Buffer('54657374205573696e67204c6172676572205468616e20426' +
+-                     'c6f636b2d53697a65204b6579202d2048617368204b657920' +
+-                     '4669727374', 'hex'),
+-    hmac: {
+-      sha224: '95e9a0db962095adaebe9b2d6f0dbce2d499f112f2d2b7273fa6870e',
+-      sha256:
+-          '60e431591ee0b67f0d8a26aacbf5b77f8e0bc6213728c5140546040f' +
+-          '0ee37f54',
+-      sha384:
+-          '4ece084485813e9088d2c63a041bc5b44f9ef1012a2b588f3cd11f05' +
+-          '033ac4c60c2ef6ab4030fe8296248df163f44952',
+-      sha512:
+-          '80b24263c7c1a3ebb71493c1dd7be8b49b46d1f41b4aeec1121b0137' +
+-          '83f8f3526b56d037e05f2598bd0fd2215d6a1e5295e64f73f63f0aec' +
+-          '8b915a985d786598'
+-    }
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaa', 'hex'),
+-    // 'This is a test using a larger than block-size key and a larger ' +
+-    // 'than block-size data. The key needs to be hashed before being ' +
+-    // 'used by the HMAC algorithm.'
+-    data: new Buffer('5468697320697320612074657374207573696e672061206c6' +
+-                     '172676572207468616e20626c6f636b2d73697a65206b6579' +
+-                     '20616e642061206c6172676572207468616e20626c6f636b2' +
+-                     'd73697a6520646174612e20546865206b6579206e65656473' +
+-                     '20746f20626520686173686564206265666f7265206265696' +
+-                     'e6720757365642062792074686520484d414320616c676f72' +
+-                     '6974686d2e', 'hex'),
+-    hmac: {
+-      sha224: '3a854166ac5d9f023f54d517d0b39dbd946770db9c2b95c9f6f565d1',
+-      sha256:
+-          '9b09ffa71b942fcb27635fbcd5b0e944bfdc63644f0713938a7f5153' +
+-          '5c3a35e2',
+-      sha384:
+-          '6617178e941f020d351e2f254e8fd32c602420feb0b8fb9adccebb82' +
+-          '461e99c5a678cc31e799176d3860e6110c46523e',
+-      sha512:
+-          'e37b6a775dc87dbaa4dfa9f96e5e3ffddebd71f8867289865df5a32d' +
+-          '20cdc944b6022cac3c4982b10d5eeb55c3e4de15134676fb6de04460' +
+-          '65c97440fa8c6a58'
+-    }
+-  }
+-];
+-
+-for (let i = 0, l = rfc4231.length; i < l; i++) {
+-  for (var hash in rfc4231[i]['hmac']) {
+-    var result = crypto.createHmac(hash, rfc4231[i]['key'])
+-                     .update(rfc4231[i]['data'])
+-                     .digest('hex');
+-    if (rfc4231[i]['truncate']) {
+-      result = result.substr(0, 32); // first 128 bits == 32 hex chars
+-    }
+-    assert.equal(rfc4231[i]['hmac'][hash],
+-                 result,
+-                 'Test HMAC-' + hash + ': Test case ' + (i + 1) + ' rfc 4231');
+-  }
+-}
+-
+-// Test HMAC-MD5/SHA1 (rfc 2202 Test Cases)
+-var rfc2202_md5 = [
+-  {
+-    key: new Buffer('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b', 'hex'),
+-    data: 'Hi There',
+-    hmac: '9294727a3638bb1c13f48ef8158bfc9d'
+-  },
+-  {
+-    key: 'Jefe',
+-    data: 'what do ya want for nothing?',
+-    hmac: '750c783e6ab0b503eaa86e310a5db738'
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex'),
+-    data: new Buffer('ddddddddddddddddddddddddddddddddddddddddddddddddd' +
+-                     'ddddddddddddddddddddddddddddddddddddddddddddddddddd',
+-                     'hex'),
+-    hmac: '56be34521d144c88dbb8c733f0e8b3f6'
+-  },
+-  {
+-    key: new Buffer('0102030405060708090a0b0c0d0e0f10111213141516171819',
+-                    'hex'),
+-    data: new Buffer('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc' +
+-                     'dcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd' +
+-                     'cdcdcdcdcd',
+-                     'hex'),
+-    hmac: '697eaf0aca3a3aea3a75164746ffaa79'
+-  },
+-  {
+-    key: new Buffer('0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c', 'hex'),
+-    data: 'Test With Truncation',
+-    hmac: '56461ef2342edc00f9bab995690efd4c'
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaa',
+-                    'hex'),
+-    data: 'Test Using Larger Than Block-Size Key - Hash Key First',
+-    hmac: '6b1ab7fe4bd7bf8f0b62e6ce61b9d0cd'
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaa',
+-                    'hex'),
+-    data:
+-        'Test Using Larger Than Block-Size Key and Larger Than One ' +
+-        'Block-Size Data',
+-    hmac: '6f630fad67cda0ee1fb1f562db3aa53e'
+-  }
+-];
+-var rfc2202_sha1 = [
+-  {
+-    key: new Buffer('0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b', 'hex'),
+-    data: 'Hi There',
+-    hmac: 'b617318655057264e28bc0b6fb378c8ef146be00'
+-  },
+-  {
+-    key: 'Jefe',
+-    data: 'what do ya want for nothing?',
+-    hmac: 'effcdf6ae5eb2fa2d27416d5f184df9c259a7c79'
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'hex'),
+-    data: new Buffer('ddddddddddddddddddddddddddddddddddddddddddddd' +
+-                     'ddddddddddddddddddddddddddddddddddddddddddddd' +
+-                     'dddddddddd',
+-                     'hex'),
+-    hmac: '125d7342b9ac11cd91a39af48aa17b4f63f175d3'
+-  },
+-  {
+-    key: new Buffer('0102030405060708090a0b0c0d0e0f10111213141516171819',
+-                    'hex'),
+-    data: new Buffer('cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc' +
+-                     'dcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd' +
+-                     'cdcdcdcdcd',
+-                     'hex'),
+-    hmac: '4c9007f4026250c6bc8414f9bf50c86c2d7235da'
+-  },
+-  {
+-    key: new Buffer('0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c', 'hex'),
+-    data: 'Test With Truncation',
+-    hmac: '4c1a03424b55e07fe7f27be1d58bb9324a9a5a04'
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaa',
+-                    'hex'),
+-    data: 'Test Using Larger Than Block-Size Key - Hash Key First',
+-    hmac: 'aa4ae5e15272d00e95705637ce8a3b55ed402112'
+-  },
+-  {
+-    key: new Buffer('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
+-                    'aaaaaaaaaaaaaaaaaaaaaa',
+-                    'hex'),
+-    data:
+-        'Test Using Larger Than Block-Size Key and Larger Than One ' +
+-        'Block-Size Data',
+-    hmac: 'e8e99d0f45237d786d6bbaa7965c7808bbff1a91'
+-  }
+-];
+-
+-for (let i = 0, l = rfc2202_md5.length; i < l; i++) {
+-  if (!common.hasFipsCrypto) {
+-    assert.equal(rfc2202_md5[i]['hmac'],
+-                 crypto.createHmac('md5', rfc2202_md5[i]['key'])
+-                     .update(rfc2202_md5[i]['data'])
+-                     .digest('hex'),
+-                 'Test HMAC-MD5 : Test case ' + (i + 1) + ' rfc 2202');
+-  }
+-}
+-for (let i = 0, l = rfc2202_sha1.length; i < l; i++) {
+-  assert.equal(rfc2202_sha1[i]['hmac'],
+-               crypto.createHmac('sha1', rfc2202_sha1[i]['key'])
+-                   .update(rfc2202_sha1[i]['data'])
+-                   .digest('hex'),
+-               'Test HMAC-SHA1 : Test case ' + (i + 1) + ' rfc 2202');
+-}
+-
+-// Test hashing
+-var a1 = crypto.createHash('sha1').update('Test123').digest('hex');
+-var a2 = crypto.createHash('sha256').update('Test123').digest('base64');
+-var a3 = crypto.createHash('sha512').update('Test123').digest(); // binary
+-var a4 = crypto.createHash('sha1').update('Test123').digest('buffer');
+-
+-if (!common.hasFipsCrypto) {
+-  var a0 = crypto.createHash('md5').update('Test123').digest('binary');
+-  assert.equal(
+-    a0,
+-    'h\u00ea\u00cb\u0097\u00d8o\fF!\u00fa+\u000e\u0017\u00ca\u00bd\u008c',
+-    'Test MD5 as binary'
+-  );
+-}
+-
+-assert.equal(a1, '8308651804facb7b9af8ffc53a33a22d6a1c8ac2', 'Test SHA1');
+-
+-assert.equal(a2, '2bX1jws4GYKTlxhloUB09Z66PoJZW+y+hq5R8dnx9l4=',
+-             'Test SHA256 as base64');
+-
+-assert.equal(a3, '\u00c1(4\u00f1\u0003\u001fd\u0097!O\'\u00d4C/&Qz\u00d4' +
+-                 '\u0094\u0015l\u00b8\u008dQ+\u00db\u001d\u00c4\u00b5}\u00b2' +
+-                 '\u00d6\u0092\u00a3\u00df\u00a2i\u00a1\u009b\n\n*\u000f' +
+-                 '\u00d7\u00d6\u00a2\u00a8\u0085\u00e3<\u0083\u009c\u0093' +
+-                 '\u00c2\u0006\u00da0\u00a1\u00879(G\u00ed\'',
+-             'Test SHA512 as assumed binary');
+-
+-assert.deepEqual(a4,
+-                 new Buffer('8308651804facb7b9af8ffc53a33a22d6a1c8ac2', 'hex'),
+-                 'Test SHA1');
+-
+-// Test multiple updates to same hash
+-var h1 = crypto.createHash('sha1').update('Test123').digest('hex');
+-var h2 = crypto.createHash('sha1').update('Test').update('123').digest('hex');
+-assert.equal(h1, h2, 'multipled updates');
+-
+-// Test hashing for binary files
+-var fn = path.join(common.fixturesDir, 'sample.png');
+-var sha1Hash = crypto.createHash('sha1');
+-var fileStream = fs.createReadStream(fn);
+-fileStream.on('data', function(data) {
+-  sha1Hash.update(data);
+-});
+-fileStream.on('close', function() {
+-  assert.equal(sha1Hash.digest('hex'),
+-               '22723e553129a336ad96e10f6aecdf0f45e4149e',
+-               'Test SHA1 of sample.png');
+-});
+-
+-// Issue #2227: unknown digest method should throw an error.
+-assert.throws(function() {
+-  crypto.createHash('xyzzy');
+-});
+-
+-// Test signing and verifying
+-var s1 = crypto.createSign('RSA-SHA1')
+-               .update('Test123')
+-               .sign(keyPem, 'base64');
+-var s1Verified = crypto.createVerify('RSA-SHA1')
+-                       .update('Test')
+-                       .update('123')
+-                       .verify(certPem, s1, 'base64');
+-assert.strictEqual(s1Verified, true, 'sign and verify (base 64)');
+-
+-var s2 = crypto.createSign('RSA-SHA256')
+-               .update('Test123')
+-               .sign(keyPem); // binary
+-var s2Verified = crypto.createVerify('RSA-SHA256')
+-                       .update('Test')
+-                       .update('123')
+-                       .verify(certPem, s2); // binary
+-assert.strictEqual(s2Verified, true, 'sign and verify (binary)');
+-
+-var s3 = crypto.createSign('RSA-SHA1')
+-               .update('Test123')
+-               .sign(keyPem, 'buffer');
+-var s3Verified = crypto.createVerify('RSA-SHA1')
+-                       .update('Test')
+-                       .update('123')
+-                       .verify(certPem, s3);
+-assert.strictEqual(s3Verified, true, 'sign and verify (buffer)');
+-
+-
+-function testCipher1(key) {
+-  // Test encryption and decryption
+-  var plaintext = 'Keep this a secret? No! Tell everyone about node.js!';
+-  var cipher = crypto.createCipher('aes192', key);
+-
+-  // encrypt plaintext which is in utf8 format
+-  // to a ciphertext which will be in hex
+-  var ciph = cipher.update(plaintext, 'utf8', 'hex');
+-  // Only use binary or hex, not base64.
+-  ciph += cipher.final('hex');
+-
+-  var decipher = crypto.createDecipher('aes192', key);
+-  var txt = decipher.update(ciph, 'hex', 'utf8');
+-  txt += decipher.final('utf8');
+-
+-  assert.equal(txt, plaintext, 'encryption and decryption');
+-}
+-
+-
+-function testCipher2(key) {
+-  // encryption and decryption with Base64
+-  // reported in https://github.com/joyent/node/issues/738
+-  var plaintext =
+-      '32|RmVZZkFUVmpRRkp0TmJaUm56ZU9qcnJkaXNNWVNpTTU*|iXmckfRWZBGWWELw' +
+-      'eCBsThSsfUHLeRe0KCsK8ooHgxie0zOINpXxfZi/oNG7uq9JWFVCk70gfzQH8ZUJ' +
+-      'jAfaFg**';
+-  var cipher = crypto.createCipher('aes256', key);
+-
+-  // encrypt plaintext which is in utf8 format
+-  // to a ciphertext which will be in Base64
+-  var ciph = cipher.update(plaintext, 'utf8', 'base64');
+-  ciph += cipher.final('base64');
+-
+-  var decipher = crypto.createDecipher('aes256', key);
+-  var txt = decipher.update(ciph, 'base64', 'utf8');
+-  txt += decipher.final('utf8');
+-
+-  assert.equal(txt, plaintext, 'encryption and decryption with Base64');
+-}
+-
+-
+-function testCipher3(key, iv) {
+-  // Test encyrption and decryption with explicit key and iv
+-  var plaintext =
+-      '32|RmVZZkFUVmpRRkp0TmJaUm56ZU9qcnJkaXNNWVNpTTU*|iXmckfRWZBGWWELw' +
+-      'eCBsThSsfUHLeRe0KCsK8ooHgxie0zOINpXxfZi/oNG7uq9JWFVCk70gfzQH8ZUJ' +
+-      'jAfaFg**';
+-  var cipher = crypto.createCipheriv('des-ede3-cbc', key, iv);
+-  var ciph = cipher.update(plaintext, 'utf8', 'hex');
+-  ciph += cipher.final('hex');
+-
+-  var decipher = crypto.createDecipheriv('des-ede3-cbc', key, iv);
+-  var txt = decipher.update(ciph, 'hex', 'utf8');
+-  txt += decipher.final('utf8');
+-
+-  assert.equal(txt, plaintext, 'encryption and decryption with key and iv');
+-}
+-
+-
+-function testCipher4(key, iv) {
+-  // Test encyrption and decryption with explicit key and iv
+-  var plaintext =
+-      '32|RmVZZkFUVmpRRkp0TmJaUm56ZU9qcnJkaXNNWVNpTTU*|iXmckfRWZBGWWELw' +
+-      'eCBsThSsfUHLeRe0KCsK8ooHgxie0zOINpXxfZi/oNG7uq9JWFVCk70gfzQH8ZUJ' +
+-      'jAfaFg**';
+-  var cipher = crypto.createCipheriv('des-ede3-cbc', key, iv);
+-  var ciph = cipher.update(plaintext, 'utf8', 'buffer');
+-  ciph = Buffer.concat([ciph, cipher.final('buffer')]);
+-
+-  var decipher = crypto.createDecipheriv('des-ede3-cbc', key, iv);
+-  var txt = decipher.update(ciph, 'buffer', 'utf8');
+-  txt += decipher.final('utf8');
+-
+-  assert.equal(txt, plaintext, 'encryption and decryption with key and iv');
+-}
+-
+-if (!common.hasFipsCrypto) {
+-  testCipher1('MySecretKey123');
+-  testCipher1(new Buffer('MySecretKey123'));
+-
+-  testCipher2('0123456789abcdef');
+-  testCipher2(new Buffer('0123456789abcdef'));
+-}
+-
+-testCipher3('0123456789abcd0123456789', '12345678');
+-testCipher3('0123456789abcd0123456789', new Buffer('12345678'));
+-testCipher3(new Buffer('0123456789abcd0123456789'), '12345678');
+-testCipher3(new Buffer('0123456789abcd0123456789'), new Buffer('12345678'));
+-
+-testCipher4(new Buffer('0123456789abcd0123456789'), new Buffer('12345678'));
+-
+-
+-// update() should only take buffers / strings
+-assert.throws(function() {
+-  crypto.createHash('sha1').update({foo: 'bar'});
+-}, /buffer/);
+-
+-
+-// Test Diffie-Hellman with two parties sharing a secret,
+-// using various encodings as we go along
+-var dh1 = crypto.createDiffieHellman(common.hasFipsCrypto ? 1024 : 256);
+-var p1 = dh1.getPrime('buffer');
+-var dh2 = crypto.createDiffieHellman(p1, 'base64');
+-var key1 = dh1.generateKeys();
+-var key2 = dh2.generateKeys('hex');
+-var secret1 = dh1.computeSecret(key2, 'hex', 'base64');
+-var secret2 = dh2.computeSecret(key1, 'binary', 'buffer');
+-
+-assert.equal(secret1, secret2.toString('base64'));
+-
+-// Create "another dh1" using generated keys from dh1,
+-// and compute secret again
+-var dh3 = crypto.createDiffieHellman(p1, 'buffer');
+-var privkey1 = dh1.getPrivateKey();
+-dh3.setPublicKey(key1);
+-dh3.setPrivateKey(privkey1);
+-
+-assert.equal(dh1.getPrime(), dh3.getPrime());
+-assert.equal(dh1.getGenerator(), dh3.getGenerator());
+-assert.equal(dh1.getPublicKey(), dh3.getPublicKey());
+-assert.equal(dh1.getPrivateKey(), dh3.getPrivateKey());
+-
+-var secret3 = dh3.computeSecret(key2, 'hex', 'base64');
+-
+-assert.equal(secret1, secret3);
+-
+-// https://github.com/joyent/node/issues/2338
+-var p = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' +
+-        '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' +
+-        '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' +
+-        'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF';
+-var d = crypto.createDiffieHellman(p, 'hex');
+-assert.equal(d.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-
+-// Test RSA key signing/verification
+-var rsaSign = crypto.createSign('RSA-SHA1');
+-var rsaVerify = crypto.createVerify('RSA-SHA1');
+-assert.ok(rsaSign);
+-assert.ok(rsaVerify);
+-
+-rsaSign.update(rsaPubPem);
+-var rsaSignature = rsaSign.sign(rsaKeyPem, 'hex');
+-assert.equal(rsaSignature,
+-             '5c50e3145c4e2497aadb0eabc83b342d0b0021ece0d4c4a064b7c' +
+-             '8f020d7e2688b122bfb54c724ac9ee169f83f66d2fe90abeb95e8' +
+-             'e1290e7e177152a4de3d944cf7d4883114a20ed0f78e70e25ef0f' +
+-             '60f06b858e6af42a2f276ede95bbc6bc9a9bbdda15bd663186a6f' +
+-             '40819a7af19e577bb2efa5e579a1f5ce8a0d4ca8b8f6');
+-
+-rsaVerify.update(rsaPubPem);
+-assert.strictEqual(rsaVerify.verify(rsaPubPem, rsaSignature, 'hex'), true);
+-
+-
+-//
+-// Test RSA signing and verification
+-//
+-(function() {
+-  var privateKey = fs.readFileSync(
+-      common.fixturesDir + '/test_rsa_privkey_2.pem');
+-
+-  var publicKey = fs.readFileSync(
+-      common.fixturesDir + '/test_rsa_pubkey_2.pem');
+-
+-  var input = 'I AM THE WALRUS';
+-
+-  var signature =
+-      '79d59d34f56d0e94aa6a3e306882b52ed4191f07521f25f505a078dc2f89' +
+-      '396e0c8ac89e996fde5717f4cb89199d8fec249961fcb07b74cd3d2a4ffa' +
+-      '235417b69618e4bcd76b97e29975b7ce862299410e1b522a328e44ac9bb2' +
+-      '8195e0268da7eda23d9825ac43c724e86ceeee0d0d4465678652ccaf6501' +
+-      '0ddfb299bedeb1ad';
+-
+-  var sign = crypto.createSign('RSA-SHA256');
+-  sign.update(input);
+-
+-  var output = sign.sign(privateKey, 'hex');
+-  assert.equal(output, signature);
+-
+-  var verify = crypto.createVerify('RSA-SHA256');
+-  verify.update(input);
+-
+-  assert.strictEqual(verify.verify(publicKey, signature, 'hex'), true);
+-})();
+-
+-
+-//
+-// Test DSA signing and verification
+-//
+-(function() {
+-  var privateKey = fs.readFileSync(
+-      common.fixturesDir + '/test_dsa_privkey.pem');
+-
+-  var publicKey = fs.readFileSync(
+-      common.fixturesDir + '/test_dsa_pubkey.pem');
+-
+-  var input = 'I AM THE WALRUS';
+-
+-  // DSA signatures vary across runs so there is no static string to verify
+-  // against
+-  var sign = crypto.createSign('DSS1');
+-  sign.update(input);
+-  var signature = sign.sign(privateKey, 'hex');
+-
+-  var verify = crypto.createVerify('DSS1');
+-  verify.update(input);
+-
+-  assert.strictEqual(verify.verify(publicKey, signature, 'hex'), true);
+-})();
+-
+-
+-//
+-// Test PBKDF2 with RFC 6070 test vectors (except #4)
+-//
+-function testPBKDF2(password, salt, iterations, keylen, expected) {
+-  var actual = crypto.pbkdf2Sync(password, salt, iterations, keylen);
+-  assert.equal(actual, expected);
+-
+-  crypto.pbkdf2(password, salt, iterations, keylen, function(err, actual) {
+-    assert.equal(actual, expected);
+-  });
+-}
+-
+-
+-testPBKDF2('password', 'salt', 1, 20,
+-           '\x0c\x60\xc8\x0f\x96\x1f\x0e\x71\xf3\xa9\xb5\x24' +
+-           '\xaf\x60\x12\x06\x2f\xe0\x37\xa6');
+-
+-testPBKDF2('password', 'salt', 2, 20,
+-           '\xea\x6c\x01\x4d\xc7\x2d\x6f\x8c\xcd\x1e\xd9\x2a' +
+-           '\xce\x1d\x41\xf0\xd8\xde\x89\x57');
+-
+-testPBKDF2('password', 'salt', 4096, 20,
+-           '\x4b\x00\x79\x01\xb7\x65\x48\x9a\xbe\xad\x49\xd9\x26' +
+-           '\xf7\x21\xd0\x65\xa4\x29\xc1');
+-
+-testPBKDF2('passwordPASSWORDpassword',
+-           'saltSALTsaltSALTsaltSALTsaltSALTsalt',
+-           4096,
+-           25,
+-           '\x3d\x2e\xec\x4f\xe4\x1c\x84\x9b\x80\xc8\xd8\x36\x62' +
+-           '\xc0\xe4\x4a\x8b\x29\x1a\x96\x4c\xf2\xf0\x70\x38');
+-
+-testPBKDF2('pass\0word', 'sa\0lt', 4096, 16,
+-           '\x56\xfa\x6a\xa7\x55\x48\x09\x9d\xcc\x37\xd7\xf0\x34' +
+-           '\x25\xe0\xc3');
+diff --git a/test/parallel/test-crypto-cipher-decipher.js b/test/parallel/test-crypto-cipher-decipher.js
+deleted file mode 100644
+index 2f03aa5..0000000
+--- a/test/parallel/test-crypto-cipher-decipher.js
++++ /dev/null
+@@ -1,115 +0,0 @@
+-'use strict';
+-var common = require('../common');
+-var assert = require('assert');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-if (common.hasFipsCrypto) {
+-  common.skip('not supported in FIPS mode');
+-  return;
+-}
+-var crypto = require('crypto');
+-
+-function testCipher1(key) {
+-  // Test encryption and decryption
+-  var plaintext = 'Keep this a secret? No! Tell everyone about node.js!';
+-  var cipher = crypto.createCipher('aes192', key);
+-
+-  // encrypt plaintext which is in utf8 format
+-  // to a ciphertext which will be in hex
+-  var ciph = cipher.update(plaintext, 'utf8', 'hex');
+-  // Only use binary or hex, not base64.
+-  ciph += cipher.final('hex');
+-
+-  var decipher = crypto.createDecipher('aes192', key);
+-  var txt = decipher.update(ciph, 'hex', 'utf8');
+-  txt += decipher.final('utf8');
+-
+-  assert.equal(txt, plaintext, 'encryption and decryption');
+-
+-  // streaming cipher interface
+-  // NB: In real life, it's not guaranteed that you can get all of it
+-  // in a single read() like this.  But in this case, we know it's
+-  // quite small, so there's no harm.
+-  var cStream = crypto.createCipher('aes192', key);
+-  cStream.end(plaintext);
+-  ciph = cStream.read();
+-
+-  var dStream = crypto.createDecipher('aes192', key);
+-  dStream.end(ciph);
+-  txt = dStream.read().toString('utf8');
+-
+-  assert.equal(txt, plaintext, 'encryption and decryption with streams');
+-}
+-
+-
+-function testCipher2(key) {
+-  // encryption and decryption with Base64
+-  // reported in https://github.com/joyent/node/issues/738
+-  var plaintext =
+-      '32|RmVZZkFUVmpRRkp0TmJaUm56ZU9qcnJkaXNNWVNpTTU*|iXmckfRWZBGWWELw' +
+-      'eCBsThSsfUHLeRe0KCsK8ooHgxie0zOINpXxfZi/oNG7uq9JWFVCk70gfzQH8ZUJ' +
+-      'jAfaFg**';
+-  var cipher = crypto.createCipher('aes256', key);
+-
+-  // encrypt plaintext which is in utf8 format
+-  // to a ciphertext which will be in Base64
+-  var ciph = cipher.update(plaintext, 'utf8', 'base64');
+-  ciph += cipher.final('base64');
+-
+-  var decipher = crypto.createDecipher('aes256', key);
+-  var txt = decipher.update(ciph, 'base64', 'utf8');
+-  txt += decipher.final('utf8');
+-
+-  assert.equal(txt, plaintext, 'encryption and decryption with Base64');
+-}
+-
+-testCipher1('MySecretKey123');
+-testCipher1(new Buffer('MySecretKey123'));
+-
+-testCipher2('0123456789abcdef');
+-testCipher2(new Buffer('0123456789abcdef'));
+-
+-// Base64 padding regression test, see #4837.
+-(function() {
+-  var c = crypto.createCipher('aes-256-cbc', 'secret');
+-  var s = c.update('test', 'utf8', 'base64') + c.final('base64');
+-  assert.equal(s, '375oxUQCIocvxmC5At+rvA==');
+-})();
+-
+-// Calling Cipher.final() or Decipher.final() twice should error but
+-// not assert. See #4886.
+-(function() {
+-  var c = crypto.createCipher('aes-256-cbc', 'secret');
+-  try { c.final('xxx'); } catch (e) { /* Ignore. */ }
+-  try { c.final('xxx'); } catch (e) { /* Ignore. */ }
+-  try { c.final('xxx'); } catch (e) { /* Ignore. */ }
+-  var d = crypto.createDecipher('aes-256-cbc', 'secret');
+-  try { d.final('xxx'); } catch (e) { /* Ignore. */ }
+-  try { d.final('xxx'); } catch (e) { /* Ignore. */ }
+-  try { d.final('xxx'); } catch (e) { /* Ignore. */ }
+-})();
+-
+-// Regression test for #5482: string to Cipher#update() should not assert.
+-(function() {
+-  var c = crypto.createCipher('aes192', '0123456789abcdef');
+-  c.update('update');
+-  c.final();
+-})();
+-
+-// #5655 regression tests, 'utf-8' and 'utf8' are identical.
+-(function() {
+-  var c = crypto.createCipher('aes192', '0123456789abcdef');
+-  c.update('update', '');  // Defaults to "utf8".
+-  c.final('utf-8');  // Should not throw.
+-
+-  c = crypto.createCipher('aes192', '0123456789abcdef');
+-  c.update('update', 'utf8');
+-  c.final('utf-8');  // Should not throw.
+-
+-  c = crypto.createCipher('aes192', '0123456789abcdef');
+-  c.update('update', 'utf-8');
+-  c.final('utf8');  // Should not throw.
+-})();
+diff --git a/test/parallel/test-crypto-dh-odd-key.js b/test/parallel/test-crypto-dh-odd-key.js
+deleted file mode 100644
+index 13c9844..0000000
+--- a/test/parallel/test-crypto-dh-odd-key.js
++++ /dev/null
+@@ -1,25 +0,0 @@
+-'use strict';
+-var common = require('../common');
+-var assert = require('assert');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-var crypto = require('crypto');
+-
+-function test() {
+-  var odd = new Buffer(39);
+-  odd.fill('A');
+-
+-  var c = crypto.createDiffieHellman(32);
+-  c.setPrivateKey(odd);
+-  c.generateKeys();
+-}
+-
+-// FIPS requires a length of at least 1024
+-if (!common.hasFipsCrypto) {
+-  assert.doesNotThrow(function() { test(); });
+-} else {
+-  assert.throws(function() { test(); }, /key size too small/);
+-}
+diff --git a/test/parallel/test-crypto-dh.js b/test/parallel/test-crypto-dh.js
+deleted file mode 100644
+index e6b1de2..0000000
+--- a/test/parallel/test-crypto-dh.js
++++ /dev/null
+@@ -1,190 +0,0 @@
+-'use strict';
+-var common = require('../common');
+-var assert = require('assert');
+-var constants = require('constants');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-var crypto = require('crypto');
+-
+-// Test Diffie-Hellman with two parties sharing a secret,
+-// using various encodings as we go along
+-var dh1 = crypto.createDiffieHellman(common.hasFipsCrypto ? 1024 : 256);
+-var p1 = dh1.getPrime('buffer');
+-var dh2 = crypto.createDiffieHellman(p1, 'buffer');
+-var key1 = dh1.generateKeys();
+-var key2 = dh2.generateKeys('hex');
+-var secret1 = dh1.computeSecret(key2, 'hex', 'base64');
+-var secret2 = dh2.computeSecret(key1, 'binary', 'buffer');
+-
+-assert.equal(secret1, secret2.toString('base64'));
+-assert.equal(dh1.verifyError, 0);
+-assert.equal(dh2.verifyError, 0);
+-
+-assert.throws(function() {
+-  crypto.createDiffieHellman([0x1, 0x2]);
+-});
+-
+-assert.throws(function() {
+-  crypto.createDiffieHellman(function() { });
+-});
+-
+-assert.throws(function() {
+-  crypto.createDiffieHellman(/abc/);
+-});
+-
+-assert.throws(function() {
+-  crypto.createDiffieHellman({});
+-});
+-
+-// Create "another dh1" using generated keys from dh1,
+-// and compute secret again
+-var dh3 = crypto.createDiffieHellman(p1, 'buffer');
+-var privkey1 = dh1.getPrivateKey();
+-dh3.setPublicKey(key1);
+-dh3.setPrivateKey(privkey1);
+-
+-assert.deepEqual(dh1.getPrime(), dh3.getPrime());
+-assert.deepEqual(dh1.getGenerator(), dh3.getGenerator());
+-assert.deepEqual(dh1.getPublicKey(), dh3.getPublicKey());
+-assert.deepEqual(dh1.getPrivateKey(), dh3.getPrivateKey());
+-assert.equal(dh3.verifyError, 0);
+-
+-var secret3 = dh3.computeSecret(key2, 'hex', 'base64');
+-
+-assert.equal(secret1, secret3);
+-
+-// Run this one twice to make sure that the dh3 clears its error properly
+-(function() {
+-  var c = crypto.createDecipheriv('aes-128-ecb', crypto.randomBytes(16), '');
+-  assert.throws(function() { c.final('utf8'); }, /wrong final block length/);
+-})();
+-
+-assert.throws(function() {
+-  dh3.computeSecret('');
+-}, /key is too small/i);
+-
+-(function() {
+-  var c = crypto.createDecipheriv('aes-128-ecb', crypto.randomBytes(16), '');
+-  assert.throws(function() { c.final('utf8'); }, /wrong final block length/);
+-})();
+-
+-// Create a shared using a DH group.
+-var alice = crypto.createDiffieHellmanGroup('modp5');
+-var bob = crypto.createDiffieHellmanGroup('modp5');
+-alice.generateKeys();
+-bob.generateKeys();
+-var aSecret = alice.computeSecret(bob.getPublicKey()).toString('hex');
+-var bSecret = bob.computeSecret(alice.getPublicKey()).toString('hex');
+-assert.equal(aSecret, bSecret);
+-assert.equal(alice.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-assert.equal(bob.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-
+-/* Ensure specific generator (buffer) works as expected.
+- * The values below (modp2/modp2buf) are for a 1024 bits long prime from
+- * RFC 2412 E.2, see https://tools.ietf.org/html/rfc2412. */
+-var modp2 = crypto.createDiffieHellmanGroup('modp2');
+-var modp2buf = new Buffer([
+-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc9, 0x0f,
+-  0xda, 0xa2, 0x21, 0x68, 0xc2, 0x34, 0xc4, 0xc6, 0x62, 0x8b,
+-  0x80, 0xdc, 0x1c, 0xd1, 0x29, 0x02, 0x4e, 0x08, 0x8a, 0x67,
+-  0xcc, 0x74, 0x02, 0x0b, 0xbe, 0xa6, 0x3b, 0x13, 0x9b, 0x22,
+-  0x51, 0x4a, 0x08, 0x79, 0x8e, 0x34, 0x04, 0xdd, 0xef, 0x95,
+-  0x19, 0xb3, 0xcd, 0x3a, 0x43, 0x1b, 0x30, 0x2b, 0x0a, 0x6d,
+-  0xf2, 0x5f, 0x14, 0x37, 0x4f, 0xe1, 0x35, 0x6d, 0x6d, 0x51,
+-  0xc2, 0x45, 0xe4, 0x85, 0xb5, 0x76, 0x62, 0x5e, 0x7e, 0xc6,
+-  0xf4, 0x4c, 0x42, 0xe9, 0xa6, 0x37, 0xed, 0x6b, 0x0b, 0xff,
+-  0x5c, 0xb6, 0xf4, 0x06, 0xb7, 0xed, 0xee, 0x38, 0x6b, 0xfb,
+-  0x5a, 0x89, 0x9f, 0xa5, 0xae, 0x9f, 0x24, 0x11, 0x7c, 0x4b,
+-  0x1f, 0xe6, 0x49, 0x28, 0x66, 0x51, 0xec, 0xe6, 0x53, 0x81,
+-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+-]);
+-var exmodp2 = crypto.createDiffieHellman(modp2buf, new Buffer([2]));
+-modp2.generateKeys();
+-exmodp2.generateKeys();
+-var modp2Secret = modp2.computeSecret(exmodp2.getPublicKey()).toString('hex');
+-var exmodp2Secret = exmodp2.computeSecret(modp2.getPublicKey()).toString('hex');
+-assert.equal(modp2Secret, exmodp2Secret);
+-assert.equal(modp2.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-assert.equal(exmodp2.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-
+-
+-// Ensure specific generator (string with encoding) works as expected.
+-var exmodp2_2 = crypto.createDiffieHellman(modp2buf, '02', 'hex');
+-exmodp2_2.generateKeys();
+-modp2Secret = modp2.computeSecret(exmodp2_2.getPublicKey()).toString('hex');
+-var exmodp2_2Secret = exmodp2_2.computeSecret(modp2.getPublicKey())
+-                               .toString('hex');
+-assert.equal(modp2Secret, exmodp2_2Secret);
+-assert.equal(exmodp2_2.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-
+-
+-// Ensure specific generator (string without encoding) works as expected.
+-var exmodp2_3 = crypto.createDiffieHellman(modp2buf, '\x02');
+-exmodp2_3.generateKeys();
+-modp2Secret = modp2.computeSecret(exmodp2_3.getPublicKey()).toString('hex');
+-var exmodp2_3Secret = exmodp2_3.computeSecret(modp2.getPublicKey())
+-                               .toString('hex');
+-assert.equal(modp2Secret, exmodp2_3Secret);
+-assert.equal(exmodp2_3.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-
+-
+-// Ensure specific generator (numeric) works as expected.
+-var exmodp2_4 = crypto.createDiffieHellman(modp2buf, 2);
+-exmodp2_4.generateKeys();
+-modp2Secret = modp2.computeSecret(exmodp2_4.getPublicKey()).toString('hex');
+-var exmodp2_4Secret = exmodp2_4.computeSecret(modp2.getPublicKey())
+-                               .toString('hex');
+-assert.equal(modp2Secret, exmodp2_4Secret);
+-assert.equal(exmodp2_4.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-
+-
+-var p = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' +
+-        '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' +
+-        '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' +
+-        'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF';
+-var bad_dh = crypto.createDiffieHellman(p, 'hex');
+-assert.equal(bad_dh.verifyError, constants.DH_NOT_SUITABLE_GENERATOR);
+-
+-
+-// Test ECDH
+-var ecdh1 = crypto.createECDH('prime256v1');
+-var ecdh2 = crypto.createECDH('prime256v1');
+-key1 = ecdh1.generateKeys();
+-key2 = ecdh2.generateKeys('hex');
+-secret1 = ecdh1.computeSecret(key2, 'hex', 'base64');
+-secret2 = ecdh2.computeSecret(key1, 'binary', 'buffer');
+-
+-assert.equal(secret1, secret2.toString('base64'));
+-
+-// Oakley curves do not clean up ERR stack, it was causing unexpected failure
+-// when accessing other OpenSSL APIs afterwards.
+-crypto.createECDH('Oakley-EC2N-3');
+-crypto.createHash('sha256');
+-
+-// Point formats
+-assert.equal(ecdh1.getPublicKey('buffer', 'uncompressed')[0], 4);
+-var firstByte = ecdh1.getPublicKey('buffer', 'compressed')[0];
+-assert(firstByte === 2 || firstByte === 3);
+-firstByte = ecdh1.getPublicKey('buffer', 'hybrid')[0];
+-assert(firstByte === 6 || firstByte === 7);
+-
+-// ECDH should check that point is on curve
+-var ecdh3 = crypto.createECDH('secp256k1');
+-var key3 = ecdh3.generateKeys();
+-
+-assert.throws(function() {
+-  ecdh2.computeSecret(key3, 'binary', 'buffer');
+-});
+-
+-// ECDH should allow .setPrivateKey()/.setPublicKey()
+-var ecdh4 = crypto.createECDH('prime256v1');
+-
+-ecdh4.setPrivateKey(ecdh1.getPrivateKey());
+-ecdh4.setPublicKey(ecdh1.getPublicKey());
+-
+-assert.throws(function() {
+-  ecdh4.setPublicKey(ecdh3.getPublicKey());
+-});
+diff --git a/test/parallel/test-crypto.js b/test/parallel/test-crypto.js
+deleted file mode 100644
+index bf87900..0000000
+--- a/test/parallel/test-crypto.js
++++ /dev/null
+@@ -1,143 +0,0 @@
+-'use strict';
+-var common = require('../common');
+-var assert = require('assert');
+-var util = require('util');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-var crypto = require('crypto');
+-
+-crypto.DEFAULT_ENCODING = 'buffer';
+-
+-var fs = require('fs');
+-
+-// Test Certificates
+-var caPem = fs.readFileSync(common.fixturesDir + '/test_ca.pem', 'ascii');
+-var certPem = fs.readFileSync(common.fixturesDir + '/test_cert.pem', 'ascii');
+-var certPfx = fs.readFileSync(common.fixturesDir + '/test_cert.pfx');
+-var keyPem = fs.readFileSync(common.fixturesDir + '/test_key.pem', 'ascii');
+-var tls = require('tls');
+-
+-// 'this' safety
+-// https://github.com/joyent/node/issues/6690
+-assert.throws(function() {
+-  var options = {key: keyPem, cert: certPem, ca: caPem};
+-  var credentials = crypto.createCredentials(options);
+-  var context = credentials.context;
+-  var notcontext = { setOptions: context.setOptions, setKey: context.setKey };
+-  crypto.createCredentials({ secureOptions: 1 }, notcontext);
+-}, TypeError);
+-
+-// PFX tests
+-assert.doesNotThrow(function() {
+-  tls.createSecureContext({pfx: certPfx, passphrase: 'sample'});
+-});
+-
+-assert.throws(function() {
+-  tls.createSecureContext({pfx: certPfx});
+-}, 'mac verify failure');
+-
+-assert.throws(function() {
+-  tls.createSecureContext({pfx: certPfx, passphrase: 'test'});
+-}, 'mac verify failure');
+-
+-assert.throws(function() {
+-  tls.createSecureContext({pfx: 'sample', passphrase: 'test'});
+-}, 'not enough data');
+-
+-
+-// update() should only take buffers / strings
+-assert.throws(function() {
+-  crypto.createHash('sha1').update({foo: 'bar'});
+-}, /buffer/);
+-
+-
+-function assertSorted(list) {
+-  // Array#sort() modifies the list in place so make a copy.
+-  var sorted = util._extend([], list).sort();
+-  assert.deepEqual(list, sorted);
+-}
+-
+-// Assume that we have at least AES-128-CBC.
+-assert.notEqual(0, crypto.getCiphers().length);
+-assert.notEqual(-1, crypto.getCiphers().indexOf('aes-128-cbc'));
+-assert.equal(-1, crypto.getCiphers().indexOf('AES-128-CBC'));
+-assertSorted(crypto.getCiphers());
+-
+-// Assume that we have at least AES256-SHA.
+-assert.notEqual(0, tls.getCiphers().length);
+-assert.notEqual(-1, tls.getCiphers().indexOf('aes256-sha'));
+-assert.equal(-1, tls.getCiphers().indexOf('AES256-SHA'));
+-assertSorted(tls.getCiphers());
+-
+-// Assert that we have sha and sha1 but not SHA and SHA1.
+-assert.notEqual(0, crypto.getHashes().length);
+-assert.notEqual(-1, crypto.getHashes().indexOf('sha1'));
+-assert.notEqual(-1, crypto.getHashes().indexOf('sha'));
+-assert.equal(-1, crypto.getHashes().indexOf('SHA1'));
+-assert.equal(-1, crypto.getHashes().indexOf('SHA'));
+-assert.notEqual(-1, crypto.getHashes().indexOf('RSA-SHA1'));
+-assert.equal(-1, crypto.getHashes().indexOf('rsa-sha1'));
+-assertSorted(crypto.getHashes());
+-
+-// Assume that we have at least secp384r1.
+-assert.notEqual(0, crypto.getCurves().length);
+-assert.notEqual(-1, crypto.getCurves().indexOf('secp384r1'));
+-assert.equal(-1, crypto.getCurves().indexOf('SECP384R1'));
+-assertSorted(crypto.getCurves());
+-
+-// Regression tests for #5725: hex input that's not a power of two should
+-// throw, not assert in C++ land.
+-assert.throws(function() {
+-  crypto.createCipher('aes192', 'test').update('0', 'hex');
+-}, common.hasFipsCrypto ? /not supported in FIPS mode/ : /Bad input string/);
+-
+-assert.throws(function() {
+-  crypto.createDecipher('aes192', 'test').update('0', 'hex');
+-}, common.hasFipsCrypto ? /not supported in FIPS mode/ : /Bad input string/);
+-
+-assert.throws(function() {
+-  crypto.createHash('sha1').update('0', 'hex');
+-}, /Bad input string/);
+-
+-assert.throws(function() {
+-  crypto.createSign('RSA-SHA1').update('0', 'hex');
+-}, /Bad input string/);
+-
+-assert.throws(function() {
+-  crypto.createVerify('RSA-SHA1').update('0', 'hex');
+-}, /Bad input string/);
+-
+-assert.throws(function() {
+-  var priv = [
+-    '-----BEGIN RSA PRIVATE KEY-----',
+-    'MIGrAgEAAiEA+3z+1QNF2/unumadiwEr+C5vfhezsb3hp4jAnCNRpPcCAwEAAQIgQNriSQK4',
+-    'EFwczDhMZp2dvbcz7OUUyt36z3S4usFPHSECEQD/41K7SujrstBfoCPzwC1xAhEA+5kt4BJy',
+-    'eKN7LggbF3Dk5wIQN6SL+fQ5H/+7NgARsVBp0QIRANxYRukavs4QvuyNhMx+vrkCEQCbf6j/',
+-    'Ig6/HueCK/0Jkmp+',
+-    '-----END RSA PRIVATE KEY-----',
+-    ''
+-  ].join('\n');
+-  crypto.createSign('RSA-SHA256').update('test').sign(priv);
+-}, /digest too big for rsa key/);
+-
+-assert.throws(function() {
+-  // The correct header inside `test_bad_rsa_privkey.pem` should have been
+-  // -----BEGIN PRIVATE KEY----- and -----END PRIVATE KEY-----
+-  // instead of
+-  // -----BEGIN RSA PRIVATE KEY----- and -----END RSA PRIVATE KEY-----
+-  // It is generated in this way:
+-  //   $ openssl genrsa -out mykey.pem 512;
+-  //   $ openssl pkcs8 -topk8 -inform PEM -outform PEM -in mykey.pem \
+-  //     -out private_key.pem -nocrypt;
+-  //   Then open private_key.pem and change its header and footer.
+-  var sha1_privateKey = fs.readFileSync(common.fixturesDir +
+-                                        '/test_bad_rsa_privkey.pem', 'ascii');
+-  // this would inject errors onto OpenSSL's error stack
+-  crypto.createSign('sha1').sign(sha1_privateKey);
+-}, /asn1 encoding routines:ASN1_CHECK_TLEN:wrong tag/);
+-
+-// Make sure memory isn't released before being returned
+-console.log(crypto.randomBytes(16));
+diff --git a/test/parallel/test-net-better-error-messages-port-hostname.js b/test/parallel/test-net-better-error-messages-port-hostname.js
+deleted file mode 100644
+index 23089ba..0000000
+--- a/test/parallel/test-net-better-error-messages-port-hostname.js
++++ /dev/null
+@@ -1,14 +0,0 @@
+-'use strict';
+-var common = require('../common');
+-var net = require('net');
+-var assert = require('assert');
+-
+-var c = net.createConnection(common.PORT, '***');
+-
+-c.on('connect', common.fail);
+-
+-c.on('error', common.mustCall(function(e) {
+-  assert.equal(e.code, 'ENOTFOUND');
+-  assert.equal(e.port, common.PORT);
+-  assert.equal(e.hostname, '***');
+-}));
+diff --git a/test/parallel/test-net-connect-immediate-finish.js b/test/parallel/test-net-connect-immediate-finish.js
+deleted file mode 100644
+index 6114233..0000000
+--- a/test/parallel/test-net-connect-immediate-finish.js
++++ /dev/null
+@@ -1,17 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-const assert = require('assert');
+-const net = require('net');
+-
+-const client = net.connect({host: '***', port: common.PORT});
+-
+-client.once('error', common.mustCall(function(err) {
+-  assert(err);
+-  assert.strictEqual(err.code, err.errno);
+-  assert.strictEqual(err.code, 'ENOTFOUND');
+-  assert.strictEqual(err.host, err.hostname);
+-  assert.strictEqual(err.host, '***');
+-  assert.strictEqual(err.syscall, 'getaddrinfo');
+-}));
+-
+-client.end();
+diff --git a/test/parallel/test-npm-install.js b/test/parallel/test-npm-install.js
+deleted file mode 100644
+index c716e48..0000000
+--- a/test/parallel/test-npm-install.js
++++ /dev/null
+@@ -1,51 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-
+-const path = require('path');
+-const spawn = require('child_process').spawn;
+-const assert = require('assert');
+-const fs = require('fs');
+-
+-common.refreshTmpDir();
+-
+-const npmPath = path.join(
+-  common.testDir,
+-  '..',
+-  'deps',
+-  'npm',
+-  'bin',
+-  'npm-cli.js'
+-);
+-
+-const args = [
+-  npmPath,
+-  'install'
+-];
+-
+-const pkgContent = JSON.stringify({
+-  dependencies: {
+-    'package-name': common.fixturesDir + '/packages/main'
+-  }
+-});
+-
+-const pkgPath = path.join(common.tmpDir, 'package.json');
+-
+-fs.writeFileSync(pkgPath, pkgContent);
+-
+-const env = Object.create(process.env);
+-env['PATH'] = path.dirname(process.execPath);
+-
+-const proc = spawn(process.execPath, args, {
+-  cwd: common.tmpDir,
+-  env: env
+-});
+-
+-function handleExit(code, signalCode) {
+-  assert.equal(code, 0, 'npm install should run without an error');
+-  assert.ok(signalCode === null, 'signalCode should be null');
+-  assert.doesNotThrow(function() {
+-    fs.accessSync(common.tmpDir + '/node_modules/package-name');
+-  });
+-}
+-
+-proc.on('exit', common.mustCall(handleExit));
+diff --git a/test/parallel/test-tls-cnnic-whitelist.js b/test/parallel/test-tls-cnnic-whitelist.js
+deleted file mode 100644
+index f16698c..0000000
+--- a/test/parallel/test-tls-cnnic-whitelist.js
++++ /dev/null
+@@ -1,84 +0,0 @@
+-'use strict';
+-var common = require('../common');
+-var assert = require('assert');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-
+-var tls = require('tls');
+-var fs = require('fs');
+-var path = require('path');
+-var finished = 0;
+-
+-function filenamePEM(n) {
+-  return path.join(common.fixturesDir, 'keys', n + '.pem');
+-}
+-
+-function loadPEM(n) {
+-  return fs.readFileSync(filenamePEM(n));
+-}
+-
+-var testCases = [
+-  { // Test 0: for the check of a cert not existed in the whitelist.
+-    // agent7-cert.pem is issued by the fake CNNIC root CA so that its
+-    // hash is not listed in the whitelist.
+-    // fake-cnnic-root-cert has the same subject name as the original
+-    // rootCA.
+-    serverOpts: {
+-      key: loadPEM('agent7-key'),
+-      cert: loadPEM('agent7-cert')
+-    },
+-    clientOpts: {
+-      port: undefined,
+-      rejectUnauthorized: true,
+-      ca: [loadPEM('fake-cnnic-root-cert')]
+-    },
+-    errorCode: 'CERT_REVOKED'
+-  },
+-  // Test 1: for the fix of node#2061
+-  // agent6-cert.pem is signed by intermidate cert of ca3.
+-  // The server has a cert chain of agent6->ca3->ca1(root) but
+-  // tls.connect should be failed with an error of
+-  // UNABLE_TO_GET_ISSUER_CERT_LOCALLY since the root CA of ca1 is not
+-  // installed locally.
+-  {
+-    serverOpts: {
+-      ca: loadPEM('ca3-key'),
+-      key: loadPEM('agent6-key'),
+-      cert: loadPEM('agent6-cert')
+-    },
+-    clientOpts: {
+-      port: undefined,
+-      rejectUnauthorized: true
+-    },
+-    errorCode: 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY'
+-  }
+-];
+-
+-function runTest(tindex) {
+-  var tcase = testCases[tindex];
+-
+-  if (!tcase) return;
+-
+-  var server = tls.createServer(tcase.serverOpts, function(s) {
+-    s.resume();
+-  }).listen(0, function() {
+-    tcase.clientOpts = this.address().port;
+-    var client = tls.connect(tcase.clientOpts);
+-    client.on('error', function(e) {
+-      assert.strictEqual(e.code, tcase.errorCode);
+-      server.close(function() {
+-        finished++;
+-        runTest(tindex + 1);
+-      });
+-    });
+-  });
+-}
+-
+-runTest(0);
+-
+-process.on('exit', function() {
+-  assert.equal(finished, testCases.length);
+-});
+diff --git a/test/parallel/test-tls-empty-sni-context.js b/test/parallel/test-tls-empty-sni-context.js
+deleted file mode 100644
+index 7759142..0000000
+--- a/test/parallel/test-tls-empty-sni-context.js
++++ /dev/null
+@@ -1,42 +0,0 @@
+-'use strict';
+-
+-if (!process.features.tls_sni) {
+-  console.log('1..0 # Skipped: node compiled without OpenSSL or ' +
+-              'with old OpenSSL version.');
+-  return;
+-}
+-
+-const common = require('../common');
+-const assert = require('assert');
+-
+-if (!common.hasCrypto) {
+-  console.log('1..0 # Skipped: missing crypto');
+-  return;
+-}
+-
+-const tls = require('tls');
+-
+-const options = {
+-  SNICallback: (name, callback) => {
+-    callback(null, tls.createSecureContext());
+-  }
+-};
+-
+-const server = tls.createServer(options, (c) => {
+-  common.fail('Should not be called');
+-}).on('clientError', common.mustCall((err, c) => {
+-  assert(/SSL_use_certificate:passed a null parameter/i.test(err.message));
+-  server.close();
+-})).listen(0, common.mustCall(() => {
+-  const c = tls.connect({
+-    port: server.address().port,
+-    rejectUnauthorized: false,
+-    servername: 'any.name'
+-  }, () => {
+-    common.fail('Should not be called');
+-  });
+-
+-  c.on('error', common.mustCall((err) => {
+-    assert(/socket hang up/.test(err.message));
+-  }));
+-}));
+diff --git a/test/parallel/test-tls-ocsp-callback.js b/test/parallel/test-tls-ocsp-callback.js
+deleted file mode 100644
+index 330ed55..0000000
+--- a/test/parallel/test-tls-ocsp-callback.js
++++ /dev/null
+@@ -1,130 +0,0 @@
+-'use strict';
+-var common = require('../common');
+-
+-if (!process.features.tls_ocsp) {
+-  common.skip('node compiled without OpenSSL or ' +
+-              'with old OpenSSL version.');
+-  return;
+-}
+-if (!common.opensslCli) {
+-  common.skip('node compiled without OpenSSL CLI.');
+-  return;
+-}
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-var tls = require('tls');
+-
+-var assert = require('assert');
+-var constants = require('constants');
+-var fs = require('fs');
+-var join = require('path').join;
+-
+-var pfx = fs.readFileSync(join(common.fixturesDir, 'keys', 'agent1-pfx.pem'));
+-
+-function test(testOptions, cb) {
+-
+-  var keyFile = join(common.fixturesDir, 'keys', 'agent1-key.pem');
+-  var certFile = join(common.fixturesDir, 'keys', 'agent1-cert.pem');
+-  var caFile = join(common.fixturesDir, 'keys', 'ca1-cert.pem');
+-  var key = fs.readFileSync(keyFile);
+-  var cert = fs.readFileSync(certFile);
+-  var ca = fs.readFileSync(caFile);
+-  var options = {
+-    key: key,
+-    cert: cert,
+-    ca: [ca]
+-  };
+-  var requestCount = 0;
+-  var clientSecure = 0;
+-  var ocspCount = 0;
+-  var ocspResponse;
+-
+-  if (testOptions.pfx) {
+-    delete options.key;
+-    delete options.cert;
+-    options.pfx = testOptions.pfx;
+-    options.passphrase = testOptions.passphrase;
+-  }
+-
+-  var server = tls.createServer(options, function(cleartext) {
+-    cleartext.on('error', function(er) {
+-      // We're ok with getting ECONNRESET in this test, but it's
+-      // timing-dependent, and thus unreliable. Any other errors
+-      // are just failures, though.
+-      if (er.code !== 'ECONNRESET')
+-        throw er;
+-    });
+-    ++requestCount;
+-    cleartext.end();
+-  });
+-  server.on('OCSPRequest', function(cert, issuer, callback) {
+-    ++ocspCount;
+-    assert.ok(Buffer.isBuffer(cert));
+-    assert.ok(Buffer.isBuffer(issuer));
+-
+-    // Just to check that async really works there
+-    setTimeout(function() {
+-      callback(null,
+-               testOptions.response ? new Buffer(testOptions.response) : null);
+-    }, 100);
+-  });
+-  server.listen(0, function() {
+-    var client = tls.connect({
+-      port: this.address().port,
+-      requestOCSP: testOptions.ocsp !== false,
+-      secureOptions: testOptions.ocsp === false ?
+-          constants.SSL_OP_NO_TICKET : 0,
+-      rejectUnauthorized: false
+-    }, function() {
+-      clientSecure++;
+-    });
+-    client.on('OCSPResponse', function(resp) {
+-      ocspResponse = resp;
+-      if (resp)
+-        client.destroy();
+-    });
+-    client.on('close', function() {
+-      server.close(cb);
+-    });
+-  });
+-
+-  process.on('exit', function() {
+-    if (testOptions.ocsp === false) {
+-      assert.equal(requestCount, clientSecure);
+-      assert.equal(requestCount, 1);
+-      return;
+-    }
+-
+-    if (testOptions.response) {
+-      assert.equal(ocspResponse.toString(), testOptions.response);
+-    } else {
+-      assert.ok(ocspResponse === null);
+-    }
+-    assert.equal(requestCount, testOptions.response ? 0 : 1);
+-    assert.equal(clientSecure, requestCount);
+-    assert.equal(ocspCount, 1);
+-  });
+-}
+-
+-var tests = [
+-  { response: false },
+-  { response: 'hello world' },
+-  { ocsp: false }
+-];
+-
+-if (!common.hasFipsCrypto) {
+-  tests.push({ pfx: pfx, passphrase: 'sample', response: 'hello pfx' });
+-}
+-
+-function runTests(i) {
+-  if (i === tests.length) return;
+-
+-  test(tests[i], common.mustCall(function() {
+-    runTests(i + 1);
+-  }));
+-}
+-
+-runTests(0);
+diff --git a/test/parallel/test-tls-pfx-gh-5100-regr.js b/test/parallel/test-tls-pfx-gh-5100-regr.js
+deleted file mode 100644
+index 385c092..0000000
+--- a/test/parallel/test-tls-pfx-gh-5100-regr.js
++++ /dev/null
+@@ -1,36 +0,0 @@
+-'use strict';
+-
+-const common = require('../common');
+-
+-if (!common.hasCrypto) {
+-  common.skip('node compiled without crypto.');
+-  return;
+-}
+-
+-const assert = require('assert');
+-const tls = require('tls');
+-const fs = require('fs');
+-const path = require('path');
+-
+-const pfx = fs.readFileSync(
+-    path.join(common.fixturesDir, 'keys', 'agent1-pfx.pem'));
+-
+-const server = tls.createServer({
+-  pfx: pfx,
+-  passphrase: 'sample',
+-  requestCert: true,
+-  rejectUnauthorized: false
+-}, common.mustCall(function(c) {
+-  assert(c.authorizationError === null, 'authorizationError must be null');
+-  c.end();
+-})).listen(0, function() {
+-  var client = tls.connect({
+-    port: this.address().port,
+-    pfx: pfx,
+-    passphrase: 'sample',
+-    rejectUnauthorized: false
+-  }, function() {
+-    client.end();
+-    server.close();
+-  });
+-});
+diff --git a/test/parallel/test-tls-session-cache.js b/test/parallel/test-tls-session-cache.js
+deleted file mode 100644
+index 99badeb..0000000
+--- a/test/parallel/test-tls-session-cache.js
++++ /dev/null
+@@ -1,113 +0,0 @@
+-'use strict';
+-var common = require('../common');
+-
+-if (!common.opensslCli) {
+-  common.skip('node compiled without OpenSSL CLI.');
+-  return;
+-}
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-
+-doTest({ tickets: false }, function() {
+-  doTest({ tickets: true }, function() {
+-    console.error('all done');
+-  });
+-});
+-
+-function doTest(testOptions, callback) {
+-  var assert = require('assert');
+-  var tls = require('tls');
+-  var fs = require('fs');
+-  var join = require('path').join;
+-  var spawn = require('child_process').spawn;
+-
+-  var keyFile = join(common.fixturesDir, 'agent.key');
+-  var certFile = join(common.fixturesDir, 'agent.crt');
+-  var key = fs.readFileSync(keyFile);
+-  var cert = fs.readFileSync(certFile);
+-  var options = {
+-    key: key,
+-    cert: cert,
+-    ca: [cert],
+-    requestCert: true
+-  };
+-  var requestCount = 0;
+-  var resumeCount = 0;
+-  var session;
+-
+-  var server = tls.createServer(options, function(cleartext) {
+-    cleartext.on('error', function(er) {
+-      // We're ok with getting ECONNRESET in this test, but it's
+-      // timing-dependent, and thus unreliable. Any other errors
+-      // are just failures, though.
+-      if (er.code !== 'ECONNRESET')
+-        throw er;
+-    });
+-    ++requestCount;
+-    cleartext.end();
+-  });
+-  server.on('newSession', function(id, data, cb) {
+-    // Emulate asynchronous store
+-    setTimeout(function() {
+-      assert.ok(!session);
+-      session = {
+-        id: id,
+-        data: data
+-      };
+-      cb();
+-    }, 1000);
+-  });
+-  server.on('resumeSession', function(id, callback) {
+-    ++resumeCount;
+-    assert.ok(session);
+-    assert.equal(session.id.toString('hex'), id.toString('hex'));
+-
+-    // Just to check that async really works there
+-    setTimeout(function() {
+-      callback(null, session.data);
+-    }, 100);
+-  });
+-
+-  server.listen(0, function() {
+-    var args = [
+-      's_client',
+-      '-tls1',
+-      '-connect', `localhost:${this.address().port}`,
+-      '-servername', 'ohgod',
+-      '-key', join(common.fixturesDir, 'agent.key'),
+-      '-cert', join(common.fixturesDir, 'agent.crt'),
+-      '-reconnect'
+-    ].concat(testOptions.tickets ? [] : '-no_ticket');
+-
+-    // for the performance and stability issue in s_client on Windows
+-    if (common.isWindows)
+-      args.push('-no_rand_screen');
+-
+-    var client = spawn(common.opensslCli, args, {
+-      stdio: [ 0, 1, 'pipe' ]
+-    });
+-    client.stderr.setEncoding('utf8');
+-    client.on('exit', function(code) {
+-      console.error('done');
+-      assert.equal(code, 0);
+-      server.close(function() {
+-        setTimeout(callback, 100);
+-      });
+-    });
+-  });
+-
+-  process.on('exit', function() {
+-    if (testOptions.tickets) {
+-      assert.equal(requestCount, 6);
+-      assert.equal(resumeCount, 0);
+-    } else {
+-      // initial request + reconnect requests (5 times)
+-      assert.ok(session);
+-      assert.equal(requestCount, 6);
+-      assert.equal(resumeCount, 5);
+-    }
+-  });
+-}
+diff --git a/test/parallel/test-tls-sni-option.js b/test/parallel/test-tls-sni-option.js
+deleted file mode 100644
+index 3bc02b5..0000000
+--- a/test/parallel/test-tls-sni-option.js
++++ /dev/null
+@@ -1,168 +0,0 @@
+-'use strict';
+-if (!process.features.tls_sni) {
+-  common.skip('node compiled without OpenSSL or ' +
+-              'with old OpenSSL version.');
+-  return;
+-}
+-
+-const common = require('../common');
+-const assert = require('assert');
+-const fs = require('fs');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-var tls = require('tls');
+-
+-function filenamePEM(n) {
+-  return require('path').join(common.fixturesDir, 'keys', n + '.pem');
+-}
+-
+-function loadPEM(n) {
+-  return fs.readFileSync(filenamePEM(n));
+-}
+-
+-var serverOptions = {
+-  key: loadPEM('agent2-key'),
+-  cert: loadPEM('agent2-cert'),
+-  requestCert: true,
+-  rejectUnauthorized: false,
+-  SNICallback: function(servername, callback) {
+-    var context = SNIContexts[servername];
+-
+-    // Just to test asynchronous callback
+-    setTimeout(function() {
+-      if (context) {
+-        if (context.emptyRegression)
+-          callback(null, {});
+-        else
+-          callback(null, tls.createSecureContext(context));
+-      } else {
+-        callback(null, null);
+-      }
+-    }, 100);
+-  }
+-};
+-
+-var SNIContexts = {
+-  'a.example.com': {
+-    key: loadPEM('agent1-key'),
+-    cert: loadPEM('agent1-cert'),
+-    ca: [ loadPEM('ca2-cert') ]
+-  },
+-  'b.example.com': {
+-    key: loadPEM('agent3-key'),
+-    cert: loadPEM('agent3-cert')
+-  },
+-  'c.another.com': {
+-    emptyRegression: true
+-  }
+-};
+-
+-var clientsOptions = [{
+-  port: undefined,
+-  key: loadPEM('agent1-key'),
+-  cert: loadPEM('agent1-cert'),
+-  ca: [loadPEM('ca1-cert')],
+-  servername: 'a.example.com',
+-  rejectUnauthorized: false
+-}, {
+-  port: undefined,
+-  key: loadPEM('agent4-key'),
+-  cert: loadPEM('agent4-cert'),
+-  ca: [loadPEM('ca1-cert')],
+-  servername: 'a.example.com',
+-  rejectUnauthorized: false
+-}, {
+-  port: undefined,
+-  key: loadPEM('agent2-key'),
+-  cert: loadPEM('agent2-cert'),
+-  ca: [loadPEM('ca2-cert')],
+-  servername: 'b.example.com',
+-  rejectUnauthorized: false
+-}, {
+-  port: undefined,
+-  key: loadPEM('agent3-key'),
+-  cert: loadPEM('agent3-cert'),
+-  ca: [loadPEM('ca1-cert')],
+-  servername: 'c.wrong.com',
+-  rejectUnauthorized: false
+-}, {
+-  port: undefined,
+-  key: loadPEM('agent3-key'),
+-  cert: loadPEM('agent3-cert'),
+-  ca: [loadPEM('ca1-cert')],
+-  servername: 'c.another.com',
+-  rejectUnauthorized: false
+-}];
+-
+-const serverResults = [];
+-const clientResults = [];
+-const serverErrors = [];
+-const clientErrors = [];
+-let serverError;
+-let clientError;
+-
+-var server = tls.createServer(serverOptions, function(c) {
+-  serverResults.push({ sni: c.servername, authorized: c.authorized });
+-});
+-
+-server.on('clientError', function(err) {
+-  serverResults.push(null);
+-  serverError = err.message;
+-});
+-
+-server.listen(0, startTest);
+-
+-function startTest() {
+-  function connectClient(i, callback) {
+-    var options = clientsOptions[i];
+-    clientError = null;
+-    serverError = null;
+-
+-    options.port = server.address().port;
+-    var client = tls.connect(options, function() {
+-      clientResults.push(
+-          /Hostname\/IP doesn't/.test(client.authorizationError || ''));
+-      client.destroy();
+-
+-      next();
+-    });
+-
+-    client.on('error', function(err) {
+-      clientResults.push(false);
+-      clientError = err.message;
+-      next();
+-    });
+-
+-    function next() {
+-      clientErrors.push(clientError);
+-      serverErrors.push(serverError);
+-
+-      if (i === clientsOptions.length - 1)
+-        callback();
+-      else
+-        connectClient(i + 1, callback);
+-    }
+-  }
+-
+-  connectClient(0, function() {
+-    server.close();
+-  });
+-}
+-
+-process.on('exit', function() {
+-  assert.deepEqual(serverResults, [
+-    { sni: 'a.example.com', authorized: false },
+-    { sni: 'a.example.com', authorized: true },
+-    { sni: 'b.example.com', authorized: false },
+-    { sni: 'c.wrong.com', authorized: false },
+-    null
+-  ]);
+-  assert.deepEqual(clientResults, [true, true, true, false, false]);
+-  assert.deepEqual(clientErrors, [null, null, null, null, 'socket hang up']);
+-  assert.deepEqual(serverErrors, [
+-    null, null, null, null, 'Invalid SNI context'
+-  ]);
+-});
+diff --git a/test/parallel/test-tls-sni-server-client.js b/test/parallel/test-tls-sni-server-client.js
+deleted file mode 100644
+index d7c30f8..0000000
+--- a/test/parallel/test-tls-sni-server-client.js
++++ /dev/null
+@@ -1,116 +0,0 @@
+-'use strict';
+-if (!process.features.tls_sni) {
+-  common.skip('node compiled without OpenSSL or ' +
+-              'with old OpenSSL version.');
+-  return;
+-}
+-
+-const common = require('../common');
+-const assert = require('assert');
+-const fs = require('fs');
+-
+-if (!common.hasCrypto) {
+-  common.skip('missing crypto');
+-  return;
+-}
+-var tls = require('tls');
+-
+-function filenamePEM(n) {
+-  return require('path').join(common.fixturesDir, 'keys', n + '.pem');
+-}
+-
+-function loadPEM(n) {
+-  return fs.readFileSync(filenamePEM(n));
+-}
+-
+-var serverOptions = {
+-  key: loadPEM('agent2-key'),
+-  cert: loadPEM('agent2-cert')
+-};
+-
+-var SNIContexts = {
+-  'a.example.com': {
+-    key: loadPEM('agent1-key'),
+-    cert: loadPEM('agent1-cert')
+-  },
+-  'asterisk.test.com': {
+-    key: loadPEM('agent3-key'),
+-    cert: loadPEM('agent3-cert')
+-  },
+-  'chain.example.com': {
+-    key: loadPEM('agent6-key'),
+-    // NOTE: Contains ca3 chain cert
+-    cert: loadPEM('agent6-cert')
+-  }
+-};
+-
+-var clientsOptions = [{
+-  port: undefined,
+-  ca: [loadPEM('ca1-cert')],
+-  servername: 'a.example.com',
+-  rejectUnauthorized: false
+-}, {
+-  port: undefined,
+-  ca: [loadPEM('ca2-cert')],
+-  servername: 'b.test.com',
+-  rejectUnauthorized: false
+-}, {
+-  port: undefined,
+-  ca: [loadPEM('ca2-cert')],
+-  servername: 'a.b.test.com',
+-  rejectUnauthorized: false
+-}, {
+-  port: undefined,
+-  ca: [loadPEM('ca1-cert')],
+-  servername: 'c.wrong.com',
+-  rejectUnauthorized: false
+-}, {
+-  port: undefined,
+-  ca: [loadPEM('ca1-cert')],
+-  servername: 'chain.example.com',
+-  rejectUnauthorized: false
+-}];
+-
+-const serverResults = [];
+-const clientResults = [];
+-
+-var server = tls.createServer(serverOptions, function(c) {
+-  serverResults.push(c.servername);
+-});
+-
+-server.addContext('a.example.com', SNIContexts['a.example.com']);
+-server.addContext('*.test.com', SNIContexts['asterisk.test.com']);
+-server.addContext('chain.example.com', SNIContexts['chain.example.com']);
+-
+-server.listen(0, startTest);
+-
+-function startTest() {
+-  var i = 0;
+-  function start() {
+-    // No options left
+-    if (i === clientsOptions.length)
+-      return server.close();
+-
+-    var options = clientsOptions[i++];
+-    options.port = server.address().port;
+-    var client = tls.connect(options, function() {
+-      clientResults.push(
+-        client.authorizationError &&
+-        /Hostname\/IP doesn't/.test(client.authorizationError));
+-      client.destroy();
+-
+-      // Continue
+-      start();
+-    });
+-  }
+-
+-  start();
+-}
+-
+-process.on('exit', function() {
+-  assert.deepEqual(serverResults, [
+-    'a.example.com', 'b.test.com', 'a.b.test.com', 'c.wrong.com',
+-    'chain.example.com'
+-  ]);
+-  assert.deepEqual(clientResults, [true, true, false, false, true]);
+-});
+-- 
+1.7.1
+
