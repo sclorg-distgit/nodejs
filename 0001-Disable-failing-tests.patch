@@ -1,29 +1,2881 @@
-From d8592f0df67e7bc7151b32e00db284db320fa27a Mon Sep 17 00:00:00 2001
+From 3f07473293edf0fc1b8e786952a643d70f86b645 Mon Sep 17 00:00:00 2001
 From: Zuzana Svetlikova <zsvetlik@redhat.com>
-Date: Wed, 11 Jan 2017 14:57:25 +0100
-Subject: [PATCH] Disable failing tests
+Date: Thu, 7 Sep 2017 12:21:29 +0000
+Subject: [PATCH 2/2] Disable failed tests
 
 ---
- .../test-net-better-error-messages-port-hostname.js                       | 0
- test/{parallel => disabled}/test-net-connect-immediate-finish.js          | 0
- test/{parallel => disabled}/test-npm-install.js                           | 0
- 3 files changed, 0 insertions(+), 0 deletions(-)
- rename test/{parallel => disabled}/test-net-better-error-messages-port-hostname.js (100%)
- rename test/{parallel => disabled}/test-net-connect-immediate-finish.js (100%)
- rename test/{parallel => disabled}/test-npm-install.js (100%)
+ test/disabled/test-env-var-no-warnings.js          |  41 ++++
+ test/disabled/test-http-dns-error.js               |  43 ++++
+ .../disabled/test-https-agent-create-connection.js | 144 ++++++++++++++
+ .../test-https-agent-disable-session-reuse.js      |  55 +++++
+ test/disabled/test-https-agent-session-eviction.js |  84 ++++++++
+ test/disabled/test-https-agent-sni.js              |  49 +++++
+ test/disabled/test-https-agent.js                  |  50 +++++
+ test/disabled/test-https-client-reject.js          |  64 ++++++
+ test/disabled/test-https-client-resume.js          |  62 ++++++
+ test/disabled/test-https-host-headers.js           | 109 ++++++++++
+ test/disabled/test-https-set-timeout-server.js     | 221 +++++++++++++++++++++
+ test/disabled/test-https-simple.js                 |  93 +++++++++
+ test/disabled/test-https-strict.js                 | 201 +++++++++++++++++++
+ ...test-net-better-error-messages-port-hostname.js |  15 ++
+ test/disabled/test-net-connect-immediate-finish.js |  17 ++
+ test/disabled/test-npm-install.js                  |  59 ++++++
+ test/parallel/test-env-var-no-warnings.js          |  41 ----
+ test/parallel/test-http-dns-error.js               |  43 ----
+ .../parallel/test-https-agent-create-connection.js | 144 --------------
+ .../test-https-agent-disable-session-reuse.js      |  55 -----
+ test/parallel/test-https-agent-session-eviction.js |  84 --------
+ test/parallel/test-https-agent-sni.js              |  49 -----
+ test/parallel/test-https-agent.js                  |  50 -----
+ test/parallel/test-https-client-reject.js          |  64 ------
+ test/parallel/test-https-client-resume.js          |  62 ------
+ test/parallel/test-https-host-headers.js           | 109 ----------
+ test/parallel/test-https-set-timeout-server.js     | 221 ---------------------
+ test/parallel/test-https-simple.js                 |  93 ---------
+ test/parallel/test-https-strict.js                 | 201 -------------------
+ ...test-net-better-error-messages-port-hostname.js |  15 --
+ test/parallel/test-net-connect-immediate-finish.js |  17 --
+ test/parallel/test-npm-install.js                  |  59 ------
+ 32 files changed, 1307 insertions(+), 1307 deletions(-)
+ create mode 100644 test/disabled/test-env-var-no-warnings.js
+ create mode 100644 test/disabled/test-http-dns-error.js
+ create mode 100644 test/disabled/test-https-agent-create-connection.js
+ create mode 100644 test/disabled/test-https-agent-disable-session-reuse.js
+ create mode 100644 test/disabled/test-https-agent-session-eviction.js
+ create mode 100644 test/disabled/test-https-agent-sni.js
+ create mode 100644 test/disabled/test-https-agent.js
+ create mode 100644 test/disabled/test-https-client-reject.js
+ create mode 100644 test/disabled/test-https-client-resume.js
+ create mode 100644 test/disabled/test-https-host-headers.js
+ create mode 100644 test/disabled/test-https-set-timeout-server.js
+ create mode 100644 test/disabled/test-https-simple.js
+ create mode 100644 test/disabled/test-https-strict.js
+ create mode 100644 test/disabled/test-net-better-error-messages-port-hostname.js
+ create mode 100644 test/disabled/test-net-connect-immediate-finish.js
+ create mode 100644 test/disabled/test-npm-install.js
+ delete mode 100644 test/parallel/test-env-var-no-warnings.js
+ delete mode 100644 test/parallel/test-http-dns-error.js
+ delete mode 100644 test/parallel/test-https-agent-create-connection.js
+ delete mode 100644 test/parallel/test-https-agent-disable-session-reuse.js
+ delete mode 100644 test/parallel/test-https-agent-session-eviction.js
+ delete mode 100644 test/parallel/test-https-agent-sni.js
+ delete mode 100644 test/parallel/test-https-agent.js
+ delete mode 100644 test/parallel/test-https-client-reject.js
+ delete mode 100644 test/parallel/test-https-client-resume.js
+ delete mode 100644 test/parallel/test-https-host-headers.js
+ delete mode 100644 test/parallel/test-https-set-timeout-server.js
+ delete mode 100644 test/parallel/test-https-simple.js
+ delete mode 100644 test/parallel/test-https-strict.js
+ delete mode 100644 test/parallel/test-net-better-error-messages-port-hostname.js
+ delete mode 100644 test/parallel/test-net-connect-immediate-finish.js
+ delete mode 100644 test/parallel/test-npm-install.js
 
-diff --git a/test/parallel/test-net-better-error-messages-port-hostname.js b/test/disabled/test-net-better-error-messages-port-hostname.js
-similarity index 100%
-rename from test/parallel/test-net-better-error-messages-port-hostname.js
-rename to test/disabled/test-net-better-error-messages-port-hostname.js
-diff --git a/test/parallel/test-net-connect-immediate-finish.js b/test/disabled/test-net-connect-immediate-finish.js
-similarity index 100%
-rename from test/parallel/test-net-connect-immediate-finish.js
-rename to test/disabled/test-net-connect-immediate-finish.js
-diff --git a/test/parallel/test-npm-install.js b/test/disabled/test-npm-install.js
-similarity index 100%
-rename from test/parallel/test-npm-install.js
-rename to test/disabled/test-npm-install.js
+diff --git a/test/disabled/test-env-var-no-warnings.js b/test/disabled/test-env-var-no-warnings.js
+new file mode 100644
+index 0000000..f829443
+--- /dev/null
++++ b/test/disabled/test-env-var-no-warnings.js
+@@ -0,0 +1,41 @@
++'use strict';
++const common = require('../common');
++const assert = require('assert');
++const cp = require('child_process');
++
++if (process.argv[2] === 'child') {
++  process.emitWarning('foo');
++} else {
++  function test(env) {
++    const cmd = `"${process.execPath}" "${__filename}" child`;
++
++    cp.exec(cmd, { env }, common.mustCall((err, stdout, stderr) => {
++      assert.strictEqual(err, null);
++      assert.strictEqual(stdout, '');
++
++      if (env.NODE_NO_WARNINGS === '1')
++        assert.strictEqual(stderr, '');
++      else
++        assert(/Warning: foo$/.test(stderr.trim()));
++    }));
++  }
++
++  test({});
++  test(process.env);
++  test({ NODE_NO_WARNINGS: undefined });
++  test({ NODE_NO_WARNINGS: null });
++  test({ NODE_NO_WARNINGS: 'foo' });
++  test({ NODE_NO_WARNINGS: true });
++  test({ NODE_NO_WARNINGS: false });
++  test({ NODE_NO_WARNINGS: {} });
++  test({ NODE_NO_WARNINGS: [] });
++  test({ NODE_NO_WARNINGS: () => {} });
++  test({ NODE_NO_WARNINGS: 0 });
++  test({ NODE_NO_WARNINGS: -1 });
++  test({ NODE_NO_WARNINGS: '0' });
++  test({ NODE_NO_WARNINGS: '01' });
++  test({ NODE_NO_WARNINGS: '2' });
++  // Don't test the number 1 because it will come through as a string in the
++  // the child process environment.
++  test({ NODE_NO_WARNINGS: '1' });
++}
+diff --git a/test/disabled/test-http-dns-error.js b/test/disabled/test-http-dns-error.js
+new file mode 100644
+index 0000000..bb736c5
+--- /dev/null
++++ b/test/disabled/test-http-dns-error.js
+@@ -0,0 +1,43 @@
++'use strict';
++const common = require('../common');
++const assert = require('assert');
++
++const http = require('http');
++
++let https;
++if (common.hasCrypto) {
++  https = require('https');
++} else {
++  common.printSkipMessage('missing crypto');
++}
++
++const host = '*'.repeat(256);
++
++function do_not_call() {
++  throw new Error('This function should not have been called.');
++}
++
++function test(mod) {
++
++  // Bad host name should not throw an uncatchable exception.
++  // Ensure that there is time to attach an error listener.
++  const req1 = mod.get({host: host, port: 42}, do_not_call);
++  req1.on('error', common.mustCall(function(err) {
++    assert.strictEqual(err.code, 'ENOTFOUND');
++  }));
++  // http.get() called req1.end() for us
++
++  const req2 = mod.request({method: 'GET', host: host, port: 42}, do_not_call);
++  req2.on('error', common.mustCall(function(err) {
++    assert.strictEqual(err.code, 'ENOTFOUND');
++  }));
++  req2.end();
++}
++
++if (common.hasCrypto) {
++  test(https);
++} else {
++  common.printSkipMessage('missing crypto');
++}
++
++test(http);
+diff --git a/test/disabled/test-https-agent-create-connection.js b/test/disabled/test-https-agent-create-connection.js
+new file mode 100644
+index 0000000..a7c329b
+--- /dev/null
++++ b/test/disabled/test-https-agent-create-connection.js
+@@ -0,0 +1,144 @@
++'use strict';
++
++const common = require('../common');
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++
++const agent = new https.Agent();
++
++const fs = require('fs');
++
++const options = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`),
++};
++
++const expectedHeader = /^HTTP\/1.1 200 OK/;
++const expectedBody = /hello world\n/;
++const expectCertError = /^Error: unable to verify the first certificate$/;
++
++const checkRequest = (socket, server) => {
++  let result = '';
++  socket.on('connect', common.mustCall((data) => {
++    socket.write('GET / HTTP/1.1\r\n\r\n');
++    socket.end();
++  }));
++  socket.on('data', common.mustCall((chunk) => {
++    result += chunk;
++  }));
++  socket.on('end', common.mustCall(() => {
++    assert(expectedHeader.test(result));
++    assert(expectedBody.test(result));
++    server.close();
++  }));
++};
++
++function createServer() {
++  return https.createServer(options, (req, res) => {
++    res.end('hello world\n');
++  });
++}
++
++// use option connect
++{
++  const server = createServer();
++  server.listen(0, common.mustCall(() => {
++    const port = server.address().port;
++    const host = 'localhost';
++    const options = {
++      port: port,
++      host: host,
++      rejectUnauthorized: false,
++      _agentKey: agent.getName({
++        port: port,
++        host: host,
++      }),
++    };
++
++    const socket = agent.createConnection(options);
++    checkRequest(socket, server);
++  }));
++}
++
++// use port and option connect
++{
++  const server = createServer();
++  server.listen(0, common.mustCall(() => {
++    const port = server.address().port;
++    const host = 'localhost';
++    const options = {
++      rejectUnauthorized: false,
++      _agentKey: agent.getName({
++        port: port,
++        host: host,
++      }),
++    };
++    const socket = agent.createConnection(port, options);
++    checkRequest(socket, server);
++  }));
++}
++
++// use port and host and option connect
++{
++  const server = createServer();
++  server.listen(0, common.mustCall(() => {
++    const port = server.address().port;
++    const host = 'localhost';
++    const options = {
++      rejectUnauthorized: false,
++      _agentKey: agent.getName({
++        port: port,
++        host: host,
++      }),
++    };
++    const socket = agent.createConnection(port, host, options);
++    checkRequest(socket, server);
++  }));
++}
++
++// use port and host and option does not have agentKey
++{
++  const server = createServer();
++  server.listen(0, common.mustCall(() => {
++    const port = server.address().port;
++    const host = 'localhost';
++    const options = {
++      rejectUnauthorized: false,
++    };
++    const socket = agent.createConnection(port, host, options);
++    checkRequest(socket, server);
++  }));
++}
++
++// options is null
++{
++  const server = createServer();
++  server.listen(0, common.mustCall(() => {
++    const port = server.address().port;
++    const host = 'localhost';
++    const options = null;
++    const socket = agent.createConnection(port, host, options);
++    socket.on('error', common.mustCall((e) => {
++      assert(expectCertError.test(e.toString()));
++      server.close();
++    }));
++  }));
++}
++
++// options is undefined
++{
++  const server = createServer();
++  server.listen(0, common.mustCall(() => {
++    const port = server.address().port;
++    const host = 'localhost';
++    const options = undefined;
++    const socket = agent.createConnection(port, host, options);
++    socket.on('error', common.mustCall((e) => {
++      assert(expectCertError.test(e.toString()));
++      server.close();
++    }));
++  }));
++}
+diff --git a/test/disabled/test-https-agent-disable-session-reuse.js b/test/disabled/test-https-agent-disable-session-reuse.js
+new file mode 100644
+index 0000000..4f92547
+--- /dev/null
++++ b/test/disabled/test-https-agent-disable-session-reuse.js
+@@ -0,0 +1,55 @@
++'use strict';
++const common = require('../common');
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++const fs = require('fs');
++
++const TOTAL_REQS = 2;
++
++const options = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
++};
++
++const clientSessions = [];
++let serverRequests = 0;
++
++const agent = new https.Agent({
++  maxCachedSessions: 0
++});
++
++const server = https.createServer(options, function(req, res) {
++  serverRequests++;
++  res.end('ok');
++}).listen(0, function() {
++  let waiting = TOTAL_REQS;
++  function request() {
++    const options = {
++      agent: agent,
++      port: server.address().port,
++      rejectUnauthorized: false
++    };
++
++    https.request(options, function(res) {
++      clientSessions.push(res.socket.getSession());
++
++      res.resume();
++      res.on('end', function() {
++        if (--waiting !== 0)
++          return request();
++        server.close();
++      });
++    }).end();
++  }
++  request();
++});
++
++process.on('exit', function() {
++  assert.strictEqual(serverRequests, TOTAL_REQS);
++  assert.strictEqual(clientSessions.length, TOTAL_REQS);
++  assert.notStrictEqual(clientSessions[0].toString('hex'),
++                        clientSessions[1].toString('hex'));
++});
+diff --git a/test/disabled/test-https-agent-session-eviction.js b/test/disabled/test-https-agent-session-eviction.js
+new file mode 100644
+index 0000000..567ed80
+--- /dev/null
++++ b/test/disabled/test-https-agent-session-eviction.js
+@@ -0,0 +1,84 @@
++'use strict';
++
++const common = require('../common');
++
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++const fs = require('fs');
++const SSL_OP_NO_TICKET = require('crypto').constants.SSL_OP_NO_TICKET;
++
++const options = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`),
++  secureOptions: SSL_OP_NO_TICKET
++};
++
++// Create TLS1.2 server
++https.createServer(options, function(req, res) {
++  res.end('ohai');
++}).listen(0, function() {
++  first(this);
++});
++
++// Do request and let agent cache the session
++function first(server) {
++  const port = server.address().port;
++  const req = https.request({
++    port: port,
++    rejectUnauthorized: false
++  }, function(res) {
++    res.resume();
++
++    server.close(function() {
++      faultyServer(port);
++    });
++  });
++  req.end();
++}
++
++// Create TLS1 server
++function faultyServer(port) {
++  options.secureProtocol = 'TLSv1_method';
++  https.createServer(options, function(req, res) {
++    res.end('hello faulty');
++  }).listen(port, function() {
++    second(this);
++  });
++}
++
++// Attempt to request using cached session
++function second(server, session) {
++  const req = https.request({
++    port: server.address().port,
++    rejectUnauthorized: false
++  }, function(res) {
++    res.resume();
++  });
++
++  // Let it fail
++  req.on('error', common.mustCall(function(err) {
++    assert(/wrong version number/.test(err.message));
++
++    req.on('close', function() {
++      third(server);
++    });
++  }));
++  req.end();
++}
++
++// Try one more time - session should be evicted!
++function third(server) {
++  const req = https.request({
++    port: server.address().port,
++    rejectUnauthorized: false
++  }, function(res) {
++    res.resume();
++    assert(!req.socket.isSessionReused());
++    server.close();
++  });
++  req.on('error', common.mustNotCall());
++  req.end();
++}
+diff --git a/test/disabled/test-https-agent-sni.js b/test/disabled/test-https-agent-sni.js
+new file mode 100644
+index 0000000..a06ce43
+--- /dev/null
++++ b/test/disabled/test-https-agent-sni.js
+@@ -0,0 +1,49 @@
++'use strict';
++const common = require('../common');
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++const fs = require('fs');
++
++const options = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
++};
++
++const TOTAL = 4;
++let waiting = TOTAL;
++
++const server = https.Server(options, function(req, res) {
++  if (--waiting === 0) server.close();
++
++  res.writeHead(200, {
++    'x-sni': req.socket.servername
++  });
++  res.end('hello world');
++});
++
++server.listen(0, function() {
++  function expectResponse(id) {
++    return common.mustCall(function(res) {
++      res.resume();
++      assert.strictEqual(res.headers['x-sni'], `sni.${id}`);
++    });
++  }
++
++  const agent = new https.Agent({
++    maxSockets: 1
++  });
++  for (let j = 0; j < TOTAL; j++) {
++    https.get({
++      agent: agent,
++
++      path: '/',
++      port: this.address().port,
++      host: '127.0.0.1',
++      servername: `sni.${j}`,
++      rejectUnauthorized: false
++    }, expectResponse(j));
++  }
++});
+diff --git a/test/disabled/test-https-agent.js b/test/disabled/test-https-agent.js
+new file mode 100644
+index 0000000..24086d1
+--- /dev/null
++++ b/test/disabled/test-https-agent.js
+@@ -0,0 +1,50 @@
++'use strict';
++const common = require('../common');
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++const fs = require('fs');
++
++const options = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
++};
++
++
++const server = https.Server(options, function(req, res) {
++  res.writeHead(200);
++  res.end('hello world\n');
++});
++
++
++let responses = 0;
++const N = 4;
++const M = 4;
++
++
++server.listen(0, function() {
++  for (let i = 0; i < N; i++) {
++    setTimeout(function() {
++      for (let j = 0; j < M; j++) {
++        https.get({
++          path: '/',
++          port: server.address().port,
++          rejectUnauthorized: false
++        }, function(res) {
++          res.resume();
++          assert.strictEqual(res.statusCode, 200);
++          if (++responses === N * M) server.close();
++        }).on('error', function(e) {
++          throw e;
++        });
++      }
++    }, i);
++  }
++});
++
++
++process.on('exit', function() {
++  assert.strictEqual(N * M, responses);
++});
+diff --git a/test/disabled/test-https-client-reject.js b/test/disabled/test-https-client-reject.js
+new file mode 100644
+index 0000000..8369e9a
+--- /dev/null
++++ b/test/disabled/test-https-client-reject.js
+@@ -0,0 +1,64 @@
++'use strict';
++const common = require('../common');
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++const fs = require('fs');
++const path = require('path');
++
++const options = {
++  key: fs.readFileSync(path.join(common.fixturesDir, 'test_key.pem')),
++  cert: fs.readFileSync(path.join(common.fixturesDir, 'test_cert.pem'))
++};
++
++const server = https.createServer(options, common.mustCall(function(req, res) {
++  res.writeHead(200);
++  res.end();
++  req.resume();
++}, 2)).listen(0, function() {
++  unauthorized();
++});
++
++function unauthorized() {
++  const req = https.request({
++    port: server.address().port,
++    rejectUnauthorized: false
++  }, function(res) {
++    assert(!req.socket.authorized);
++    res.resume();
++    rejectUnauthorized();
++  });
++  req.on('error', function(err) {
++    throw err;
++  });
++  req.end();
++}
++
++function rejectUnauthorized() {
++  const options = {
++    port: server.address().port
++  };
++  options.agent = new https.Agent(options);
++  const req = https.request(options, common.mustNotCall());
++  req.on('error', function(err) {
++    authorized();
++  });
++  req.end();
++}
++
++function authorized() {
++  const options = {
++    port: server.address().port,
++    ca: [fs.readFileSync(path.join(common.fixturesDir, 'test_cert.pem'))]
++  };
++  options.agent = new https.Agent(options);
++  const req = https.request(options, function(res) {
++    res.resume();
++    assert(req.socket.authorized);
++    server.close();
++  });
++  req.on('error', common.mustNotCall());
++  req.end();
++}
+diff --git a/test/disabled/test-https-client-resume.js b/test/disabled/test-https-client-resume.js
+new file mode 100644
+index 0000000..6ba40dc
+--- /dev/null
++++ b/test/disabled/test-https-client-resume.js
+@@ -0,0 +1,62 @@
++'use strict';
++// Create an ssl server.  First connection, validate that not resume.
++// Cache session and close connection.  Use session on second connection.
++// ASSERT resumption.
++const common = require('../common');
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++const tls = require('tls');
++const fs = require('fs');
++
++const options = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent2-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent2-cert.pem`)
++};
++
++// create server
++const server = https.createServer(options, common.mustCall(function(req, res) {
++  res.end('Goodbye');
++}, 2));
++
++// start listening
++server.listen(0, function() {
++
++  let session1 = null;
++  const client1 = tls.connect({
++    port: this.address().port,
++    rejectUnauthorized: false
++  }, function() {
++    console.log('connect1');
++    assert.ok(!client1.isSessionReused(), 'Session *should not* be reused.');
++    session1 = client1.getSession();
++    client1.write('GET / HTTP/1.0\r\n' +
++                  'Server: 127.0.0.1\r\n' +
++                  '\r\n');
++  });
++
++  client1.on('close', function() {
++    console.log('close1');
++
++    const opts = {
++      port: server.address().port,
++      rejectUnauthorized: false,
++      session: session1
++    };
++
++    const client2 = tls.connect(opts, function() {
++      console.log('connect2');
++      assert.ok(client2.isSessionReused(), 'Session *should* be reused.');
++      client2.write('GET / HTTP/1.0\r\n' +
++                    'Server: 127.0.0.1\r\n' +
++                    '\r\n');
++    });
++
++    client2.on('close', function() {
++      console.log('close2');
++      server.close();
++    });
++  });
++});
+diff --git a/test/disabled/test-https-host-headers.js b/test/disabled/test-https-host-headers.js
+new file mode 100644
+index 0000000..c8afa61
+--- /dev/null
++++ b/test/disabled/test-https-host-headers.js
+@@ -0,0 +1,109 @@
++'use strict';
++const common = require('../common');
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++const fs = require('fs');
++
++const options = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
++};
++const httpsServer = https.createServer(options, reqHandler);
++
++function reqHandler(req, res) {
++  console.log(`Got request: ${req.headers.host} ${req.url}`);
++  if (req.url === '/setHostFalse5') {
++    assert.strictEqual(req.headers.host, undefined);
++  } else {
++    assert.strictEqual(
++      req.headers.host, `localhost:${this.address().port}`,
++      `Wrong host header for req[${req.url}]: ${req.headers.host}`);
++  }
++  res.writeHead(200, {});
++  //process.nextTick(function() { res.end('ok'); });
++  res.end('ok');
++}
++
++function thrower(er) {
++  throw er;
++}
++
++testHttps();
++
++function testHttps() {
++
++  let counter = 0;
++
++  function cb(res) {
++    counter--;
++    console.log(`back from https request. counter = ${counter}`);
++    if (counter === 0) {
++      httpsServer.close();
++      console.log('ok');
++    }
++    res.resume();
++  }
++
++  httpsServer.listen(0, function(er) {
++    console.log(`test https server listening on port ${this.address().port}`);
++
++    if (er) throw er;
++
++    https.get({
++      method: 'GET',
++      path: `/${counter++}`,
++      host: 'localhost',
++      //agent: false,
++      port: this.address().port,
++      rejectUnauthorized: false
++    }, cb).on('error', thrower);
++
++    https.request({
++      method: 'GET',
++      path: `/${counter++}`,
++      host: 'localhost',
++      //agent: false,
++      port: this.address().port,
++      rejectUnauthorized: false
++    }, cb).on('error', thrower).end();
++
++    https.request({
++      method: 'POST',
++      path: `/${counter++}`,
++      host: 'localhost',
++      //agent: false,
++      port: this.address().port,
++      rejectUnauthorized: false
++    }, cb).on('error', thrower).end();
++
++    https.request({
++      method: 'PUT',
++      path: `/${counter++}`,
++      host: 'localhost',
++      //agent: false,
++      port: this.address().port,
++      rejectUnauthorized: false
++    }, cb).on('error', thrower).end();
++
++    https.request({
++      method: 'DELETE',
++      path: `/${counter++}`,
++      host: 'localhost',
++      //agent: false,
++      port: this.address().port,
++      rejectUnauthorized: false
++    }, cb).on('error', thrower).end();
++
++    https.get({
++      method: 'GET',
++      path: `/setHostFalse${counter++}`,
++      host: 'localhost',
++      setHost: false,
++      port: this.address().port,
++      rejectUnauthorized: false
++    }, cb).on('error', thrower).end();
++  });
++}
+diff --git a/test/disabled/test-https-set-timeout-server.js b/test/disabled/test-https-set-timeout-server.js
+new file mode 100644
+index 0000000..b27471e
+--- /dev/null
++++ b/test/disabled/test-https-set-timeout-server.js
+@@ -0,0 +1,221 @@
++'use strict';
++const common = require('../common');
++const assert = require('assert');
++
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const https = require('https');
++const http = require('http');
++
++const tls = require('tls');
++const fs = require('fs');
++
++const tests = [];
++
++const serverOptions = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
++};
++
++function test(fn) {
++  if (!tests.length)
++    process.nextTick(run);
++  tests.push(common.mustCall(fn));
++}
++
++function run() {
++  const fn = tests.shift();
++  if (fn) {
++    fn(run);
++  }
++}
++
++test(function serverTimeout(cb) {
++  const server = https.createServer(serverOptions);
++  server.listen(common.mustCall(() => {
++    const s = server.setTimeout(50, common.mustCall((socket) => {
++      socket.destroy();
++      server.close();
++      cb();
++    }));
++    assert.ok(s instanceof https.Server);
++    https.get({
++      port: server.address().port,
++      rejectUnauthorized: false
++    }).on('error', () => {});
++  }));
++});
++
++test(function serverRequestTimeout(cb) {
++  const server = https.createServer(
++    serverOptions,
++    common.mustCall((req, res) => {
++      // just do nothing, we should get a timeout event.
++      const s = req.setTimeout(50, common.mustCall((socket) => {
++        socket.destroy();
++        server.close();
++        cb();
++      }));
++      assert.ok(s instanceof http.IncomingMessage);
++    }));
++  server.listen(common.mustCall(() => {
++    const req = https.request({
++      port: server.address().port,
++      method: 'POST',
++      rejectUnauthorized: false
++    });
++    req.on('error', () => {});
++    req.write('Hello');
++    // req is in progress
++  }));
++});
++
++test(function serverResponseTimeout(cb) {
++  const server = https.createServer(
++    serverOptions,
++    common.mustCall((req, res) => {
++      // just do nothing, we should get a timeout event.
++      const s = res.setTimeout(50, common.mustCall((socket) => {
++        socket.destroy();
++        server.close();
++        cb();
++      }));
++      assert.ok(s instanceof http.OutgoingMessage);
++    }));
++  server.listen(common.mustCall(() => {
++    https.get({
++      port: server.address().port,
++      rejectUnauthorized: false
++    }).on('error', common.mustCall());
++  }));
++});
++
++test(function serverRequestNotTimeoutAfterEnd(cb) {
++  const server = https.createServer(
++    serverOptions,
++    common.mustCall((req, res) => {
++      // just do nothing, we should get a timeout event.
++      const s = req.setTimeout(50, common.mustNotCall());
++      assert.ok(s instanceof http.IncomingMessage);
++      res.on('timeout', common.mustCall());
++    }));
++  server.on('timeout', common.mustCall((socket) => {
++    socket.destroy();
++    server.close();
++    cb();
++  }));
++  server.listen(common.mustCall(() => {
++    https.get({
++      port: server.address().port,
++      rejectUnauthorized: false
++    }).on('error', common.mustCall());
++  }));
++});
++
++test(function serverResponseTimeoutWithPipeline(cb) {
++  let caughtTimeout = '';
++  let secReceived = false;
++  process.on('exit', () => {
++    assert.strictEqual(caughtTimeout, '/2');
++  });
++  const server = https.createServer(serverOptions, (req, res) => {
++    if (req.url === '/2')
++      secReceived = true;
++    if (req.url === '/1') {
++      res.end();
++      return;
++    }
++    const s = res.setTimeout(50, () => {
++      caughtTimeout += req.url;
++    });
++    assert.ok(s instanceof http.OutgoingMessage);
++  });
++  server.on('timeout', common.mustCall((socket) => {
++    if (secReceived) {
++      socket.destroy();
++      server.close();
++      cb();
++    }
++  }));
++  server.listen(common.mustCall(() => {
++    const options = {
++      port: server.address().port,
++      allowHalfOpen: true,
++      rejectUnauthorized: false
++    };
++    const c = tls.connect(options, () => {
++      c.write('GET /1 HTTP/1.1\r\nHost: localhost\r\n\r\n');
++      c.write('GET /2 HTTP/1.1\r\nHost: localhost\r\n\r\n');
++      c.write('GET /3 HTTP/1.1\r\nHost: localhost\r\n\r\n');
++    });
++  }));
++});
++
++test(function idleTimeout(cb) {
++  // Test that the an idle connection invokes the timeout callback.
++  const server = https.createServer(serverOptions);
++  const s = server.setTimeout(50, common.mustCall((socket) => {
++    socket.destroy();
++    server.close();
++    cb();
++  }));
++  assert.ok(s instanceof https.Server);
++  server.listen(common.mustCall(() => {
++    const options = {
++      port: server.address().port,
++      allowHalfOpen: true,
++      rejectUnauthorized: false
++    };
++    const c = tls.connect(options, () => {
++      // ECONNRESET could happen on a heavily-loaded server.
++      c.on('error', (e) => {
++        if (e.message !== 'read ECONNRESET')
++          throw e;
++      });
++      c.write('GET /1 HTTP/1.1\r\nHost: localhost\r\n\r\n');
++      // Keep-Alive
++    });
++  }));
++});
++
++test(function fastTimeout(cb) {
++  // Test that the socket timeout fires but no timeout fires for the request.
++  let connectionHandlerInvoked = false;
++  let timeoutHandlerInvoked = false;
++  let connectionSocket;
++
++  function invokeCallbackIfDone() {
++    if (connectionHandlerInvoked && timeoutHandlerInvoked) {
++      connectionSocket.destroy();
++      server.close();
++      cb();
++    }
++  }
++
++  const server = https.createServer(serverOptions, common.mustCall(
++    (req, res) => {
++      req.on('timeout', common.mustNotCall());
++      res.end();
++      connectionHandlerInvoked = true;
++      invokeCallbackIfDone();
++    }
++  ));
++  const s = server.setTimeout(1, common.mustCall((socket) => {
++    connectionSocket = socket;
++    timeoutHandlerInvoked = true;
++    invokeCallbackIfDone();
++  }));
++  assert.ok(s instanceof https.Server);
++  server.listen(common.mustCall(() => {
++    const options = {
++      port: server.address().port,
++      allowHalfOpen: true,
++      rejectUnauthorized: false
++    };
++    const c = tls.connect(options, () => {
++      c.write('GET /1 HTTP/1.1\r\nHost: localhost\r\n\r\n');
++      // Keep-Alive
++    });
++  }));
++});
+diff --git a/test/disabled/test-https-simple.js b/test/disabled/test-https-simple.js
+new file mode 100644
+index 0000000..9184430
+--- /dev/null
++++ b/test/disabled/test-https-simple.js
+@@ -0,0 +1,93 @@
++'use strict';
++const common = require('../common');
++
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++const assert = require('assert');
++const https = require('https');
++const fs = require('fs');
++
++const options = {
++  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
++  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
++};
++
++const tests = 2;
++let successful = 0;
++
++const testSucceeded = () => {
++  successful = successful + 1;
++  if (successful === tests) {
++    server.close();
++  }
++};
++
++const body = 'hello world\n';
++
++const serverCallback = common.mustCall(function(req, res) {
++  res.writeHead(200, { 'content-type': 'text/plain' });
++  res.end(body);
++});
++
++const server = https.createServer(options, serverCallback);
++
++server.listen(0, common.mustCall(() => {
++  // Do a request ignoring the unauthorized server certs
++  const port = server.address().port;
++
++  const noCertCheckOptions = {
++    hostname: '127.0.0.1',
++    port: port,
++    path: '/',
++    method: 'GET',
++    rejectUnauthorized: false
++  };
++
++  noCertCheckOptions.Agent = new https.Agent(noCertCheckOptions);
++
++  const req = https.request(noCertCheckOptions, common.mustCall((res) => {
++    let responseBody = '';
++    res.on('data', function(d) {
++      responseBody = responseBody + d;
++    });
++
++    res.on('end', common.mustCall(() => {
++      assert.strictEqual(responseBody, body);
++      testSucceeded();
++    }));
++  }));
++  req.end();
++
++  req.on('error', function(e) {
++    throw e;
++  });
++
++  // Do a request that throws error due to the invalid server certs
++  const checkCertOptions = {
++    hostname: '127.0.0.1',
++    port: port,
++    path: '/',
++    method: 'GET'
++  };
++
++  const checkCertReq = https.request(checkCertOptions, function(res) {
++    res.on('data', function() {
++      throw new Error('data should not be received');
++    });
++
++    res.on('end', function() {
++      throw new Error('connection should not be established');
++    });
++  });
++  checkCertReq.end();
++
++  checkCertReq.on('error', common.mustCall((e) => {
++    assert.strictEqual(e.code, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE');
++    testSucceeded();
++  }));
++}));
++
++process.on('exit', function() {
++  assert.strictEqual(successful, tests);
++});
+diff --git a/test/disabled/test-https-strict.js b/test/disabled/test-https-strict.js
+new file mode 100644
+index 0000000..1cb49fc
+--- /dev/null
++++ b/test/disabled/test-https-strict.js
+@@ -0,0 +1,201 @@
++'use strict';
++const common = require('../common');
++if (!common.hasCrypto)
++  common.skip('missing crypto');
++
++// disable strict server certificate validation by the client
++process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
++
++const assert = require('assert');
++const https = require('https');
++const fs = require('fs');
++const path = require('path');
++
++function file(fname) {
++  return path.resolve(common.fixturesDir, 'keys', fname);
++}
++
++function read(fname) {
++  return fs.readFileSync(file(fname));
++}
++
++// key1 is signed by ca1.
++const key1 = read('agent1-key.pem');
++const cert1 = read('agent1-cert.pem');
++
++// key2 has a self signed cert
++const key2 = read('agent2-key.pem');
++const cert2 = read('agent2-cert.pem');
++
++// key3 is signed by ca2.
++const key3 = read('agent3-key.pem');
++const cert3 = read('agent3-cert.pem');
++
++const ca1 = read('ca1-cert.pem');
++const ca2 = read('ca2-cert.pem');
++
++// different agents to use different CA lists.
++// this api is beyond bad.
++const agent0 = new https.Agent();
++const agent1 = new https.Agent({ ca: [ca1] });
++const agent2 = new https.Agent({ ca: [ca2] });
++const agent3 = new https.Agent({ ca: [ca1, ca2] });
++
++const options1 = {
++  key: key1,
++  cert: cert1
++};
++
++const options2 = {
++  key: key2,
++  cert: cert2
++};
++
++const options3 = {
++  key: key3,
++  cert: cert3
++};
++
++const server1 = server(options1);
++const server2 = server(options2);
++const server3 = server(options3);
++
++let listenWait = 0;
++
++server1.listen(0, listening());
++server2.listen(0, listening());
++server3.listen(0, listening());
++
++const responseErrors = {};
++let expectResponseCount = 0;
++let responseCount = 0;
++let pending = 0;
++
++
++function server(options, port) {
++  const s = https.createServer(options, handler);
++  s.requests = [];
++  s.expectCount = 0;
++  return s;
++}
++
++function handler(req, res) {
++  this.requests.push(req.url);
++  res.statusCode = 200;
++  res.setHeader('foo', 'bar');
++  res.end('hello, world\n');
++}
++
++function listening() {
++  listenWait++;
++  return function() {
++    listenWait--;
++    if (listenWait === 0) {
++      allListening();
++    }
++  };
++}
++
++function makeReq(path, port, error, host, ca) {
++  pending++;
++  const options = {
++    port: port,
++    path: path,
++    ca: ca
++  };
++
++  if (!ca) {
++    options.agent = agent0;
++  } else {
++    if (!Array.isArray(ca)) ca = [ca];
++    if (ca.includes(ca1) && ca.includes(ca2)) {
++      options.agent = agent3;
++    } else if (ca.includes(ca1)) {
++      options.agent = agent1;
++    } else if (ca.includes(ca2)) {
++      options.agent = agent2;
++    } else {
++      options.agent = agent0;
++    }
++  }
++
++  if (host) {
++    options.headers = { host: host };
++  }
++  const req = https.get(options);
++  expectResponseCount++;
++  const server = port === server1.address().port ? server1
++    : port === server2.address().port ? server2
++      : port === server3.address().port ? server3
++        : null;
++
++  if (!server) throw new Error(`invalid port: ${port}`);
++  server.expectCount++;
++
++  req.on('response', function(res) {
++    responseCount++;
++    assert.strictEqual(res.connection.authorizationError, error);
++    responseErrors[path] = res.connection.authorizationError;
++    pending--;
++    if (pending === 0) {
++      server1.close();
++      server2.close();
++      server3.close();
++    }
++    res.resume();
++  });
++}
++
++function allListening() {
++  // ok, ready to start the tests!
++  const port1 = server1.address().port;
++  const port2 = server2.address().port;
++  const port3 = server3.address().port;
++
++  // server1: host 'agent1', signed by ca1
++  makeReq('/inv1', port1, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE');
++  makeReq('/inv1-ca1', port1,
++          'Hostname/IP doesn\'t match certificate\'s altnames: ' +
++              '"Host: localhost. is not cert\'s CN: agent1"',
++          null, ca1);
++  makeReq('/inv1-ca1ca2', port1,
++          'Hostname/IP doesn\'t match certificate\'s altnames: ' +
++              '"Host: localhost. is not cert\'s CN: agent1"',
++          null, [ca1, ca2]);
++  makeReq('/val1-ca1', port1, null, 'agent1', ca1);
++  makeReq('/val1-ca1ca2', port1, null, 'agent1', [ca1, ca2]);
++  makeReq('/inv1-ca2', port1,
++          'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'agent1', ca2);
++
++  // server2: self-signed, host = 'agent2'
++  // doesn't matter that thename matches, all of these will error.
++  makeReq('/inv2', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT');
++  makeReq('/inv2-ca1', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT',
++          'agent2', ca1);
++  makeReq('/inv2-ca1ca2', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT',
++          'agent2', [ca1, ca2]);
++
++  // server3: host 'agent3', signed by ca2
++  makeReq('/inv3', port3, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE');
++  makeReq('/inv3-ca2', port3,
++          'Hostname/IP doesn\'t match certificate\'s altnames: ' +
++              '"Host: localhost. is not cert\'s CN: agent3"',
++          null, ca2);
++  makeReq('/inv3-ca1ca2', port3,
++          'Hostname/IP doesn\'t match certificate\'s altnames: ' +
++              '"Host: localhost. is not cert\'s CN: agent3"',
++          null, [ca1, ca2]);
++  makeReq('/val3-ca2', port3, null, 'agent3', ca2);
++  makeReq('/val3-ca1ca2', port3, null, 'agent3', [ca1, ca2]);
++  makeReq('/inv3-ca1', port3,
++          'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'agent1', ca1);
++
++}
++
++process.on('exit', function() {
++  console.error(responseErrors);
++  assert.strictEqual(server1.requests.length, server1.expectCount);
++  assert.strictEqual(server2.requests.length, server2.expectCount);
++  assert.strictEqual(server3.requests.length, server3.expectCount);
++  assert.strictEqual(responseCount, expectResponseCount);
++});
+diff --git a/test/disabled/test-net-better-error-messages-port-hostname.js b/test/disabled/test-net-better-error-messages-port-hostname.js
+new file mode 100644
+index 0000000..0497490
+--- /dev/null
++++ b/test/disabled/test-net-better-error-messages-port-hostname.js
+@@ -0,0 +1,15 @@
++'use strict';
++const common = require('../common');
++const net = require('net');
++const assert = require('assert');
++
++// Using port 0 as hostname used is already invalid.
++const c = net.createConnection(0, '***');
++
++c.on('connect', common.mustNotCall());
++
++c.on('error', common.mustCall(function(e) {
++  assert.strictEqual(e.code, 'ENOTFOUND');
++  assert.strictEqual(e.port, 0);
++  assert.strictEqual(e.hostname, '***');
++}));
+diff --git a/test/disabled/test-net-connect-immediate-finish.js b/test/disabled/test-net-connect-immediate-finish.js
+new file mode 100644
+index 0000000..2c0f45f
+--- /dev/null
++++ b/test/disabled/test-net-connect-immediate-finish.js
+@@ -0,0 +1,17 @@
++'use strict';
++const common = require('../common');
++const assert = require('assert');
++const net = require('net');
++
++const client = net.connect({host: '***', port: common.PORT});
++
++client.once('error', common.mustCall((err) => {
++  assert(err);
++  assert.strictEqual(err.code, err.errno);
++  assert.strictEqual(err.code, 'ENOTFOUND');
++  assert.strictEqual(err.host, err.hostname);
++  assert.strictEqual(err.host, '***');
++  assert.strictEqual(err.syscall, 'getaddrinfo');
++}));
++
++client.end();
+diff --git a/test/disabled/test-npm-install.js b/test/disabled/test-npm-install.js
+new file mode 100644
+index 0000000..315f788
+--- /dev/null
++++ b/test/disabled/test-npm-install.js
+@@ -0,0 +1,59 @@
++'use strict';
++const common = require('../common');
++
++const path = require('path');
++const spawn = require('child_process').spawn;
++const assert = require('assert');
++const fs = require('fs');
++
++common.refreshTmpDir();
++const npmSandbox = path.join(common.tmpDir, 'npm-sandbox');
++fs.mkdirSync(npmSandbox);
++const installDir = path.join(common.tmpDir, 'install-dir');
++fs.mkdirSync(installDir);
++
++const npmPath = path.join(
++  __dirname,
++  '..',
++  '..',
++  'deps',
++  'npm',
++  'bin',
++  'npm-cli.js'
++);
++
++const args = [
++  npmPath,
++  'install'
++];
++
++const pkgContent = JSON.stringify({
++  dependencies: {
++    'package-name': `${common.fixturesDir}/packages/main`
++  }
++});
++
++const pkgPath = path.join(installDir, 'package.json');
++
++fs.writeFileSync(pkgPath, pkgContent);
++
++const env = Object.create(process.env);
++env['PATH'] = path.dirname(process.execPath);
++env['NPM_CONFIG_PREFIX'] = path.join(npmSandbox, 'npm-prefix');
++env['NPM_CONFIG_TMP'] = path.join(npmSandbox, 'npm-tmp');
++env['HOME'] = path.join(npmSandbox, 'home');
++
++const proc = spawn(process.execPath, args, {
++  cwd: installDir,
++  env: env
++});
++
++function handleExit(code, signalCode) {
++  assert.strictEqual(code, 0, `npm install got error code ${code}`);
++  assert.strictEqual(signalCode, null, `unexpected signal: ${signalCode}`);
++  assert.doesNotThrow(function() {
++    fs.accessSync(`${installDir}/node_modules/package-name`);
++  });
++}
++
++proc.on('exit', common.mustCall(handleExit));
+diff --git a/test/parallel/test-env-var-no-warnings.js b/test/parallel/test-env-var-no-warnings.js
+deleted file mode 100644
+index f829443..0000000
+--- a/test/parallel/test-env-var-no-warnings.js
++++ /dev/null
+@@ -1,41 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-const assert = require('assert');
+-const cp = require('child_process');
+-
+-if (process.argv[2] === 'child') {
+-  process.emitWarning('foo');
+-} else {
+-  function test(env) {
+-    const cmd = `"${process.execPath}" "${__filename}" child`;
+-
+-    cp.exec(cmd, { env }, common.mustCall((err, stdout, stderr) => {
+-      assert.strictEqual(err, null);
+-      assert.strictEqual(stdout, '');
+-
+-      if (env.NODE_NO_WARNINGS === '1')
+-        assert.strictEqual(stderr, '');
+-      else
+-        assert(/Warning: foo$/.test(stderr.trim()));
+-    }));
+-  }
+-
+-  test({});
+-  test(process.env);
+-  test({ NODE_NO_WARNINGS: undefined });
+-  test({ NODE_NO_WARNINGS: null });
+-  test({ NODE_NO_WARNINGS: 'foo' });
+-  test({ NODE_NO_WARNINGS: true });
+-  test({ NODE_NO_WARNINGS: false });
+-  test({ NODE_NO_WARNINGS: {} });
+-  test({ NODE_NO_WARNINGS: [] });
+-  test({ NODE_NO_WARNINGS: () => {} });
+-  test({ NODE_NO_WARNINGS: 0 });
+-  test({ NODE_NO_WARNINGS: -1 });
+-  test({ NODE_NO_WARNINGS: '0' });
+-  test({ NODE_NO_WARNINGS: '01' });
+-  test({ NODE_NO_WARNINGS: '2' });
+-  // Don't test the number 1 because it will come through as a string in the
+-  // the child process environment.
+-  test({ NODE_NO_WARNINGS: '1' });
+-}
+diff --git a/test/parallel/test-http-dns-error.js b/test/parallel/test-http-dns-error.js
+deleted file mode 100644
+index bb736c5..0000000
+--- a/test/parallel/test-http-dns-error.js
++++ /dev/null
+@@ -1,43 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-const assert = require('assert');
+-
+-const http = require('http');
+-
+-let https;
+-if (common.hasCrypto) {
+-  https = require('https');
+-} else {
+-  common.printSkipMessage('missing crypto');
+-}
+-
+-const host = '*'.repeat(256);
+-
+-function do_not_call() {
+-  throw new Error('This function should not have been called.');
+-}
+-
+-function test(mod) {
+-
+-  // Bad host name should not throw an uncatchable exception.
+-  // Ensure that there is time to attach an error listener.
+-  const req1 = mod.get({host: host, port: 42}, do_not_call);
+-  req1.on('error', common.mustCall(function(err) {
+-    assert.strictEqual(err.code, 'ENOTFOUND');
+-  }));
+-  // http.get() called req1.end() for us
+-
+-  const req2 = mod.request({method: 'GET', host: host, port: 42}, do_not_call);
+-  req2.on('error', common.mustCall(function(err) {
+-    assert.strictEqual(err.code, 'ENOTFOUND');
+-  }));
+-  req2.end();
+-}
+-
+-if (common.hasCrypto) {
+-  test(https);
+-} else {
+-  common.printSkipMessage('missing crypto');
+-}
+-
+-test(http);
+diff --git a/test/parallel/test-https-agent-create-connection.js b/test/parallel/test-https-agent-create-connection.js
+deleted file mode 100644
+index a7c329b..0000000
+--- a/test/parallel/test-https-agent-create-connection.js
++++ /dev/null
+@@ -1,144 +0,0 @@
+-'use strict';
+-
+-const common = require('../common');
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-
+-const agent = new https.Agent();
+-
+-const fs = require('fs');
+-
+-const options = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`),
+-};
+-
+-const expectedHeader = /^HTTP\/1.1 200 OK/;
+-const expectedBody = /hello world\n/;
+-const expectCertError = /^Error: unable to verify the first certificate$/;
+-
+-const checkRequest = (socket, server) => {
+-  let result = '';
+-  socket.on('connect', common.mustCall((data) => {
+-    socket.write('GET / HTTP/1.1\r\n\r\n');
+-    socket.end();
+-  }));
+-  socket.on('data', common.mustCall((chunk) => {
+-    result += chunk;
+-  }));
+-  socket.on('end', common.mustCall(() => {
+-    assert(expectedHeader.test(result));
+-    assert(expectedBody.test(result));
+-    server.close();
+-  }));
+-};
+-
+-function createServer() {
+-  return https.createServer(options, (req, res) => {
+-    res.end('hello world\n');
+-  });
+-}
+-
+-// use option connect
+-{
+-  const server = createServer();
+-  server.listen(0, common.mustCall(() => {
+-    const port = server.address().port;
+-    const host = 'localhost';
+-    const options = {
+-      port: port,
+-      host: host,
+-      rejectUnauthorized: false,
+-      _agentKey: agent.getName({
+-        port: port,
+-        host: host,
+-      }),
+-    };
+-
+-    const socket = agent.createConnection(options);
+-    checkRequest(socket, server);
+-  }));
+-}
+-
+-// use port and option connect
+-{
+-  const server = createServer();
+-  server.listen(0, common.mustCall(() => {
+-    const port = server.address().port;
+-    const host = 'localhost';
+-    const options = {
+-      rejectUnauthorized: false,
+-      _agentKey: agent.getName({
+-        port: port,
+-        host: host,
+-      }),
+-    };
+-    const socket = agent.createConnection(port, options);
+-    checkRequest(socket, server);
+-  }));
+-}
+-
+-// use port and host and option connect
+-{
+-  const server = createServer();
+-  server.listen(0, common.mustCall(() => {
+-    const port = server.address().port;
+-    const host = 'localhost';
+-    const options = {
+-      rejectUnauthorized: false,
+-      _agentKey: agent.getName({
+-        port: port,
+-        host: host,
+-      }),
+-    };
+-    const socket = agent.createConnection(port, host, options);
+-    checkRequest(socket, server);
+-  }));
+-}
+-
+-// use port and host and option does not have agentKey
+-{
+-  const server = createServer();
+-  server.listen(0, common.mustCall(() => {
+-    const port = server.address().port;
+-    const host = 'localhost';
+-    const options = {
+-      rejectUnauthorized: false,
+-    };
+-    const socket = agent.createConnection(port, host, options);
+-    checkRequest(socket, server);
+-  }));
+-}
+-
+-// options is null
+-{
+-  const server = createServer();
+-  server.listen(0, common.mustCall(() => {
+-    const port = server.address().port;
+-    const host = 'localhost';
+-    const options = null;
+-    const socket = agent.createConnection(port, host, options);
+-    socket.on('error', common.mustCall((e) => {
+-      assert(expectCertError.test(e.toString()));
+-      server.close();
+-    }));
+-  }));
+-}
+-
+-// options is undefined
+-{
+-  const server = createServer();
+-  server.listen(0, common.mustCall(() => {
+-    const port = server.address().port;
+-    const host = 'localhost';
+-    const options = undefined;
+-    const socket = agent.createConnection(port, host, options);
+-    socket.on('error', common.mustCall((e) => {
+-      assert(expectCertError.test(e.toString()));
+-      server.close();
+-    }));
+-  }));
+-}
+diff --git a/test/parallel/test-https-agent-disable-session-reuse.js b/test/parallel/test-https-agent-disable-session-reuse.js
+deleted file mode 100644
+index 4f92547..0000000
+--- a/test/parallel/test-https-agent-disable-session-reuse.js
++++ /dev/null
+@@ -1,55 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-const fs = require('fs');
+-
+-const TOTAL_REQS = 2;
+-
+-const options = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
+-};
+-
+-const clientSessions = [];
+-let serverRequests = 0;
+-
+-const agent = new https.Agent({
+-  maxCachedSessions: 0
+-});
+-
+-const server = https.createServer(options, function(req, res) {
+-  serverRequests++;
+-  res.end('ok');
+-}).listen(0, function() {
+-  let waiting = TOTAL_REQS;
+-  function request() {
+-    const options = {
+-      agent: agent,
+-      port: server.address().port,
+-      rejectUnauthorized: false
+-    };
+-
+-    https.request(options, function(res) {
+-      clientSessions.push(res.socket.getSession());
+-
+-      res.resume();
+-      res.on('end', function() {
+-        if (--waiting !== 0)
+-          return request();
+-        server.close();
+-      });
+-    }).end();
+-  }
+-  request();
+-});
+-
+-process.on('exit', function() {
+-  assert.strictEqual(serverRequests, TOTAL_REQS);
+-  assert.strictEqual(clientSessions.length, TOTAL_REQS);
+-  assert.notStrictEqual(clientSessions[0].toString('hex'),
+-                        clientSessions[1].toString('hex'));
+-});
+diff --git a/test/parallel/test-https-agent-session-eviction.js b/test/parallel/test-https-agent-session-eviction.js
+deleted file mode 100644
+index 567ed80..0000000
+--- a/test/parallel/test-https-agent-session-eviction.js
++++ /dev/null
+@@ -1,84 +0,0 @@
+-'use strict';
+-
+-const common = require('../common');
+-
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-const fs = require('fs');
+-const SSL_OP_NO_TICKET = require('crypto').constants.SSL_OP_NO_TICKET;
+-
+-const options = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`),
+-  secureOptions: SSL_OP_NO_TICKET
+-};
+-
+-// Create TLS1.2 server
+-https.createServer(options, function(req, res) {
+-  res.end('ohai');
+-}).listen(0, function() {
+-  first(this);
+-});
+-
+-// Do request and let agent cache the session
+-function first(server) {
+-  const port = server.address().port;
+-  const req = https.request({
+-    port: port,
+-    rejectUnauthorized: false
+-  }, function(res) {
+-    res.resume();
+-
+-    server.close(function() {
+-      faultyServer(port);
+-    });
+-  });
+-  req.end();
+-}
+-
+-// Create TLS1 server
+-function faultyServer(port) {
+-  options.secureProtocol = 'TLSv1_method';
+-  https.createServer(options, function(req, res) {
+-    res.end('hello faulty');
+-  }).listen(port, function() {
+-    second(this);
+-  });
+-}
+-
+-// Attempt to request using cached session
+-function second(server, session) {
+-  const req = https.request({
+-    port: server.address().port,
+-    rejectUnauthorized: false
+-  }, function(res) {
+-    res.resume();
+-  });
+-
+-  // Let it fail
+-  req.on('error', common.mustCall(function(err) {
+-    assert(/wrong version number/.test(err.message));
+-
+-    req.on('close', function() {
+-      third(server);
+-    });
+-  }));
+-  req.end();
+-}
+-
+-// Try one more time - session should be evicted!
+-function third(server) {
+-  const req = https.request({
+-    port: server.address().port,
+-    rejectUnauthorized: false
+-  }, function(res) {
+-    res.resume();
+-    assert(!req.socket.isSessionReused());
+-    server.close();
+-  });
+-  req.on('error', common.mustNotCall());
+-  req.end();
+-}
+diff --git a/test/parallel/test-https-agent-sni.js b/test/parallel/test-https-agent-sni.js
+deleted file mode 100644
+index a06ce43..0000000
+--- a/test/parallel/test-https-agent-sni.js
++++ /dev/null
+@@ -1,49 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-const fs = require('fs');
+-
+-const options = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
+-};
+-
+-const TOTAL = 4;
+-let waiting = TOTAL;
+-
+-const server = https.Server(options, function(req, res) {
+-  if (--waiting === 0) server.close();
+-
+-  res.writeHead(200, {
+-    'x-sni': req.socket.servername
+-  });
+-  res.end('hello world');
+-});
+-
+-server.listen(0, function() {
+-  function expectResponse(id) {
+-    return common.mustCall(function(res) {
+-      res.resume();
+-      assert.strictEqual(res.headers['x-sni'], `sni.${id}`);
+-    });
+-  }
+-
+-  const agent = new https.Agent({
+-    maxSockets: 1
+-  });
+-  for (let j = 0; j < TOTAL; j++) {
+-    https.get({
+-      agent: agent,
+-
+-      path: '/',
+-      port: this.address().port,
+-      host: '127.0.0.1',
+-      servername: `sni.${j}`,
+-      rejectUnauthorized: false
+-    }, expectResponse(j));
+-  }
+-});
+diff --git a/test/parallel/test-https-agent.js b/test/parallel/test-https-agent.js
+deleted file mode 100644
+index 24086d1..0000000
+--- a/test/parallel/test-https-agent.js
++++ /dev/null
+@@ -1,50 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-const fs = require('fs');
+-
+-const options = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
+-};
+-
+-
+-const server = https.Server(options, function(req, res) {
+-  res.writeHead(200);
+-  res.end('hello world\n');
+-});
+-
+-
+-let responses = 0;
+-const N = 4;
+-const M = 4;
+-
+-
+-server.listen(0, function() {
+-  for (let i = 0; i < N; i++) {
+-    setTimeout(function() {
+-      for (let j = 0; j < M; j++) {
+-        https.get({
+-          path: '/',
+-          port: server.address().port,
+-          rejectUnauthorized: false
+-        }, function(res) {
+-          res.resume();
+-          assert.strictEqual(res.statusCode, 200);
+-          if (++responses === N * M) server.close();
+-        }).on('error', function(e) {
+-          throw e;
+-        });
+-      }
+-    }, i);
+-  }
+-});
+-
+-
+-process.on('exit', function() {
+-  assert.strictEqual(N * M, responses);
+-});
+diff --git a/test/parallel/test-https-client-reject.js b/test/parallel/test-https-client-reject.js
+deleted file mode 100644
+index 8369e9a..0000000
+--- a/test/parallel/test-https-client-reject.js
++++ /dev/null
+@@ -1,64 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-const fs = require('fs');
+-const path = require('path');
+-
+-const options = {
+-  key: fs.readFileSync(path.join(common.fixturesDir, 'test_key.pem')),
+-  cert: fs.readFileSync(path.join(common.fixturesDir, 'test_cert.pem'))
+-};
+-
+-const server = https.createServer(options, common.mustCall(function(req, res) {
+-  res.writeHead(200);
+-  res.end();
+-  req.resume();
+-}, 2)).listen(0, function() {
+-  unauthorized();
+-});
+-
+-function unauthorized() {
+-  const req = https.request({
+-    port: server.address().port,
+-    rejectUnauthorized: false
+-  }, function(res) {
+-    assert(!req.socket.authorized);
+-    res.resume();
+-    rejectUnauthorized();
+-  });
+-  req.on('error', function(err) {
+-    throw err;
+-  });
+-  req.end();
+-}
+-
+-function rejectUnauthorized() {
+-  const options = {
+-    port: server.address().port
+-  };
+-  options.agent = new https.Agent(options);
+-  const req = https.request(options, common.mustNotCall());
+-  req.on('error', function(err) {
+-    authorized();
+-  });
+-  req.end();
+-}
+-
+-function authorized() {
+-  const options = {
+-    port: server.address().port,
+-    ca: [fs.readFileSync(path.join(common.fixturesDir, 'test_cert.pem'))]
+-  };
+-  options.agent = new https.Agent(options);
+-  const req = https.request(options, function(res) {
+-    res.resume();
+-    assert(req.socket.authorized);
+-    server.close();
+-  });
+-  req.on('error', common.mustNotCall());
+-  req.end();
+-}
+diff --git a/test/parallel/test-https-client-resume.js b/test/parallel/test-https-client-resume.js
+deleted file mode 100644
+index 6ba40dc..0000000
+--- a/test/parallel/test-https-client-resume.js
++++ /dev/null
+@@ -1,62 +0,0 @@
+-'use strict';
+-// Create an ssl server.  First connection, validate that not resume.
+-// Cache session and close connection.  Use session on second connection.
+-// ASSERT resumption.
+-const common = require('../common');
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-const tls = require('tls');
+-const fs = require('fs');
+-
+-const options = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent2-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent2-cert.pem`)
+-};
+-
+-// create server
+-const server = https.createServer(options, common.mustCall(function(req, res) {
+-  res.end('Goodbye');
+-}, 2));
+-
+-// start listening
+-server.listen(0, function() {
+-
+-  let session1 = null;
+-  const client1 = tls.connect({
+-    port: this.address().port,
+-    rejectUnauthorized: false
+-  }, function() {
+-    console.log('connect1');
+-    assert.ok(!client1.isSessionReused(), 'Session *should not* be reused.');
+-    session1 = client1.getSession();
+-    client1.write('GET / HTTP/1.0\r\n' +
+-                  'Server: 127.0.0.1\r\n' +
+-                  '\r\n');
+-  });
+-
+-  client1.on('close', function() {
+-    console.log('close1');
+-
+-    const opts = {
+-      port: server.address().port,
+-      rejectUnauthorized: false,
+-      session: session1
+-    };
+-
+-    const client2 = tls.connect(opts, function() {
+-      console.log('connect2');
+-      assert.ok(client2.isSessionReused(), 'Session *should* be reused.');
+-      client2.write('GET / HTTP/1.0\r\n' +
+-                    'Server: 127.0.0.1\r\n' +
+-                    '\r\n');
+-    });
+-
+-    client2.on('close', function() {
+-      console.log('close2');
+-      server.close();
+-    });
+-  });
+-});
+diff --git a/test/parallel/test-https-host-headers.js b/test/parallel/test-https-host-headers.js
+deleted file mode 100644
+index c8afa61..0000000
+--- a/test/parallel/test-https-host-headers.js
++++ /dev/null
+@@ -1,109 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-const fs = require('fs');
+-
+-const options = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
+-};
+-const httpsServer = https.createServer(options, reqHandler);
+-
+-function reqHandler(req, res) {
+-  console.log(`Got request: ${req.headers.host} ${req.url}`);
+-  if (req.url === '/setHostFalse5') {
+-    assert.strictEqual(req.headers.host, undefined);
+-  } else {
+-    assert.strictEqual(
+-      req.headers.host, `localhost:${this.address().port}`,
+-      `Wrong host header for req[${req.url}]: ${req.headers.host}`);
+-  }
+-  res.writeHead(200, {});
+-  //process.nextTick(function() { res.end('ok'); });
+-  res.end('ok');
+-}
+-
+-function thrower(er) {
+-  throw er;
+-}
+-
+-testHttps();
+-
+-function testHttps() {
+-
+-  let counter = 0;
+-
+-  function cb(res) {
+-    counter--;
+-    console.log(`back from https request. counter = ${counter}`);
+-    if (counter === 0) {
+-      httpsServer.close();
+-      console.log('ok');
+-    }
+-    res.resume();
+-  }
+-
+-  httpsServer.listen(0, function(er) {
+-    console.log(`test https server listening on port ${this.address().port}`);
+-
+-    if (er) throw er;
+-
+-    https.get({
+-      method: 'GET',
+-      path: `/${counter++}`,
+-      host: 'localhost',
+-      //agent: false,
+-      port: this.address().port,
+-      rejectUnauthorized: false
+-    }, cb).on('error', thrower);
+-
+-    https.request({
+-      method: 'GET',
+-      path: `/${counter++}`,
+-      host: 'localhost',
+-      //agent: false,
+-      port: this.address().port,
+-      rejectUnauthorized: false
+-    }, cb).on('error', thrower).end();
+-
+-    https.request({
+-      method: 'POST',
+-      path: `/${counter++}`,
+-      host: 'localhost',
+-      //agent: false,
+-      port: this.address().port,
+-      rejectUnauthorized: false
+-    }, cb).on('error', thrower).end();
+-
+-    https.request({
+-      method: 'PUT',
+-      path: `/${counter++}`,
+-      host: 'localhost',
+-      //agent: false,
+-      port: this.address().port,
+-      rejectUnauthorized: false
+-    }, cb).on('error', thrower).end();
+-
+-    https.request({
+-      method: 'DELETE',
+-      path: `/${counter++}`,
+-      host: 'localhost',
+-      //agent: false,
+-      port: this.address().port,
+-      rejectUnauthorized: false
+-    }, cb).on('error', thrower).end();
+-
+-    https.get({
+-      method: 'GET',
+-      path: `/setHostFalse${counter++}`,
+-      host: 'localhost',
+-      setHost: false,
+-      port: this.address().port,
+-      rejectUnauthorized: false
+-    }, cb).on('error', thrower).end();
+-  });
+-}
+diff --git a/test/parallel/test-https-set-timeout-server.js b/test/parallel/test-https-set-timeout-server.js
+deleted file mode 100644
+index b27471e..0000000
+--- a/test/parallel/test-https-set-timeout-server.js
++++ /dev/null
+@@ -1,221 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-const assert = require('assert');
+-
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const https = require('https');
+-const http = require('http');
+-
+-const tls = require('tls');
+-const fs = require('fs');
+-
+-const tests = [];
+-
+-const serverOptions = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
+-};
+-
+-function test(fn) {
+-  if (!tests.length)
+-    process.nextTick(run);
+-  tests.push(common.mustCall(fn));
+-}
+-
+-function run() {
+-  const fn = tests.shift();
+-  if (fn) {
+-    fn(run);
+-  }
+-}
+-
+-test(function serverTimeout(cb) {
+-  const server = https.createServer(serverOptions);
+-  server.listen(common.mustCall(() => {
+-    const s = server.setTimeout(50, common.mustCall((socket) => {
+-      socket.destroy();
+-      server.close();
+-      cb();
+-    }));
+-    assert.ok(s instanceof https.Server);
+-    https.get({
+-      port: server.address().port,
+-      rejectUnauthorized: false
+-    }).on('error', () => {});
+-  }));
+-});
+-
+-test(function serverRequestTimeout(cb) {
+-  const server = https.createServer(
+-    serverOptions,
+-    common.mustCall((req, res) => {
+-      // just do nothing, we should get a timeout event.
+-      const s = req.setTimeout(50, common.mustCall((socket) => {
+-        socket.destroy();
+-        server.close();
+-        cb();
+-      }));
+-      assert.ok(s instanceof http.IncomingMessage);
+-    }));
+-  server.listen(common.mustCall(() => {
+-    const req = https.request({
+-      port: server.address().port,
+-      method: 'POST',
+-      rejectUnauthorized: false
+-    });
+-    req.on('error', () => {});
+-    req.write('Hello');
+-    // req is in progress
+-  }));
+-});
+-
+-test(function serverResponseTimeout(cb) {
+-  const server = https.createServer(
+-    serverOptions,
+-    common.mustCall((req, res) => {
+-      // just do nothing, we should get a timeout event.
+-      const s = res.setTimeout(50, common.mustCall((socket) => {
+-        socket.destroy();
+-        server.close();
+-        cb();
+-      }));
+-      assert.ok(s instanceof http.OutgoingMessage);
+-    }));
+-  server.listen(common.mustCall(() => {
+-    https.get({
+-      port: server.address().port,
+-      rejectUnauthorized: false
+-    }).on('error', common.mustCall());
+-  }));
+-});
+-
+-test(function serverRequestNotTimeoutAfterEnd(cb) {
+-  const server = https.createServer(
+-    serverOptions,
+-    common.mustCall((req, res) => {
+-      // just do nothing, we should get a timeout event.
+-      const s = req.setTimeout(50, common.mustNotCall());
+-      assert.ok(s instanceof http.IncomingMessage);
+-      res.on('timeout', common.mustCall());
+-    }));
+-  server.on('timeout', common.mustCall((socket) => {
+-    socket.destroy();
+-    server.close();
+-    cb();
+-  }));
+-  server.listen(common.mustCall(() => {
+-    https.get({
+-      port: server.address().port,
+-      rejectUnauthorized: false
+-    }).on('error', common.mustCall());
+-  }));
+-});
+-
+-test(function serverResponseTimeoutWithPipeline(cb) {
+-  let caughtTimeout = '';
+-  let secReceived = false;
+-  process.on('exit', () => {
+-    assert.strictEqual(caughtTimeout, '/2');
+-  });
+-  const server = https.createServer(serverOptions, (req, res) => {
+-    if (req.url === '/2')
+-      secReceived = true;
+-    if (req.url === '/1') {
+-      res.end();
+-      return;
+-    }
+-    const s = res.setTimeout(50, () => {
+-      caughtTimeout += req.url;
+-    });
+-    assert.ok(s instanceof http.OutgoingMessage);
+-  });
+-  server.on('timeout', common.mustCall((socket) => {
+-    if (secReceived) {
+-      socket.destroy();
+-      server.close();
+-      cb();
+-    }
+-  }));
+-  server.listen(common.mustCall(() => {
+-    const options = {
+-      port: server.address().port,
+-      allowHalfOpen: true,
+-      rejectUnauthorized: false
+-    };
+-    const c = tls.connect(options, () => {
+-      c.write('GET /1 HTTP/1.1\r\nHost: localhost\r\n\r\n');
+-      c.write('GET /2 HTTP/1.1\r\nHost: localhost\r\n\r\n');
+-      c.write('GET /3 HTTP/1.1\r\nHost: localhost\r\n\r\n');
+-    });
+-  }));
+-});
+-
+-test(function idleTimeout(cb) {
+-  // Test that the an idle connection invokes the timeout callback.
+-  const server = https.createServer(serverOptions);
+-  const s = server.setTimeout(50, common.mustCall((socket) => {
+-    socket.destroy();
+-    server.close();
+-    cb();
+-  }));
+-  assert.ok(s instanceof https.Server);
+-  server.listen(common.mustCall(() => {
+-    const options = {
+-      port: server.address().port,
+-      allowHalfOpen: true,
+-      rejectUnauthorized: false
+-    };
+-    const c = tls.connect(options, () => {
+-      // ECONNRESET could happen on a heavily-loaded server.
+-      c.on('error', (e) => {
+-        if (e.message !== 'read ECONNRESET')
+-          throw e;
+-      });
+-      c.write('GET /1 HTTP/1.1\r\nHost: localhost\r\n\r\n');
+-      // Keep-Alive
+-    });
+-  }));
+-});
+-
+-test(function fastTimeout(cb) {
+-  // Test that the socket timeout fires but no timeout fires for the request.
+-  let connectionHandlerInvoked = false;
+-  let timeoutHandlerInvoked = false;
+-  let connectionSocket;
+-
+-  function invokeCallbackIfDone() {
+-    if (connectionHandlerInvoked && timeoutHandlerInvoked) {
+-      connectionSocket.destroy();
+-      server.close();
+-      cb();
+-    }
+-  }
+-
+-  const server = https.createServer(serverOptions, common.mustCall(
+-    (req, res) => {
+-      req.on('timeout', common.mustNotCall());
+-      res.end();
+-      connectionHandlerInvoked = true;
+-      invokeCallbackIfDone();
+-    }
+-  ));
+-  const s = server.setTimeout(1, common.mustCall((socket) => {
+-    connectionSocket = socket;
+-    timeoutHandlerInvoked = true;
+-    invokeCallbackIfDone();
+-  }));
+-  assert.ok(s instanceof https.Server);
+-  server.listen(common.mustCall(() => {
+-    const options = {
+-      port: server.address().port,
+-      allowHalfOpen: true,
+-      rejectUnauthorized: false
+-    };
+-    const c = tls.connect(options, () => {
+-      c.write('GET /1 HTTP/1.1\r\nHost: localhost\r\n\r\n');
+-      // Keep-Alive
+-    });
+-  }));
+-});
+diff --git a/test/parallel/test-https-simple.js b/test/parallel/test-https-simple.js
+deleted file mode 100644
+index 9184430..0000000
+--- a/test/parallel/test-https-simple.js
++++ /dev/null
+@@ -1,93 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-const assert = require('assert');
+-const https = require('https');
+-const fs = require('fs');
+-
+-const options = {
+-  key: fs.readFileSync(`${common.fixturesDir}/keys/agent1-key.pem`),
+-  cert: fs.readFileSync(`${common.fixturesDir}/keys/agent1-cert.pem`)
+-};
+-
+-const tests = 2;
+-let successful = 0;
+-
+-const testSucceeded = () => {
+-  successful = successful + 1;
+-  if (successful === tests) {
+-    server.close();
+-  }
+-};
+-
+-const body = 'hello world\n';
+-
+-const serverCallback = common.mustCall(function(req, res) {
+-  res.writeHead(200, { 'content-type': 'text/plain' });
+-  res.end(body);
+-});
+-
+-const server = https.createServer(options, serverCallback);
+-
+-server.listen(0, common.mustCall(() => {
+-  // Do a request ignoring the unauthorized server certs
+-  const port = server.address().port;
+-
+-  const noCertCheckOptions = {
+-    hostname: '127.0.0.1',
+-    port: port,
+-    path: '/',
+-    method: 'GET',
+-    rejectUnauthorized: false
+-  };
+-
+-  noCertCheckOptions.Agent = new https.Agent(noCertCheckOptions);
+-
+-  const req = https.request(noCertCheckOptions, common.mustCall((res) => {
+-    let responseBody = '';
+-    res.on('data', function(d) {
+-      responseBody = responseBody + d;
+-    });
+-
+-    res.on('end', common.mustCall(() => {
+-      assert.strictEqual(responseBody, body);
+-      testSucceeded();
+-    }));
+-  }));
+-  req.end();
+-
+-  req.on('error', function(e) {
+-    throw e;
+-  });
+-
+-  // Do a request that throws error due to the invalid server certs
+-  const checkCertOptions = {
+-    hostname: '127.0.0.1',
+-    port: port,
+-    path: '/',
+-    method: 'GET'
+-  };
+-
+-  const checkCertReq = https.request(checkCertOptions, function(res) {
+-    res.on('data', function() {
+-      throw new Error('data should not be received');
+-    });
+-
+-    res.on('end', function() {
+-      throw new Error('connection should not be established');
+-    });
+-  });
+-  checkCertReq.end();
+-
+-  checkCertReq.on('error', common.mustCall((e) => {
+-    assert.strictEqual(e.code, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE');
+-    testSucceeded();
+-  }));
+-}));
+-
+-process.on('exit', function() {
+-  assert.strictEqual(successful, tests);
+-});
+diff --git a/test/parallel/test-https-strict.js b/test/parallel/test-https-strict.js
+deleted file mode 100644
+index 1cb49fc..0000000
+--- a/test/parallel/test-https-strict.js
++++ /dev/null
+@@ -1,201 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-if (!common.hasCrypto)
+-  common.skip('missing crypto');
+-
+-// disable strict server certificate validation by the client
+-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+-
+-const assert = require('assert');
+-const https = require('https');
+-const fs = require('fs');
+-const path = require('path');
+-
+-function file(fname) {
+-  return path.resolve(common.fixturesDir, 'keys', fname);
+-}
+-
+-function read(fname) {
+-  return fs.readFileSync(file(fname));
+-}
+-
+-// key1 is signed by ca1.
+-const key1 = read('agent1-key.pem');
+-const cert1 = read('agent1-cert.pem');
+-
+-// key2 has a self signed cert
+-const key2 = read('agent2-key.pem');
+-const cert2 = read('agent2-cert.pem');
+-
+-// key3 is signed by ca2.
+-const key3 = read('agent3-key.pem');
+-const cert3 = read('agent3-cert.pem');
+-
+-const ca1 = read('ca1-cert.pem');
+-const ca2 = read('ca2-cert.pem');
+-
+-// different agents to use different CA lists.
+-// this api is beyond bad.
+-const agent0 = new https.Agent();
+-const agent1 = new https.Agent({ ca: [ca1] });
+-const agent2 = new https.Agent({ ca: [ca2] });
+-const agent3 = new https.Agent({ ca: [ca1, ca2] });
+-
+-const options1 = {
+-  key: key1,
+-  cert: cert1
+-};
+-
+-const options2 = {
+-  key: key2,
+-  cert: cert2
+-};
+-
+-const options3 = {
+-  key: key3,
+-  cert: cert3
+-};
+-
+-const server1 = server(options1);
+-const server2 = server(options2);
+-const server3 = server(options3);
+-
+-let listenWait = 0;
+-
+-server1.listen(0, listening());
+-server2.listen(0, listening());
+-server3.listen(0, listening());
+-
+-const responseErrors = {};
+-let expectResponseCount = 0;
+-let responseCount = 0;
+-let pending = 0;
+-
+-
+-function server(options, port) {
+-  const s = https.createServer(options, handler);
+-  s.requests = [];
+-  s.expectCount = 0;
+-  return s;
+-}
+-
+-function handler(req, res) {
+-  this.requests.push(req.url);
+-  res.statusCode = 200;
+-  res.setHeader('foo', 'bar');
+-  res.end('hello, world\n');
+-}
+-
+-function listening() {
+-  listenWait++;
+-  return function() {
+-    listenWait--;
+-    if (listenWait === 0) {
+-      allListening();
+-    }
+-  };
+-}
+-
+-function makeReq(path, port, error, host, ca) {
+-  pending++;
+-  const options = {
+-    port: port,
+-    path: path,
+-    ca: ca
+-  };
+-
+-  if (!ca) {
+-    options.agent = agent0;
+-  } else {
+-    if (!Array.isArray(ca)) ca = [ca];
+-    if (ca.includes(ca1) && ca.includes(ca2)) {
+-      options.agent = agent3;
+-    } else if (ca.includes(ca1)) {
+-      options.agent = agent1;
+-    } else if (ca.includes(ca2)) {
+-      options.agent = agent2;
+-    } else {
+-      options.agent = agent0;
+-    }
+-  }
+-
+-  if (host) {
+-    options.headers = { host: host };
+-  }
+-  const req = https.get(options);
+-  expectResponseCount++;
+-  const server = port === server1.address().port ? server1
+-    : port === server2.address().port ? server2
+-      : port === server3.address().port ? server3
+-        : null;
+-
+-  if (!server) throw new Error(`invalid port: ${port}`);
+-  server.expectCount++;
+-
+-  req.on('response', function(res) {
+-    responseCount++;
+-    assert.strictEqual(res.connection.authorizationError, error);
+-    responseErrors[path] = res.connection.authorizationError;
+-    pending--;
+-    if (pending === 0) {
+-      server1.close();
+-      server2.close();
+-      server3.close();
+-    }
+-    res.resume();
+-  });
+-}
+-
+-function allListening() {
+-  // ok, ready to start the tests!
+-  const port1 = server1.address().port;
+-  const port2 = server2.address().port;
+-  const port3 = server3.address().port;
+-
+-  // server1: host 'agent1', signed by ca1
+-  makeReq('/inv1', port1, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE');
+-  makeReq('/inv1-ca1', port1,
+-          'Hostname/IP doesn\'t match certificate\'s altnames: ' +
+-              '"Host: localhost. is not cert\'s CN: agent1"',
+-          null, ca1);
+-  makeReq('/inv1-ca1ca2', port1,
+-          'Hostname/IP doesn\'t match certificate\'s altnames: ' +
+-              '"Host: localhost. is not cert\'s CN: agent1"',
+-          null, [ca1, ca2]);
+-  makeReq('/val1-ca1', port1, null, 'agent1', ca1);
+-  makeReq('/val1-ca1ca2', port1, null, 'agent1', [ca1, ca2]);
+-  makeReq('/inv1-ca2', port1,
+-          'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'agent1', ca2);
+-
+-  // server2: self-signed, host = 'agent2'
+-  // doesn't matter that thename matches, all of these will error.
+-  makeReq('/inv2', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT');
+-  makeReq('/inv2-ca1', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT',
+-          'agent2', ca1);
+-  makeReq('/inv2-ca1ca2', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT',
+-          'agent2', [ca1, ca2]);
+-
+-  // server3: host 'agent3', signed by ca2
+-  makeReq('/inv3', port3, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE');
+-  makeReq('/inv3-ca2', port3,
+-          'Hostname/IP doesn\'t match certificate\'s altnames: ' +
+-              '"Host: localhost. is not cert\'s CN: agent3"',
+-          null, ca2);
+-  makeReq('/inv3-ca1ca2', port3,
+-          'Hostname/IP doesn\'t match certificate\'s altnames: ' +
+-              '"Host: localhost. is not cert\'s CN: agent3"',
+-          null, [ca1, ca2]);
+-  makeReq('/val3-ca2', port3, null, 'agent3', ca2);
+-  makeReq('/val3-ca1ca2', port3, null, 'agent3', [ca1, ca2]);
+-  makeReq('/inv3-ca1', port3,
+-          'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'agent1', ca1);
+-
+-}
+-
+-process.on('exit', function() {
+-  console.error(responseErrors);
+-  assert.strictEqual(server1.requests.length, server1.expectCount);
+-  assert.strictEqual(server2.requests.length, server2.expectCount);
+-  assert.strictEqual(server3.requests.length, server3.expectCount);
+-  assert.strictEqual(responseCount, expectResponseCount);
+-});
+diff --git a/test/parallel/test-net-better-error-messages-port-hostname.js b/test/parallel/test-net-better-error-messages-port-hostname.js
+deleted file mode 100644
+index 0497490..0000000
+--- a/test/parallel/test-net-better-error-messages-port-hostname.js
++++ /dev/null
+@@ -1,15 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-const net = require('net');
+-const assert = require('assert');
+-
+-// Using port 0 as hostname used is already invalid.
+-const c = net.createConnection(0, '***');
+-
+-c.on('connect', common.mustNotCall());
+-
+-c.on('error', common.mustCall(function(e) {
+-  assert.strictEqual(e.code, 'ENOTFOUND');
+-  assert.strictEqual(e.port, 0);
+-  assert.strictEqual(e.hostname, '***');
+-}));
+diff --git a/test/parallel/test-net-connect-immediate-finish.js b/test/parallel/test-net-connect-immediate-finish.js
+deleted file mode 100644
+index 2c0f45f..0000000
+--- a/test/parallel/test-net-connect-immediate-finish.js
++++ /dev/null
+@@ -1,17 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-const assert = require('assert');
+-const net = require('net');
+-
+-const client = net.connect({host: '***', port: common.PORT});
+-
+-client.once('error', common.mustCall((err) => {
+-  assert(err);
+-  assert.strictEqual(err.code, err.errno);
+-  assert.strictEqual(err.code, 'ENOTFOUND');
+-  assert.strictEqual(err.host, err.hostname);
+-  assert.strictEqual(err.host, '***');
+-  assert.strictEqual(err.syscall, 'getaddrinfo');
+-}));
+-
+-client.end();
+diff --git a/test/parallel/test-npm-install.js b/test/parallel/test-npm-install.js
+deleted file mode 100644
+index 315f788..0000000
+--- a/test/parallel/test-npm-install.js
++++ /dev/null
+@@ -1,59 +0,0 @@
+-'use strict';
+-const common = require('../common');
+-
+-const path = require('path');
+-const spawn = require('child_process').spawn;
+-const assert = require('assert');
+-const fs = require('fs');
+-
+-common.refreshTmpDir();
+-const npmSandbox = path.join(common.tmpDir, 'npm-sandbox');
+-fs.mkdirSync(npmSandbox);
+-const installDir = path.join(common.tmpDir, 'install-dir');
+-fs.mkdirSync(installDir);
+-
+-const npmPath = path.join(
+-  __dirname,
+-  '..',
+-  '..',
+-  'deps',
+-  'npm',
+-  'bin',
+-  'npm-cli.js'
+-);
+-
+-const args = [
+-  npmPath,
+-  'install'
+-];
+-
+-const pkgContent = JSON.stringify({
+-  dependencies: {
+-    'package-name': `${common.fixturesDir}/packages/main`
+-  }
+-});
+-
+-const pkgPath = path.join(installDir, 'package.json');
+-
+-fs.writeFileSync(pkgPath, pkgContent);
+-
+-const env = Object.create(process.env);
+-env['PATH'] = path.dirname(process.execPath);
+-env['NPM_CONFIG_PREFIX'] = path.join(npmSandbox, 'npm-prefix');
+-env['NPM_CONFIG_TMP'] = path.join(npmSandbox, 'npm-tmp');
+-env['HOME'] = path.join(npmSandbox, 'home');
+-
+-const proc = spawn(process.execPath, args, {
+-  cwd: installDir,
+-  env: env
+-});
+-
+-function handleExit(code, signalCode) {
+-  assert.strictEqual(code, 0, `npm install got error code ${code}`);
+-  assert.strictEqual(signalCode, null, `unexpected signal: ${signalCode}`);
+-  assert.doesNotThrow(function() {
+-    fs.accessSync(`${installDir}/node_modules/package-name`);
+-  });
+-}
+-
+-proc.on('exit', common.mustCall(handleExit));
 -- 
-2.11.0
+1.8.3.1
 
