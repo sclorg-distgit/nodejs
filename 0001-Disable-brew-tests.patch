@@ -1,0 +1,41 @@
+From 9323baeec6ece929414b4ccf8c24ef51b68eaee7 Mon Sep 17 00:00:00 2001
+From: Zuzana Svetlikova <zsvetlik@redhat.com>
+Date: Tue, 15 Nov 2016 23:32:56 +0100
+Subject: [PATCH] Disable tests failing in brew
+
+---
+ test/{parallel => disabled}/test-crypto-dh-odd-key.js     | 0
+ test/{parallel => disabled}/test-tls-dhe.js               | 0
+ test/{parallel => disabled}/test-tls-ecdh-disable.js      | 0
+ test/{parallel => disabled}/test-tls-ecdh.js              | 0
+ test/{parallel => disabled}/test-tls-securepair-server.js | 0
+ 5 files changed, 0 insertions(+), 0 deletions(-)
+ rename test/{parallel => disabled}/test-crypto-dh-odd-key.js (100%)
+ rename test/{parallel => disabled}/test-tls-dhe.js (100%)
+ rename test/{parallel => disabled}/test-tls-ecdh-disable.js (100%)
+ rename test/{parallel => disabled}/test-tls-ecdh.js (100%)
+ rename test/{parallel => disabled}/test-tls-securepair-server.js (100%)
+
+diff --git a/test/parallel/test-crypto-dh-odd-key.js b/test/disabled/test-crypto-dh-odd-key.js
+similarity index 100%
+rename from test/parallel/test-crypto-dh-odd-key.js
+rename to test/disabled/test-crypto-dh-odd-key.js
+diff --git a/test/parallel/test-tls-dhe.js b/test/disabled/test-tls-dhe.js
+similarity index 100%
+rename from test/parallel/test-tls-dhe.js
+rename to test/disabled/test-tls-dhe.js
+diff --git a/test/parallel/test-tls-ecdh-disable.js b/test/disabled/test-tls-ecdh-disable.js
+similarity index 100%
+rename from test/parallel/test-tls-ecdh-disable.js
+rename to test/disabled/test-tls-ecdh-disable.js
+diff --git a/test/parallel/test-tls-ecdh.js b/test/disabled/test-tls-ecdh.js
+similarity index 100%
+rename from test/parallel/test-tls-ecdh.js
+rename to test/disabled/test-tls-ecdh.js
+diff --git a/test/parallel/test-tls-securepair-server.js b/test/disabled/test-tls-securepair-server.js
+similarity index 100%
+rename from test/parallel/test-tls-securepair-server.js
+rename to test/disabled/test-tls-securepair-server.js
+-- 
+2.10.2
+

@@ -1,0 +1,23 @@
+From a5b69e8e922560115413ed9e0d91eee2034bc659 Mon Sep 17 00:00:00 2001
+From: Zuzana Svetlikova <zsvetlik@redhat.com>
+Date: Tue, 29 Nov 2016 15:31:57 +0100
+Subject: [PATCH] Disable net tests
+
+---
+ .../test-net-better-error-messages-port-hostname.js                       | 0
+ test/{parallel => disabled}/test-net-connect-immediate-finish.js          | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ rename test/{parallel => disabled}/test-net-better-error-messages-port-hostname.js (100%)
+ rename test/{parallel => disabled}/test-net-connect-immediate-finish.js (100%)
+
+diff --git a/test/parallel/test-net-better-error-messages-port-hostname.js b/test/disabled/test-net-better-error-messages-port-hostname.js
+similarity index 100%
+rename from test/parallel/test-net-better-error-messages-port-hostname.js
+rename to test/disabled/test-net-better-error-messages-port-hostname.js
+diff --git a/test/parallel/test-net-connect-immediate-finish.js b/test/disabled/test-net-connect-immediate-finish.js
+similarity index 100%
+rename from test/parallel/test-net-connect-immediate-finish.js
+rename to test/disabled/test-net-connect-immediate-finish.js
+-- 
+2.10.2
+

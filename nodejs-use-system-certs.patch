@@ -1,4 +1,4 @@
-From 58c110a74377171587a6ef28a6d5dff1f29a7d52 Mon Sep 17 00:00:00 2001
+From e0aac817a87c927f70a6f8edb63a4103a4109dfc Mon Sep 17 00:00:00 2001
 From: Stephen Gallagher <sgallagh@redhat.com>
 Date: Tue, 1 Dec 2015 16:29:07 -0500
 Subject: [PATCH 2/2] Do not bundle CA Certificates
@@ -17,16 +17,21 @@ correct path for Fedora
 
 Modified 2015-12-01 by Stephen Gallagher <sgallagh@redhat.com> to update for
 Node.js 4.2
+
+Modified 2016-03-04 by Stephen Gallagher <sgallagh@redhat.com> to update for
+Node.js 5.7.1
 ---
- src/node_crypto.cc | 31 ++++++++-----------------------
- 1 file changed, 8 insertions(+), 23 deletions(-)
+ src/node_crypto.cc | 28 ++++++++--------------------
+ 1 file changed, 8 insertions(+), 20 deletions(-)
 
 diff --git a/src/node_crypto.cc b/src/node_crypto.cc
-index 7911ce9..60516ad 100644
+index acd83e9f2f41ade75ee9a3c8061acfa8b3dbf0f4..70ffe035f8be24b2eb6daf71185649d8ae7d579f 100644
 --- a/src/node_crypto.cc
 +++ b/src/node_crypto.cc
-@@ -119,7 +119,7 @@ static X509_NAME *cnnic_ev_name =
- static uv_mutex_t* locks;
+@@ -119,11 +119,11 @@ static X509_NAME *cnnic_ev_name =
+                   sizeof(CNNIC_EV_ROOT_CA_SUBJECT_DATA)-1);
+ 
+ static Mutex* mutexes;
  
  const char* const root_certs[] = {
 -#include "node_root_certs.h"  // NOLINT(build/include_order)
@@ -34,22 +39,23 @@ index 7911ce9..60516ad 100644
  };
  
  X509_STORE* root_cert_store;
-@@ -763,32 +763,17 @@ void SecureContext::AddRootCerts(const FunctionCallbackInfo<Value>& args) {
+ 
+ // Just to generate static methods
+@@ -748,33 +748,21 @@ void SecureContext::AddRootCerts(const FunctionCallbackInfo<Value>& args) {
+   (void) &clear_error_on_return;  // Silence compiler warning.
+ 
    CHECK_EQ(sc->ca_store_, nullptr);
  
    if (!root_cert_store) {
 -    root_cert_store = X509_STORE_new();
 -
--    for (size_t i = 0; i < ARRAY_SIZE(root_certs); i++) {
--      BIO* bp = NodeBIO::New();
--
--      if (!BIO_write(bp, root_certs[i], strlen(root_certs[i]))) {
--        BIO_free_all(bp);
+-    for (size_t i = 0; i < arraysize(root_certs); i++) {
+-      BIO* bp = NodeBIO::NewFixed(root_certs[i], strlen(root_certs[i]));
+-      if (bp == nullptr) {
 -        return;
 -      }
 -
 -      X509 *x509 = PEM_read_bio_X509(bp, nullptr, CryptoPemCallback, nullptr);
--
 -      if (x509 == nullptr) {
 -        BIO_free_all(bp);
 -        return;
@@ -74,6 +80,8 @@ index 7911ce9..60516ad 100644
  }
  
  
+ void SecureContext::SetCiphers(const FunctionCallbackInfo<Value>& args) {
+   SecureContext* sc;
 -- 
-2.5.0
+2.7.2
 

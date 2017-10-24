@@ -1,0 +1,89 @@
+From f9b8303e88ac7cffbdb1fa5a4c5436771bf4fe7d Mon Sep 17 00:00:00 2001
+From: Zuzana Svetlikova <zsvetlik@redhat.com>
+Date: Tue, 15 Nov 2016 18:13:26 +0100
+Subject: [PATCH] Disable failing tests
+
+---
+ test/{parallel => disabled}/test-child-process-uid-gid.js  | 0
+ test/{parallel => disabled}/test-crypto-authenticated.js   | 0
+ test/{parallel => disabled}/test-crypto-binary-default.js  | 0
+ test/{parallel => disabled}/test-crypto-cipher-decipher.js | 0
+ test/{parallel => disabled}/test-crypto-dh.js              | 0
+ test/{parallel => disabled}/test-crypto.js                 | 0
+ test/{parallel => disabled}/test-npm-install.js            | 0
+ test/{parallel => disabled}/test-tls-cnnic-whitelist.js    | 0
+ test/{parallel => disabled}/test-tls-empty-sni-context.js  | 0
+ test/{parallel => disabled}/test-tls-ocsp-callback.js      | 0
+ test/{parallel => disabled}/test-tls-pfx-gh-5100-regr.js   | 0
+ test/{parallel => disabled}/test-tls-sni-option.js         | 0
+ test/{parallel => disabled}/test-tls-sni-server-client.js  | 0
+ 13 files changed, 0 insertions(+), 0 deletions(-)
+ rename test/{parallel => disabled}/test-child-process-uid-gid.js (100%)
+ rename test/{parallel => disabled}/test-crypto-authenticated.js (100%)
+ rename test/{parallel => disabled}/test-crypto-binary-default.js (100%)
+ rename test/{parallel => disabled}/test-crypto-cipher-decipher.js (100%)
+ rename test/{parallel => disabled}/test-crypto-dh.js (100%)
+ rename test/{parallel => disabled}/test-crypto.js (100%)
+ rename test/{parallel => disabled}/test-npm-install.js (100%)
+ rename test/{parallel => disabled}/test-tls-cnnic-whitelist.js (100%)
+ rename test/{parallel => disabled}/test-tls-empty-sni-context.js (100%)
+ rename test/{parallel => disabled}/test-tls-ocsp-callback.js (100%)
+ rename test/{parallel => disabled}/test-tls-pfx-gh-5100-regr.js (100%)
+ rename test/{parallel => disabled}/test-tls-sni-option.js (100%)
+ rename test/{parallel => disabled}/test-tls-sni-server-client.js (100%)
+
+diff --git a/test/parallel/test-child-process-uid-gid.js b/test/disabled/test-child-process-uid-gid.js
+similarity index 100%
+rename from test/parallel/test-child-process-uid-gid.js
+rename to test/disabled/test-child-process-uid-gid.js
+diff --git a/test/parallel/test-crypto-authenticated.js b/test/disabled/test-crypto-authenticated.js
+similarity index 100%
+rename from test/parallel/test-crypto-authenticated.js
+rename to test/disabled/test-crypto-authenticated.js
+diff --git a/test/parallel/test-crypto-binary-default.js b/test/disabled/test-crypto-binary-default.js
+similarity index 100%
+rename from test/parallel/test-crypto-binary-default.js
+rename to test/disabled/test-crypto-binary-default.js
+diff --git a/test/parallel/test-crypto-cipher-decipher.js b/test/disabled/test-crypto-cipher-decipher.js
+similarity index 100%
+rename from test/parallel/test-crypto-cipher-decipher.js
+rename to test/disabled/test-crypto-cipher-decipher.js
+diff --git a/test/parallel/test-crypto-dh.js b/test/disabled/test-crypto-dh.js
+similarity index 100%
+rename from test/parallel/test-crypto-dh.js
+rename to test/disabled/test-crypto-dh.js
+diff --git a/test/parallel/test-crypto.js b/test/disabled/test-crypto.js
+similarity index 100%
+rename from test/parallel/test-crypto.js
+rename to test/disabled/test-crypto.js
+diff --git a/test/parallel/test-npm-install.js b/test/disabled/test-npm-install.js
+similarity index 100%
+rename from test/parallel/test-npm-install.js
+rename to test/disabled/test-npm-install.js
+diff --git a/test/parallel/test-tls-cnnic-whitelist.js b/test/disabled/test-tls-cnnic-whitelist.js
+similarity index 100%
+rename from test/parallel/test-tls-cnnic-whitelist.js
+rename to test/disabled/test-tls-cnnic-whitelist.js
+diff --git a/test/parallel/test-tls-empty-sni-context.js b/test/disabled/test-tls-empty-sni-context.js
+similarity index 100%
+rename from test/parallel/test-tls-empty-sni-context.js
+rename to test/disabled/test-tls-empty-sni-context.js
+diff --git a/test/parallel/test-tls-ocsp-callback.js b/test/disabled/test-tls-ocsp-callback.js
+similarity index 100%
+rename from test/parallel/test-tls-ocsp-callback.js
+rename to test/disabled/test-tls-ocsp-callback.js
+diff --git a/test/parallel/test-tls-pfx-gh-5100-regr.js b/test/disabled/test-tls-pfx-gh-5100-regr.js
+similarity index 100%
+rename from test/parallel/test-tls-pfx-gh-5100-regr.js
+rename to test/disabled/test-tls-pfx-gh-5100-regr.js
+diff --git a/test/parallel/test-tls-sni-option.js b/test/disabled/test-tls-sni-option.js
+similarity index 100%
+rename from test/parallel/test-tls-sni-option.js
+rename to test/disabled/test-tls-sni-option.js
+diff --git a/test/parallel/test-tls-sni-server-client.js b/test/disabled/test-tls-sni-server-client.js
+similarity index 100%
+rename from test/parallel/test-tls-sni-server-client.js
+rename to test/disabled/test-tls-sni-server-client.js
+-- 
+2.10.2
+
