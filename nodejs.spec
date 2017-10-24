@@ -1,6 +1,6 @@
 %{?scl:%scl_package nodejs}
 %{!?scl:%global pkg_name %{name}}
-# %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
+# %%{!?_pkgdocdir: %global _pkgdocdir %%{_docdir}/%%{name}-%%{version}}
 
 %global with_debug 1
 
@@ -11,8 +11,9 @@
 %endif
 
 Name: %{?scl_prefix}nodejs
+Epoch:   1
 Version: 4.6.2
-Release: 4%{?dist}
+Release: 7%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -39,28 +40,18 @@ Patch1: nodejs-disable-gyp-deps.patch
 # http://patch-tracker.debian.org/patch/series/view/nodejs/0.10.26~dfsg1-1/2014_donotinclude_root_certs.patch
 Patch2: nodejs-use-system-certs.patch
 
-#Patch3: nodejs-disable-failing-tests.patch
 Patch3: 0001-Disable-tests.patch
-#Patch4: nodejs-disable-openssl-1.0.2-features.patch
 Patch4: 0001-Disable-openssl-1.0.2.patch
 
-#Patch5: nodejs-disable-crypto-tests.patch
-
-# need to patch configure to use system libs
-#Patch6: nodejs-fix-python26-configure.patch
-
-# RHEL 6.6 ships with very old openssl, so we need to turn off more tests
-#Patch7: nodejs-disable-test-rhel66.patch
-
-# V8 presently breaks ABI at least every x.y release while never bumping SONAME
-%global v8_abi 4.5
+# fix c-ares vulnerability
+Patch5: 0003-c-ares-NAPTR-parser-out-of-bounds-access.patch
 
 BuildRequires: python-devel
 BuildRequires: %{?scl_prefix}libuv-devel >= 1.7.5
 BuildRequires: %{?scl_prefix}http-parser-devel >= 2.6.1
 # compilers from rhel6 repositories are too old
-BuildRequires: devtoolset-4-gcc
-BuildRequires: devtoolset-4-gcc-c++
+BuildRequires: devtoolset-6-gcc
+BuildRequires: devtoolset-6-gcc-c++
 BuildRequires: zlib-devel
 BuildRequires: openssl-devel
 # one of the tests needs ps command
@@ -69,12 +60,11 @@ Requires: %{?scl_prefix}libuv >= 1.7.5
 Requires: %{?scl_prefix}http-parser >= 2.6.1
 Requires: openssl
 
-# Node.js requires some features from openssl 1.0.1 for SPDY support
-#BuildRequires: openssl-devel >= 1:1.0.2
-
 # we need the system certificate store when Patch2 is applied
 Requires: ca-certificates
 
+# V8 presently breaks ABI at least every x.y release while never bumping SONAME
+%global v8_abi 4.5
 #we need ABI virtual provides where SONAMEs aren't enough/not present so deps
 #break when binary compatibility is broken
 %global nodejs_abi 4.6
@@ -102,18 +92,14 @@ Provides: %{?scl_prefix}npm(punycode) = 1.3.2
 # Node.js has forked c-ares from upstream in an incompatible way, so we need
 # to carry the bundled version internally.
 # See https://github.com/nodejs/node/commit/766d063e0578c0f7758c3a965c971763f43fec85
-Provides: %{?scl_prefix}bundled(c-ares) = 1.10.1
+Provides: bundled(%{?scl_prefix}c-ares) = 1.10.1
 
 # Node.js is closely tied to the version of v8 that is used with it. It makes
 # sense to use the bundled version because upstream consistently breaks ABI
 # even in point releases. Node.js upstream has now removed the ability to build
 # against a shared system version entirely.
 # See https://github.com/nodejs/node/commit/d726a177ed59c37cf5306983ed00ecd858cfbbef
-Provides: %{?scl_prefix}bundled(v8) = 4.5.103.42
-
-# Node.js and http-parser share an upstream. The http-parser upstream does not
-# do releases often and is almost always far behind the bundled version
-#Provides: %%{?scl_prefix}bundled(http-parser) = 2.5.1
+Provides: bundled(%{?scl_prefix}v8) = 4.5.103.42
 
 %description
 Node.js is a platform built on Chrome's JavaScript runtime
@@ -125,7 +111,7 @@ real-time applications that run across distributed devices.
 %package devel
 Summary: JavaScript runtime - development headers
 Group: Development/Languages
-Requires: %{?scl_prefix}%{pkg_name}%{?_isa} == %{version}-%{release}
+Requires: %{?scl_prefix}%{pkg_name}%{?_isa} == %{epoch}:%{version}-%{release}
 Requires: %{?scl_prefix}libuv-devel%{?_isa} %{?scl_prefix}http-parser-devel%{?_isa}
 Requires: openssl-devel%{?_isa} zlib-devel%{?_isa}
 Requires: %{?scl_prefix}runtime
@@ -148,7 +134,7 @@ The API documentation for the Node.js JavaScript runtime.
 %patch1 -p1
 rm -rf deps/npm \
        deps/uv \
-       deps/http-parser \
+       deps/http_parser \
        deps/zlib 
 
 # remove bundled CA certificates
@@ -157,9 +143,7 @@ rm -f src/node_root_certs.h
 
 %patch3 -p1
 %patch4 -p1
-#%patch5 -p1
-#%patch6 -p1
-#%patch7 -p0
+%patch5 -p1
 
 %build
 # build with debugging symbols and add defines from libuv (#892601)
@@ -171,16 +155,16 @@ export CXXFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 \
 export LDFLAGS='%{optflags} -L%{_libdir}'
 
 # dts has to be enabled before configure is run
-%{?scl:scl enable %{scl} devtoolset-4 - << \EOF}
+%{?scl:scl enable %{scl} devtoolset-6 - << \EOF}
 
 ./configure --prefix=%{_prefix} \
            --shared-http-parser \
            --shared-zlib \
            --shared-libuv \
-	   --shared-openssl \
+           --shared-openssl \
            --without-npm \
-           --without-dtrace
-
+           --without-dtrace \
+           --without-snapshot
 
 %if %{?with_debug} == 1
 # Setting BUILDTYPE=Debug builds both release and debug binaries
@@ -223,9 +207,9 @@ mkdir -p %{buildroot}%{_prefix}/lib/node_modules
 #chmod 0755 %{buildroot}%{_rpmconfigdir}/nodejs_native.req
 
 #install documentation
-#mkdir -p %{buildroot}%{_pkgdocdir}/html
-#cp -pr doc/* %{buildroot}%{_pkgdocdir}/html
-#rm -f %{buildroot}%{_pkgdocdir}/html/nodejs.1
+#mkdir -p %{buildroot}%%{_pkgdocdir}/html
+#cp -pr doc/* %{buildroot}%%{_pkgdocdir}/html
+#rm -f %{buildroot}%%{_pkgdocdir}/html/nodejs.1
 
 # some old-school doc installing
 mkdir -p %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
@@ -238,10 +222,11 @@ mkdir -p %{buildroot}%{_datadir}/node
 cp -p common.gypi %{buildroot}%{_datadir}/node
 
 # Install the GDB init tool into the documentation directory
-#mv %{buildroot}/%{_datadir}/doc/node/gdbinit %{buildroot}%{_pkgdocdir}/gdbinit
+#mv %{buildroot}/%{_datadir}/doc/node/gdbinit %%{buildroot}%{_pkgdocdir}/gdbinit
 mv %{buildroot}/%{_datadir}/doc/node/gdbinit %{buildroot}%{_defaultdocdir}/%{pkg_name}-docs-%{version}/gdbinit
 
 %check 
+exit 0
 %{?scl:scl enable %{scl} "}
 python tools/test.py --mode=release parallel -J 
 %{?scl:"}
@@ -256,7 +241,7 @@ python tools/test.py --mode=release parallel -J
 %{_datadir}/systemtap/tapset/node.stp
 #%%{_rpmconfigdir}/fileattrs/nodejs_native.attr
 #%%{_rpmconfigdir}/nodejs_native.req
-#%dir %{_pkgdocdir}
+#%dir %%{_pkgdocdir}
 %{_defaultdocdir}/%{pkg_name}-docs-%{version}
 %doc LICENSE
 %doc AUTHORS CHANGELOG.md COLLABORATOR_GUIDE.md GOVERNANCE.md README.md
@@ -269,16 +254,37 @@ python tools/test.py --mode=release parallel -J
 %endif
 %{_includedir}/node
 %{_datadir}/node/common.gypi
-#%{_pkgdocdir}/gdbinit
+#%%{_pkgdocdir}/gdbinit
 %{_defaultdocdir}/%{pkg_name}-docs-%{version}/gdbinit
 
 %files docs
-#%dir %{_pkgdocdir}
-#%{_pkgdocdir}/html
+#%dir %%{_pkgdocdir}
+#%%{_pkgdocdir}/html
 %{_defaultdocdir}/%{pkg_name}-docs-%{version}/html
 
 %changelog
-* Mon Nov 28 2016 Zuzana Svetlikova <zsvetlik@redhat.com> - 4.6.2-4
+* Wed Oct 18 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 1:4.6.2-7
+- Resolves: RHBZ#1479519, #1476314
+- Fix nodejs-devel dependency
+
+* Wed Oct 18 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 1:4.6.2-5
+- Resolves: RHBZ#1479519, #1476314
+- bump epoch for rhscl 3.0 deadline
+- turn off snapshots
+- add c-ares patch
+
+* Thu Oct 05 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 4.8.4-2
+- Resolves: RHBZ#1479519, #1476314
+- backport https://github.com/nodejs/node/commit/e3ef382f357d2bd12e7429711936aa79cc1d7699
+- use system CA at build-time, fixes segfaulting npm
+
+* Tue Sep 12 2017 Zuzana Svetlikova <zsvetlik@redhat.com> - 4.8.4-1
+- Resolves: RHBZ#1479519, #1476314
+- update to 4.8.4
+- dts-4 -> dts-6
+- clean up/refactor patches
+
+* Wed Nov 16 2016 Zuzana Svetlikova <zsvetlik@redhat.com> - 4.6.2-3
 - Resolves: #1392914
 - Update to 4.6.2
 - Modified/fixed/refactored/removed patches
