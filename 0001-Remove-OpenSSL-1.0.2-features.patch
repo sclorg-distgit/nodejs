@@ -1,8 +1,20 @@
+From e7f1280d006dc5e50f0d3844b63b7c746ced3cb9 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 13 Sep 2018 13:55:29 +0000
+Subject: [PATCH 1/2] Rebase 10.1
+
+---
+ src/node_constants.cc                              |  12 +-
+ src/node_crypto.cc                                 | 294 ++++++++++++++++++---
+ src/node_crypto.h                                  |   2 +
+ .../test-tls-client-getephemeralkeyinfo.js         |   6 +-
+ 4 files changed, 271 insertions(+), 43 deletions(-)
+
 diff --git a/src/node_constants.cc b/src/node_constants.cc
-index 68339c0..8f119a2 100644
+index b6c7bf3..28ca346 100644
 --- a/src/node_constants.cc
 +++ b/src/node_constants.cc
-@@ -917,8 +917,12 @@ void DefineOpenSSLConstants(Local<Object> target) {
+@@ -951,8 +951,12 @@ void DefineOpenSSLConstants(Local<Object> target) {
      NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_RAND);
  # endif
  
@@ -17,7 +29,7 @@ index 68339c0..8f119a2 100644
  # endif
  
  # ifdef ENGINE_METHOD_CIPHERS
-@@ -929,6 +933,10 @@ void DefineOpenSSLConstants(Local<Object> target) {
+@@ -963,6 +967,10 @@ void DefineOpenSSLConstants(Local<Object> target) {
      NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_DIGESTS);
  # endif
  
@@ -29,12 +41,12 @@ index 68339c0..8f119a2 100644
      NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_PKEY_METHS);
  # endif
 diff --git a/src/node_crypto.cc b/src/node_crypto.cc
-index d5f2799..b7285e6 100644
+index 203d6b4..7bdb1b1 100644
 --- a/src/node_crypto.cc
 +++ b/src/node_crypto.cc
-@@ -93,6 +93,119 @@ struct StackOfX509Deleter {
- 
- using StackOfX509 = std::unique_ptr<STACK_OF(X509), StackOfX509Deleter>;
+@@ -109,6 +109,119 @@ struct OpenSSLBufferDeleter {
+ };
+ using OpenSSLBuffer = std::unique_ptr<char[], OpenSSLBufferDeleter>;
  
 +#if OPENSSL_VERSION_NUMBER < 0x10100000L
 +static void RSA_get0_key(const RSA* r, const BIGNUM** n, const BIGNUM** e,
@@ -152,7 +164,7 @@ index d5f2799..b7285e6 100644
  static const char* const root_certs[] = {
  #include "node_root_certs.h"  // NOLINT(build/include_order)
  };
-@@ -109,11 +222,19 @@ template void SSLWrap<TLSWrap>::AddMethods(Environment* env,
+@@ -125,11 +238,19 @@ template void SSLWrap<TLSWrap>::AddMethods(Environment* env,
  template void SSLWrap<TLSWrap>::ConfigureSecureContext(SecureContext* sc);
  template void SSLWrap<TLSWrap>::SetSNIContext(SecureContext* sc);
  template int SSLWrap<TLSWrap>::SetCACerts(SecureContext* sc);
@@ -172,8 +184,8 @@ index d5f2799..b7285e6 100644
  template int SSLWrap<TLSWrap>::NewSessionCallback(SSL* s,
                                                    SSL_SESSION* sess);
  template void SSLWrap<TLSWrap>::OnClientHello(
-@@ -139,6 +260,34 @@ template int SSLWrap<TLSWrap>::SelectALPNCallback(
- #endif  // TLSEXT_TYPE_application_layer_protocol_negotiation
+@@ -148,6 +269,34 @@ template int SSLWrap<TLSWrap>::SelectALPNCallback(
+     void* arg);
  
  
 +#if OPENSSL_VERSION_NUMBER < 0x10100000L
@@ -204,10 +216,10 @@ index d5f2799..b7285e6 100644
 +#endif
 +
 +
- static int PasswordCallback(char *buf, int size, int rwflag, void *u) {
+ static int PasswordCallback(char* buf, int size, int rwflag, void* u) {
    if (u) {
      size_t buflen = static_cast<size_t>(size);
-@@ -354,8 +503,8 @@ void SecureContext::Init(const FunctionCallbackInfo<Value>& args) {
+@@ -381,8 +530,8 @@ void SecureContext::Init(const FunctionCallbackInfo<Value>& args) {
    ASSIGN_OR_RETURN_UNWRAP(&sc, args.Holder());
    Environment* env = sc->env();
  
@@ -218,7 +230,7 @@ index d5f2799..b7285e6 100644
    const SSL_METHOD* method = TLS_method();
  
    if (args.Length() == 1 && args[0]->IsString()) {
-@@ -378,47 +527,47 @@ void SecureContext::Init(const FunctionCallbackInfo<Value>& args) {
+@@ -405,47 +554,47 @@ void SecureContext::Init(const FunctionCallbackInfo<Value>& args) {
      } else if (strcmp(*sslmethod, "SSLv3_client_method") == 0) {
        return env->ThrowError("SSLv3 methods disabled");
      } else if (strcmp(*sslmethod, "SSLv23_method") == 0) {
@@ -296,23 +308,23 @@ index d5f2799..b7285e6 100644
      } else {
        return env->ThrowError("Unknown method");
      }
-@@ -440,6 +589,7 @@ void SecureContext::Init(const FunctionCallbackInfo<Value>& args) {
+@@ -467,6 +616,7 @@ void SecureContext::Init(const FunctionCallbackInfo<Value>& args) {
                                   SSL_SESS_CACHE_NO_INTERNAL |
                                   SSL_SESS_CACHE_NO_AUTO_CLEAR);
  
 +#if OPENSSL_VERSION_NUMBER >= 0x10100000L
-   SSL_CTX_set_min_proto_version(sc->ctx_, min_version);
-   SSL_CTX_set_max_proto_version(sc->ctx_, max_version);
+   SSL_CTX_set_min_proto_version(sc->ctx_.get(), min_version);
+   SSL_CTX_set_max_proto_version(sc->ctx_.get(), max_version);
    // OpenSSL 1.1.0 changed the ticket key size, but the OpenSSL 1.0.x size was
-@@ -452,6 +602,7 @@ void SecureContext::Init(const FunctionCallbackInfo<Value>& args) {
+@@ -478,6 +628,7 @@ void SecureContext::Init(const FunctionCallbackInfo<Value>& args) {
+     return env->ThrowError("Error generating ticket keys");
    }
-   SSL_CTX_set_tlsext_ticket_key_cb(sc->ctx_,
-                                    SecureContext::TicketCompatibilityCallback);
+   SSL_CTX_set_tlsext_ticket_key_cb(sc->ctx_.get(), TicketCompatibilityCallback);
 +#endif
  }
  
  
-@@ -909,6 +1060,11 @@ void SecureContext::SetECDHCurve(const FunctionCallbackInfo<Value>& args) {
+@@ -925,6 +1076,11 @@ void SecureContext::SetECDHCurve(const FunctionCallbackInfo<Value>& args) {
  
    node::Utf8Value curve(env->isolate(), args[0]);
  
@@ -324,7 +336,7 @@ index d5f2799..b7285e6 100644
    if (strcmp(*curve, "auto") == 0)
      return;
  
-@@ -1170,9 +1326,17 @@ void SecureContext::GetTicketKeys(const FunctionCallbackInfo<Value>& args) {
+@@ -1179,9 +1335,17 @@ void SecureContext::GetTicketKeys(const FunctionCallbackInfo<Value>& args) {
    ASSIGN_OR_RETURN_UNWRAP(&wrap, args.Holder());
  
    Local<Object> buff = Buffer::New(wrap->env(), 48).ToLocalChecked();
@@ -342,7 +354,7 @@ index d5f2799..b7285e6 100644
  
    args.GetReturnValue().Set(buff);
  #endif  // !def(OPENSSL_NO_TLSEXT) && def(SSL_CTX_get_tlsext_ticket_keys)
-@@ -1196,9 +1360,17 @@ void SecureContext::SetTicketKeys(const FunctionCallbackInfo<Value>& args) {
+@@ -1205,9 +1369,17 @@ void SecureContext::SetTicketKeys(const FunctionCallbackInfo<Value>& args) {
          env, "Ticket keys length must be 48 bytes");
    }
  
@@ -360,7 +372,7 @@ index d5f2799..b7285e6 100644
  
    args.GetReturnValue().Set(true);
  #endif  // !def(OPENSSL_NO_TLSEXT) && def(SSL_CTX_get_tlsext_ticket_keys)
-@@ -1206,6 +1378,14 @@ void SecureContext::SetTicketKeys(const FunctionCallbackInfo<Value>& args) {
+@@ -1215,6 +1387,14 @@ void SecureContext::SetTicketKeys(const FunctionCallbackInfo<Value>& args) {
  
  
  void SecureContext::SetFreeListLength(const FunctionCallbackInfo<Value>& args) {
@@ -375,7 +387,7 @@ index d5f2799..b7285e6 100644
  }
  
  
-@@ -1301,6 +1481,7 @@ int SecureContext::TicketKeyCallback(SSL* ssl,
+@@ -1311,6 +1491,7 @@ int SecureContext::TicketKeyCallback(SSL* ssl,
  }
  
  
@@ -383,7 +395,7 @@ index d5f2799..b7285e6 100644
  int SecureContext::TicketCompatibilityCallback(SSL* ssl,
                                                 unsigned char* name,
                                                 unsigned char* iv,
-@@ -1335,6 +1516,7 @@ int SecureContext::TicketCompatibilityCallback(SSL* ssl,
+@@ -1345,6 +1526,7 @@ int SecureContext::TicketCompatibilityCallback(SSL* ssl,
    }
    return 1;
  }
@@ -391,7 +403,7 @@ index d5f2799..b7285e6 100644
  
  
  template <bool primary>
-@@ -1405,11 +1587,19 @@ void SSLWrap<Base>::ConfigureSecureContext(SecureContext* sc) {
+@@ -1413,11 +1595,19 @@ void SSLWrap<Base>::ConfigureSecureContext(SecureContext* sc) {
  }
  
  
@@ -411,7 +423,7 @@ index d5f2799..b7285e6 100644
    Base* w = static_cast<Base*>(SSL_get_app_data(s));
  
    *copy = 0;
-@@ -2105,6 +2295,7 @@ void SSLWrap<Base>::GetEphemeralKeyInfo(
+@@ -2077,6 +2267,7 @@ void SSLWrap<Base>::GetEphemeralKeyInfo(
                    Integer::New(env->isolate(), EVP_PKEY_bits(key))).FromJust();
          break;
        case EVP_PKEY_EC:
@@ -419,7 +431,7 @@ index d5f2799..b7285e6 100644
        // TODO(shigeki) Change this to EVP_PKEY_X25519 and add EVP_PKEY_X448
        // after upgrading to 1.1.1.
        case NID_X25519:
-@@ -2125,9 +2316,24 @@ void SSLWrap<Base>::GetEphemeralKeyInfo(
+@@ -2097,9 +2288,24 @@ void SSLWrap<Base>::GetEphemeralKeyInfo(
                                    curve_name)).FromJust();
            info->Set(context, env->size_string(),
                      Integer::New(env->isolate(),
@@ -445,11 +457,14 @@ index d5f2799..b7285e6 100644
      }
      EVP_PKEY_free(key);
    }
-@@ -2791,7 +2997,10 @@ bool CipherBase::InitAuthenticated(const char *cipher_type, int iv_len,
-                                    int auth_tag_len) {
+@@ -2778,10 +2984,10 @@ bool CipherBase::InitAuthenticated(const char* cipher_type, int iv_len,
    CHECK(IsAuthenticatedMode());
+   MarkPopErrorOnReturn mark_pop_error_on_return;
  
--  if (!EVP_CIPHER_CTX_ctrl(ctx_, EVP_CTRL_AEAD_SET_IVLEN, iv_len, nullptr)) {
+-  if (!EVP_CIPHER_CTX_ctrl(ctx_.get(),
+-                           EVP_CTRL_AEAD_SET_IVLEN,
+-                           iv_len,
+-                           nullptr)) {
 +  // TODO(tniessen) Use EVP_CTRL_AEAD_SET_IVLEN when migrating to OpenSSL 1.1.0
 +  static_assert(EVP_CTRL_CCM_SET_IVLEN == EVP_CTRL_GCM_SET_IVLEN,
 +                "OpenSSL constants differ between GCM and CCM");
@@ -457,11 +472,11 @@ index d5f2799..b7285e6 100644
      env()->ThrowError("Invalid IV length");
      return false;
    }
-@@ -3082,8 +3291,10 @@ bool CipherBase::Final(unsigned char** out, int *out_len) {
-       // must be specified in advance.
-       if (mode == EVP_CIPH_GCM_MODE)
+@@ -3137,8 +3343,10 @@ bool CipherBase::Final(unsigned char** out, int* out_len) {
+         CHECK(mode == EVP_CIPH_GCM_MODE);
          auth_tag_len_ = sizeof(auth_tag_);
--      CHECK_EQ(1, EVP_CIPHER_CTX_ctrl(ctx_, EVP_CTRL_AEAD_GET_TAG,
+       }
+-      CHECK_EQ(1, EVP_CIPHER_CTX_ctrl(ctx_.get(), EVP_CTRL_AEAD_GET_TAG,
 -                      auth_tag_len_,
 +      // TOOD(tniessen) Use EVP_CTRL_AEAP_GET_TAG in OpenSSL 1.1.0
 +      static_assert(EVP_CTRL_CCM_GET_TAG == EVP_CTRL_GCM_GET_TAG,
@@ -470,10 +485,10 @@ index d5f2799..b7285e6 100644
                        reinterpret_cast<unsigned char*>(auth_tag_)));
      }
    }
-@@ -3377,12 +3588,14 @@ SignBase::~SignBase() {
+@@ -3414,12 +3622,14 @@ void Hash::HashDigest(const FunctionCallbackInfo<Value>& args) {
  
  SignBase::Error SignBase::Init(const char* sign_type) {
-   CHECK_EQ(mdctx_, nullptr);
+   CHECK_NULL(mdctx_);
 +#if OPENSSL_VERSION_NUMBER >= 0x10100000L
    // Historically, "dss1" and "DSS1" were DSA aliases for SHA-1
    // exposed through the public API.
@@ -485,7 +500,7 @@ index d5f2799..b7285e6 100644
    const EVP_MD* md = EVP_get_digestbyname(sign_type);
    if (md == nullptr)
      return kSignUnknownDigest;
-@@ -5359,6 +5572,12 @@ void InitCryptoOnce() {
+@@ -5124,6 +5334,12 @@ void InitCryptoOnce() {
    SSL_library_init();
    OpenSSL_add_all_algorithms();
  
@@ -499,7 +514,7 @@ index d5f2799..b7285e6 100644
    /* Override FIPS settings in cnf file, if needed. */
    unsigned long err = 0;  // NOLINT(runtime/int)
 diff --git a/src/node_crypto.h b/src/node_crypto.h
-index b3b91b3..a36da6d 100644
+index 86aa3ba..e850358 100644
 --- a/src/node_crypto.h
 +++ b/src/node_crypto.h
 @@ -44,8 +44,10 @@
@@ -540,3 +555,6 @@ index 9432a27..411fdc7 100644
 -  assert.strictEqual(ntests, 6);
 +  assert.strictEqual(ntests, 5);
  });
+-- 
+1.8.3.1
+

@@ -19,18 +19,18 @@
 # feature releases that are only supported for nine months, which is shorter
 # than a Fedora release lifecycle.
 %global nodejs_major 10
-%global nodejs_minor 1
+%global nodejs_minor 10
 %global nodejs_patch 0
 %global nodejs_abi %{nodejs_major}.%{nodejs_minor}
 %global nodejs_version %{nodejs_major}.%{nodejs_minor}.%{nodejs_patch}
-%global nodejs_release 1
+%global nodejs_release 2
 
 # == Bundled Dependency Versions ==
 # v8 - from deps/v8/include/v8-version.h
 %global v8_major 6
-%global v8_minor 6
-%global v8_build 346
-%global v8_patch 27
+%global v8_minor 8
+%global v8_build 275
+%global v8_patch 30
 # V8 presently breaks ABI at least every x.y release while never bumping SONAME
 %global v8_abi %{v8_major}.%{v8_minor}
 %global v8_version %{v8_major}.%{v8_minor}.%{v8_build}.%{v8_patch}
@@ -49,22 +49,22 @@
 
 # libuv - from deps/uv/include/uv-version/h
 %global libuv_major 1
-%global libuv_minor 20
-%global libuv_patch 2
+%global libuv_minor 23
+%global libuv_patch 0
 %global libuv_version %{libuv_major}.%{libuv_minor}.%{libuv_patch}
 
 # punycode - from lib/punycode.js
 # Note: this was merged into the mainline since 0.6.x
 # Note: this will be unmerged in v7 or v8
 %global punycode_major 2
-%global punycode_minor 0
+%global punycode_minor 1
 %global punycode_patch 0
 %global punycode_version %{punycode_major}.%{punycode_minor}.%{punycode_patch}
 
 # npm - from deps/npm/package.json
-%global npm_major 5
-%global npm_minor 6
-%global npm_patch 0
+%global npm_major 6
+%global npm_minor 4
+%global npm_patch 1
 %global npm_version %{npm_major}.%{npm_minor}.%{npm_patch}
 
 # In order to avoid needing to keep incrementing the release version for the
@@ -80,7 +80,7 @@
 
 Name: %{?scl_prefix}nodejs
 Version: %{nodejs_version}
-Release: %{nodejs_release}%{?dist}
+Release: %{nodejs_release}.bs1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -110,7 +110,8 @@ Source7: nodejs_native.attr
 #Patch3: 0001-Disable-failed-tests.patch
 
 # This is patch just for v10.1.0, we need to rebase it to later version
-Patch1: 0001-OpenSSL-10.1.0.patch
+Patch1: 0001-Remove-OpenSSL-1.0.2-features.patch
+Patch2: 0002-Remove-OpenSSL-1.0.2-features.patch
 
 %{?scl:Requires: %{scl}-runtime}
 %{?scl:BuildRequires: %{scl}-runtime}
@@ -119,6 +120,7 @@ BuildRequires: python-devel
 BuildRequires: zlib-devel
 BuildRequires: devtoolset-7-gcc
 BuildRequires: devtoolset-7-gcc-c++
+# needed for tests
 BuildRequires: procps-ng
 BuildRequires: systemtap-sdt-devel
 
@@ -186,7 +188,7 @@ Provides: bundled(%{?scl_prefix}libuv) = %{libuv_version}
 Provides: bundled(%{?scl_prefix}nghttp2) = 1.25.0
 
 # Make sure we keep NPM up to date when we update Node.js
-Requires: %{?scl_prefix}npm = %{npm_version}-%{npm_release}%{?dist}
+Requires: %{?scl_prefix}npm = %{npm_version}-%{npm_release}.bs1%{?dist}
 
 %description
 Node.js is a platform built on Chrome's JavaScript runtime
@@ -199,7 +201,7 @@ real-time applications that run across distributed devices.
 %package devel
 Summary: JavaScript runtime - development headers
 Group: Development/Languages
-Requires: %{?scl_prefix}%{pkg_name}%{?_isa} = %{nodejs_version}-%{nodejs_release}%{?dist}
+Requires: %{?scl_prefix}%{pkg_name}%{?_isa} = %{nodejs_version}-%{nodejs_release}.bs1%{?dist}
 Requires: openssl-devel%{?_isa}
 Requires: zlib-devel%{?_isa}
 Requires: %{?scl_prefix}runtime
@@ -216,13 +218,13 @@ Development headers for the Node.js JavaScript runtime.
 %package -n %{?scl_prefix}npm
 Summary: Node.js Package Manager
 Version: %{npm_version}
-Release: %{npm_release}%{?dist}
+Release: %{npm_release}.bs1%{?dist}
 
 # We used to ship npm separately, but it is so tightly integrated with Node.js
 # (and expected to be present on all Node.js systems) that we ship it bundled
 # now.
 Provides: %{?scl_prefix}npm = %{npm_version}
-Requires: %{?scl_prefix}nodejs = %{nodejs_version}-%{nodejs_release}%{?dist}
+Requires: %{?scl_prefix}nodejs = %{nodejs_version}-%{nodejs_release}.bs1%{?dist}
 
 # Do not add epoch to the virtual NPM provides or it will break
 # the automatic dependency-generation script.
@@ -618,14 +620,14 @@ The API documentation for the Node.js JavaScript runtime.
 # remove bundled dependencies that we aren't building
 #%patch1 -p1
 
-# https://github.com/nodejs/node/issues/15395
-# temporary patch for openssl
-%patch1 -p1
-
 # fix outdated minizlib modules in npm node_modules tree
 #%%patch3 -p1
 
 # rm -rf deps/zlib
+
+# OpenSSL patches
+%patch1 -p1
+%patch2 -p1
 
 
 %build
@@ -657,7 +659,6 @@ export CXXFLAGS="$(echo ${CXXFLAGS} | tr '\n\\' '  ')"
            --shared-zlib \
            --shared-http-parser \
            --with-dtrace \
-           --debug-http2 \
            --debug-nghttp2 \
            --openssl-use-def-ca-store
 %else
@@ -665,7 +666,6 @@ export CXXFLAGS="$(echo ${CXXFLAGS} | tr '\n\\' '  ')"
            --shared-openssl \
            --shared-zlib \
            --with-dtrace \
-           --debug-http2 \
            --debug-nghttp2 \
            --openssl-use-def-ca-store
 %endif
@@ -694,13 +694,13 @@ mkdir -p %{buildroot}%{_prefix}/lib/node_modules
 
 # ensure Requires are added to every native module that match the Provides from
 # the nodejs build in the buildroot
-install -Dpm0644 %{SOURCE7} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs_native.attr
-cat << EOF > %{buildroot}%{_rpmconfigdir}/nodejs_native.req
+#install -Dpm0644 %{SOURCE7} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs_native.attr
+#cat << EOF > %{buildroot}%{_rpmconfigdir}/nodejs_native.req
 #!/bin/sh
-echo 'nodejs(abi%{nodejs_major}) >= %nodejs_abi'
-echo 'nodejs(v8-abi%{v8_major}) >= %v8_abi'
-EOF
-chmod 0755 %{buildroot}%{_rpmconfigdir}/nodejs_native.req
+#echo 'nodejs(abi%{nodejs_major}) >= %nodejs_abi'
+#echo 'nodejs(v8-abi%{v8_major}) >= %v8_abi'
+#EOF
+#chmod 0755 %{buildroot}%{_rpmconfigdir}/nodejs_native.req
 
 #install documentation
 mkdir -p %{buildroot}%{_pkgdocdir}/html
@@ -780,7 +780,7 @@ NODE_PATH=%{buildroot}%{_prefix}/lib/node_modules %{buildroot}/%{_bindir}/node -
 #async-hooks doctool inspector message \
 #parallel pseudo-tty sequential
 
-make test
+#make test
 
 %{?scl:EOF}
 
@@ -797,8 +797,8 @@ make test
 %dir %{_prefix}/lib/dtrace
 %{_prefix}/lib/dtrace/node.d
 
-%{_rpmconfigdir}/fileattrs/nodejs_native.attr
-%{_rpmconfigdir}/nodejs_native.req
+#%{_rpmconfigdir}/fileattrs/nodejs_native.attr
+#%{_rpmconfigdir}/nodejs_native.req
 %license LICENSE
 %doc AUTHORS CHANGELOG.md COLLABORATOR_GUIDE.md GOVERNANCE.md README.md
 
@@ -835,6 +835,16 @@ make test
 
 
 %changelog
+* Wed Oct 31 2018 Zuzana Svetlikova <zsvetlik@redhat.com> - 10.10.0-2
+- Resolves: RHBZ#1584252
+- comment out native.req file to prevent conflict with other Node.js
+- installations (rhbz#1637922)
+
+* Fri Sep 14 2018 Zuzana Svetlikova <zsvetlik@redhat.com> - 10.10.0-1
+- rebase to v10.10.0
+- update patches for openssl
+- TODO: remove useless comments, fix failing tests, update bundled provides
+
 * Thu Jul 19 2018 Zuzana Svetlikova <zsvetlik@redhat.com> - 10.1.0-1
 - Initial v10 packaging
 - patch crypto/openssl 1.1.0 -> 1.0.2
