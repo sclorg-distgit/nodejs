@@ -5,8 +5,6 @@
 
 %{!?_with_bootstrap: %global bootstrap 1}
 
-%{?!_pkgdocdir:%global _pkgdocdir %{_docdir}/%{pkg_name}-%{version}}
-
 # ARM builds currently break on the Debug builds, so we'll just
 # build the standard runtime until that gets sorted out.
 %ifarch %{arm} aarch64 %{power64}
@@ -19,18 +17,18 @@
 # feature releases that are only supported for nine months, which is shorter
 # than a Fedora release lifecycle.
 %global nodejs_major 12
-%global nodejs_minor 8
+%global nodejs_minor 10
 %global nodejs_patch 0
 %global nodejs_abi %{nodejs_major}.%{nodejs_minor}
 %global nodejs_version %{nodejs_major}.%{nodejs_minor}.%{nodejs_patch}
-%global nodejs_release 1
+%global nodejs_release 3
 
 # == Bundled Dependency Versions ==
 # v8 - from deps/v8/include/v8-version.h
 %global v8_major 7
-%global v8_minor 5
-%global v8_build 288
-%global v8_patch 22
+%global v8_minor 6
+%global v8_build 303
+%global v8_patch 29
 # V8 presently breaks ABI at least every x.y release while never bumping SONAME
 %global v8_abi %{v8_major}.%{v8_minor}
 %global v8_version %{v8_major}.%{v8_minor}.%{v8_build}.%{v8_patch}
@@ -55,15 +53,15 @@
 
 # libuv - from deps/uv/include/uv-version/h
 %global libuv_major 1
-%global libuv_minor 30
-%global libuv_patch 1
+%global libuv_minor 31
+%global libuv_patch 0
 %global libuv_version %{libuv_major}.%{libuv_minor}.%{libuv_patch}
 
 # nghttp2 - from deps/nghttp2/lib/includes/nghttp2/nghttp2ver.h
-	
+
 %global nghttp2_major 1
 %global nghttp2_minor 39
-%global nghttp2_patch 1
+%global nghttp2_patch 2
 %global nghttp2_version %{nghttp2_major}.%{nghttp2_minor}.%{nghttp2_patch}
 
 # punycode - from lib/punycode.js
@@ -71,13 +69,13 @@
 # Note: this will be unmerged in v7 or v8
 %global punycode_major 2
 %global punycode_minor 1
-%global punycode_patch 0
+%global punycode_patch 1
 %global punycode_version %{punycode_major}.%{punycode_minor}.%{punycode_patch}
 
 # npm - from deps/npm/package.json
 %global npm_major 6
 %global npm_minor 10
-%global npm_patch 0
+%global npm_patch 3
 %global npm_version %{npm_major}.%{npm_minor}.%{npm_patch}
 
 # zlib version - from deps/zlib/CMakeLists.txt
@@ -112,9 +110,10 @@ URL: http://nodejs.org/
 Source0: node-v%{nodejs_version}-stripped.tar.gz
 Source100: %{pkg_name}-tarball.sh
 
-# This is patch just for v10.1.0, we need to rebase it to later version
-# Patch1: 0001-Remove-OpenSSL-1.0.2-features.patch
-# Patch2: 0002-Remove-OpenSSL-1.0.2-features.patch
+# Patch for making nodejs compatible with older openssl
+Patch1: 0001-Remove-or-backport-OpenSSL-features.patch
+# Remove libuv attempts to use statx syscall – rhbz#1760184
+Patch2: nodejs-revert-statx.patch
 
 %{?scl:Requires: %{scl}-runtime}
 %{?scl:BuildRequires: %{scl}-runtime}
@@ -130,7 +129,7 @@ BuildRequires: chrpath
 BuildRequires: devtoolset-7-libatomic-devel
 
 
-# BuildRequires: openssl-devel >= 1:1.0.2
+BuildRequires: openssl-devel >= 1:1.0.2
 
 # we need the system certificate store when Patch2 is applied
 Requires: ca-certificates
@@ -184,7 +183,7 @@ Provides: bundled(%{?scl_prefix}llhttp) = %{llhttp_version}
 Provides: bundled(%{?scl_prefix}libuv) = %{libuv_version}
 
 # Node.js provides http2 support, but shared option is not yet available
-Provides: bundled(%{?scl_prefix}nghttp2) = 1.25.0
+Provides: bundled(%{?scl_prefix}nghttp2) = %{nghttp2_version}
 
 # Bundle zlib on RHEL7, as the system version is too old
 Provides: bundled(%{?scl_prefix}zlib) = %{zlib_version}
@@ -244,24 +243,17 @@ The API documentation for the Node.js JavaScript runtime.
 
 
 %prep
-%setup -q -n node-v%{nodejs_version}
-
-# remove bundled dependencies that we aren't building
-#%patch1 -p1
-
-# fix outdated minizlib modules in npm node_modules tree
-#%%patch3 -p1
-
-# rm -rf deps/zlib
-
-# OpenSSL patches
-# %%patch1 -p1
-# %%patch2 -p1
+%autosetup -p1 -n node-v%{nodejs_version}
+# fix file permissions on source and header files
+find deps/ -name '*.c' -o -name '*.h' -exec chmod 0644 '{}' +
 
 
 %build
 
 %{?scl:scl enable %{scl} devtoolset-7 - << \EOF}
+
+# _pkgdocdir does not support subpackage with different version
+%{?rhel7:%global _pkgdocdir %{_docdir}/%{name}-%{nodejs_version}}
 
 set -ex
 # build with debugging symbols and add defines from libuv (#892601)
@@ -270,11 +262,15 @@ set -ex
 export CFLAGS='%{optflags} -g \
                -D_LARGEFILE_SOURCE \
                -D_FILE_OFFSET_BITS=64 \
+               -DOPENSSL_NO_OCB \
+               -DOPENSSL_NO_SCRYPT \
                -DZLIB_CONST \
                -fno-delete-null-pointer-checks'
 export CXXFLAGS='%{optflags} -g \
                  -D_LARGEFILE_SOURCE \
                  -D_FILE_OFFSET_BITS=64 \
+                 -DOPENSSL_NO_OCB \
+                 -DOPENSSL_NO_SCRYPT \
                  -DZLIB_CONST \
                  -fno-delete-null-pointer-checks'
 
@@ -284,21 +280,21 @@ export CXXFLAGS="$(echo ${CXXFLAGS} | tr '\n\\' '  ')"
 
 %if ! 0%{?bootstrap}
 ./configure --prefix=%{_prefix} \
-           --without-nssl \
            %{?!el7:--shared-zlib} \
            --shared-http-parser \
            --with-dtrace \
            --with-intl=small-icu \
-           --debug-nghttp2
-#           --openssl-use-def-ca-store
+           --debug-nghttp2 \
+           --shared-openssl \
+           --openssl-use-def-ca-store
 %else
 ./configure --prefix=%{_prefix} \
-           --without-ssl \
            %{?!el7:--shared-zlib} \
            --with-dtrace \
            --with-intl=small-icu \
-           --debug-nghttp2
-#           --openssl-use-def-ca-store
+           --debug-nghttp2 \
+           --shared-openssl \
+           --openssl-use-def-ca-store
 %endif
 
 make BUILDTYPE=Release %{?_smp_mflags}
@@ -436,6 +432,21 @@ ln -sf %{_pkgdocdir}/npm/html %{buildroot}%{_prefix}/lib/node_modules/npm/doc
 
 #make test
 
+# Only run suites that we are expected to pass
+#RUN_SUITES=(
+#    abort
+#    async-hooks
+#    cctest
+#    es-module
+#    parallel
+#    sequential
+#)
+#%ifarch ppc64le aarch64
+#python2 tools/test.py "${RUN_SUITES[@]}" || :
+#%else
+#python2 tools/test.py "${RUN_SUITES[@]}"
+#%endif
+
 #%{?scl:EOF}
 
 %files
@@ -487,6 +498,17 @@ ln -sf %{_pkgdocdir}/npm/html %{buildroot}%{_prefix}/lib/node_modules/npm/doc
 
 
 %changelog
+* Thu Oct 10 2019 Jan Staněk <jstanek@redhat.com> - 12.10.0-3
+- Revert statx utilization in libuv to workaround s390x container issue
+- Resolves: rhbz#1760184
+
+* Sat Oct 05 2019 Zuzana Svetlikova <zsvetlik@redhat.com> - 12.10.0-2
+- Add some missing flags, merge patches into one
+
+* Sat Oct 05 2019 Honza Horak <hhorak@redhat.com> - 12.10.0-1.1
+- Rebase to 12.10.0 and apply patches for openssl compatibility
+  (patches prepared by Zuzana and Jan)
+
 * Tue Aug 13 2019 Zuzana Svetlikova <zsvetlik@redhat.com> - 12.8.0-1
 - Resolves: RHBZ#1717846
 - update to v12.x
